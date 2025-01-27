@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar rol</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="fragments/navbar :: navbar"></div>
+
+    <div class="container">
+        <div class="col">
+            <div class="mb-5">
+                <div class="card mx-auto" style="width: 50%;">
+                    <div class="card-header text-center text-bg-secondary" style="font-size: xx-large;">
+                        FORMULARIO PARA EDITAR ROL
+                    </div>
+
+                    <div class="card-body">
+                        <form th:action="@{/admin/roles/{id}(id=${rol.id_rol})}" th:object="${rol}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">ID:</label>
+                                <input type="text" class="form-control" th:field="*{id_rol}" name="id_rol" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">NOMBRE DEL ROL</label>
+                                <input type="text" class="form-control text-uppercase" th:field="*{nombre}" name="nombre"
+                                    placeholder="Escribe el nombre del nuevo rol" autofocus required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">NIVEL DEL ROL (Menor número = Mayor prioridad)</label>
+                                <input type="number" class="form-control" th:field="*{nivel}" name="nivel" min="0"
+                                    value="0" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">FECHA DE CREACIÓN</label>
+                                <input type="text" class="form-control" th:field="*{fecha_creacion}"
+                                    name="fecha_creacion" disabled>
+                            </div>
+
+                            <div class="row mx-5">
+                                <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal">CANCELAR</button>
+                                <button type="submit" class="btn btn-primary col mx-3">EDITAR ROL</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h1 class="text-center">LISTA DE ROLES</h1>
+                    </div>
+                    <div class="my-auto">
+                        <a class="btn btn-primary disabled-button" th:href="@{roles/nuevo}" role="button">AGREGAR
+                            ROL</a>
+                    </div>
+                </div>
+
+                <table class="table border table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center w-auto" colspan="2" style="width: min-content;">ACCIONES</th>
+                            <th class="ms-3">ID</th>
+                            <th>NOMBRE</th>
+                            <th class="text-center">NIVEL</th>
+                            <th class="text-center">FECHA DE CREACIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="rol: ${roles}">
+                            <td class="text-center" style="width: 12px;">
+                                <a class="btn btn-sm btn-primary" role="button" title="EDITAR ROL"
+                                    th:href="@{/admin/roles/editar/{id}(id=${rol.id_rol})}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </td>
+                            <td class="text-center border" style="width: 12px;">
+                                <a class="btn btn-sm btn-danger disabled-button" role="button" title="ELIMINAR ROL">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </td>
+                            <td th:text="${rol.id_rol}">ID</td>
+                            <td th:text="${rol.nombre}">NOMBRE</td>
+                            <td th:text="${rol.nivel}" class="text-center">NIVEL</td>
+                            <td th:text="${rol.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:insert="fragments/modal :: modal('/admin/roles')"></div>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+</body>
+
+</html>
