@@ -17,30 +17,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-@RequestMapping(value = "/admin")
+@RequestMapping(value = "/admin/roles")
 public class RolesController {
 
     @Autowired
     private RolesService rolesServicio;
 
-    @GetMapping("/roles")
+    @GetMapping
     public String listarRoles(Model modelo) {
         modelo.addAttribute("roles", rolesServicio.getRoles());
         
-        return "roles";
+        return "templates_roles/roles";
     }
     
-    @GetMapping("/roles/nuevo")
+    @GetMapping("/nuevo")
     public String nuevoRolForm(Model modelo) {
         Roles rol = new Roles();
         
         modelo.addAttribute("roles", rolesServicio.getRoles());
         modelo.addAttribute("rol", rol);
         
-        return "form_nuevo_rol";
+        return "templates_roles/form_nuevo_rol";
     }
 
-    @PostMapping("/roles")
+    @PostMapping
     public String crearRol(@ModelAttribute("rol") Roles rol) {
         rol.setNombre(rol.getNombre().toUpperCase());
         rolesServicio.createRol(rol);
@@ -48,15 +48,15 @@ public class RolesController {
         return "redirect:/admin/roles";
     }
     
-    @GetMapping("/roles/editar/{id}")
+    @GetMapping("/editar/{id}")
     public String editarRolForm(@PathVariable Long id, Model modelo) {
         modelo.addAttribute("roles", rolesServicio.getRoles());
         modelo.addAttribute("rol", rolesServicio.getRolById(id));
 
-        return "form_editar_rol";
+        return "templates_roles/form_editar_rol";
     }
 
-    @PostMapping("/roles/{id}")
+    @PostMapping("/{id}")
     public String actualizarRol(@PathVariable Long id, @ModelAttribute("rol") Roles rol , Model modelo) {
         Roles rolExistente = rolesServicio.getRolById(id);
         rolExistente.setId_rol(id);
@@ -69,7 +69,7 @@ public class RolesController {
         return "redirect:/admin/roles";
     }
     
-    @GetMapping("/roles/{id}")
+    @GetMapping("/{id}")
     public String eliminarRol(@PathVariable Long id) {
         rolesServicio.deleteRol(id);
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear rol</title>
+    <title>Editar rol</title>
     <!-- Cambia 'static' a '/css/' para Thymeleaf -->
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -16,27 +16,38 @@
 
     <div class="container">
         <div class="col">
-            <div class="mb-5">
-                <div class="card mx-auto" style="width: 50%;">
-                    <div class="card-header text-center text-bg-secondary" style="font-size: xx-large;">FORMULARIO PARA
-                        CREAR ROL</div>
+            <div class="mb-5 ">
+                <div class="card mx-auto shadow" style="width: 50%;">
+                    <div class="card-header text-center text-bg-secondary" style="font-size: xx-large;">
+                        FORMULARIO PARA EDITAR ROL
+                    </div>
 
                     <div class="card-body">
-                        <form th:action="@{/admin/roles}" th:object="${rol}" method="post">
+                        <form th:action="@{/admin/roles/{id}(id=${rol.id_rol})}" th:object="${rol}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">ID:</label>
+                                <input type="text" class="form-control" th:field="*{id_rol}" name="id_rol" disabled>
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label">NOMBRE DEL ROL</label>
-                                <input type="text" class="form-control text-uppercase" id="inputNombre" name="nombre"
+                                <input type="text" class="form-control text-uppercase" th:field="*{nombre}" name="nombre"
                                     placeholder="Escribe el nombre del nuevo rol" autofocus required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">NIVEL DEL ROL (Menor número = Mayor prioridad)</label>
-                                <input type="number" class="form-control" id="inputNivel" name="nivel" min="0" value="0"
-                                    required>
+                                <input type="number" class="form-control" th:field="*{nivel}" name="nivel" min="0"
+                                    value="0" required>
                             </div>
+                            <div class="mb-3">
+                                <label class="form-label">FECHA DE CREACIÓN (Se cambiará por la fecha actual)</label>
+                                <input type="text" class="form-control" th:field="*{fecha_creacion}"
+                                    name="fecha_creacion" disabled>
+                            </div>
+
                             <div class="row mx-5">
                                 <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
                                     data-bs-target="#cancelModal">CANCELAR</button>
-                                <button type="submit" class="btn btn-primary col mx-3">CREAR ROL</button>
+                                <button type="submit" class="btn btn-primary col mx-3">EDITAR REGISTRO</button>
                             </div>
                         </form>
                     </div>
@@ -49,17 +60,16 @@
                         <h1 class="text-center">LISTA DE ROLES</h1>
                     </div>
                     <div class="my-auto">
-                        <a class="btn btn-primary disabled-button" th:href="@{roles/nuevo}" role="button">AGREGAR
+                        <a class="btn btn-primary disabled-button" role="button">AGREGAR
                             ROL</a>
-                        <!-- <button class="btn btn-primary" type="button" onclick="window.location.href='/admin/roles/nuevo'" disabled>AGREGAR ROL</button> -->
                     </div>
                 </div>
 
-                <table class="table border table-hover">
+                <table class="table border table-hover shadow">
                     <thead class="table-dark">
                         <tr>
                             <th class="text-center w-auto" colspan="2" style="width: min-content;">ACCIONES</th>
-                            <th class="ms-3">ID</th>
+                            <th class="text-center">ID</th>
                             <th>NOMBRE</th>
                             <th class="text-center">NIVEL</th>
                             <th class="text-center">FECHA DE CREACIÓN</th>
@@ -68,7 +78,8 @@
                     <tbody>
                         <tr th:each="rol: ${roles}">
                             <td class="text-center" style="width: 12px;">
-                                <a class="btn btn-sm btn-primary disabled-button" role="button" title="EDITAR ROL">
+                                <a class="btn btn-sm btn-primary" role="button" title="EDITAR ROL"
+                                    th:href="@{/admin/roles/editar/{id}(id=${rol.id_rol})}">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                             </td>
@@ -77,7 +88,7 @@
                                     <i class="bi bi-trash-fill"></i>
                                 </a>
                             </td>
-                            <td th:text="${rol.id_rol}">ID</td>
+                            <td th:text="${rol.id_rol}" class="text-center">ID</td>
                             <td th:text="${rol.nombre}">NOMBRE</td>
                             <td th:text="${rol.nivel}" class="text-center">NIVEL</td>
                             <td th:text="${rol.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
@@ -92,6 +103,7 @@
 
     <script th:src="@{/js/index.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 
 </html>

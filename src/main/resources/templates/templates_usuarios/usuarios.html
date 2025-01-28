@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de usuarios</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="fragments/navbar :: navbar"></div>
+
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h1 class="text-center">LISTA DE USUARIOS</h1>
+            </div>
+            <div class="my-auto">
+                <a class="btn btn-primary" th:href="@{/admin/usuarios/nuevo}" role="button">AGREGAR USUARIO</a>
+            </div>
+        </div>
+
+        <table class="table border table-hover shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center w-auto" colspan="2">ACCIONES</th>
+                    <th class="text-center">ID</th>
+                    <th>NOMBRES</th>
+                    <th>APELLIDOS</th>
+                    <th>DNI</th>
+                    <th>CELULAR</th>
+                    <th>EDAD</th>
+                    <th class="text-center">ESTADO DE VETO</th>
+                    <th>RAZÓN DE VETO</th>
+                    <th>ROL</th>
+                    <th class="text-center">FECHA DE CREACIÓN</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="usuario: ${usuarios}">
+                    <td class="text-center" style="width: 12px;">
+                        <a class="btn btn-sm btn-primary" role="button" title="EDITAR USUARIO"
+                            th:href="@{/admin/usuarios/editar/{id}(id=${usuario.id_usuario})}">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </td>
+                    <td class="text-center border" style="width: 12px;">
+                        <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR USUARIO"
+                            th:href="@{/admin/usuarios/{id}(id=${usuario.id_usuario})}"
+                            onclick="return confirm('¿Estás seguro de que deseas eliminar este usuario?')">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </td>
+                    <td th:text="${usuario.id_usuario}" class="text-center">ID</td>
+                    <td th:text="${usuario.nombres}">NOMBRES</td>
+                    <td th:text="${usuario.apellidos}">APELLIDOS</td>
+                    <td th:text="${usuario.dni}">DNI</td>
+                    <td th:text="${usuario.celular}">CELULAR</td>
+                    <td th:text="${usuario.edad}">EDAD</td>
+                    <td th:text="${usuario.estado_vetado? 'VETADO' : 'NO VETADO'}"
+                        th:class="${usuario.estado_vetado? 'bg-danger text-light text-center' : 'bg-success text-light text-center'}">ESTADO DE VETO</td>
+                    <td th:text="${usuario.razon_vetado}">RAZÓN DE VETO</td>
+                    <td th:text="${usuario.rol.nombre}">ROL</td>
+                    <td th:text="${usuario.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

@@ -1,20 +1,32 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5" th:fragment="navbar">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="#">Mi Hotel</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-5 shadow" th:fragment="navbar">
+    <div class="container-fluid mx-3">
+        <div>
+            <a class="navbar-brand fs-2 m-0" th:href="@{/admin}"><i class="bi bi-building-fill"></i></a>
+        </div>
+
+        <!-- Centro: Reloj Digital -->
+        <div>
+            <span id="digital-clock" class="text-ligth text-bg-dark fw-semibold border border-dark border-5 shadow"></span>
+        </div>
+
+        <div>
+            <ul class="navbar-nav align-items-center">
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/admin/roles}">Roles</a>
+                    <a class="nav-link" aria-current="page" th:href="@{/admin/roles}">INICIO</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/admin/habitaciones}">Habitaciones</a>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        CONSULTAR REGISTROS
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" th:href="@{/admin/usuarios}">USUARIOS</a></li>
+                        <li><a class="dropdown-item" th:href="@{/admin/roles}">ROLES</a></li>
+                    </ul>
                 </li>
+
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/admin/ventas}">Ventas</a>
+                    <a class="nav-link fs-2" th:href="@{/admin/roles}"><i class="bi bi-person-fill"></i></a>
                 </li>
             </ul>
         </div>

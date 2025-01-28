@@ -48,7 +48,7 @@ public class Usuarios {
     private Boolean estado_vetado = false;
 
     @Column(name = "razon_vetado")
-    private String razon_vetado;
+    private String razon_vetado = "";
 
     @ManyToOne
     @JoinColumn(name = "rol", referencedColumnName = "id_rol")
