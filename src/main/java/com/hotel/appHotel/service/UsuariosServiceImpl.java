@@ -37,4 +37,9 @@ public class UsuariosServiceImpl implements UsuariosService {
     public void deleteUsuario(Long id) {
         repositorio.deleteById(id);
     }
+
+    @Override
+    public List<Usuarios> getUsuariosExcluyendoRol(String rol) {
+        return repositorio.findByRol_NombreNot(rol);
+    } 
 }

@@ -38,4 +38,9 @@ public class RolesServiceImpl implements RolesService {
     public void deleteRol(Long id) {
         repositorio.deleteById(id);
     }
+
+    @Override
+    public Roles getByName(String nombre) {
+        return repositorio.findByNombre(nombre);
+    }
 }

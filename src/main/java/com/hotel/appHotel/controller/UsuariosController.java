@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
+import com.hotel.appHotel.model.Credenciales;
 import com.hotel.appHotel.model.Roles;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.repository.RolesRepository;
+import com.hotel.appHotel.service.CredencialesService;
 import com.hotel.appHotel.service.UsuariosService;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,22 +31,25 @@ public class UsuariosController {
     @Autowired
     private RolesRepository rolesRepositorio;
 
+    @Autowired
+    private CredencialesService credencialesServicio;
+
     @GetMapping
     public String listarUsuarios(Model modelo) {
         modelo.addAttribute("usuarios", usuariosServicio.getUsuarios());
-        
+
         return "templates_usuarios/usuarios";
     }
-    
+
     @GetMapping("/nuevo")
     public String nuevoUsuarioForm(Model modelo) {
         Usuarios usuario = new Usuarios();
         List<Roles> roles = rolesRepositorio.findAll();
 
-        modelo.addAttribute("roles", roles);        
+        modelo.addAttribute("roles", roles);
         modelo.addAttribute("usuarios", usuariosServicio.getUsuarios());
         modelo.addAttribute("usuario", usuario);
-        
+
         return "templates_usuarios/form_nuevo_usuario";
     }
 
@@ -53,10 +58,32 @@ public class UsuariosController {
         usuario.setNombres(usuario.getNombres().toUpperCase());
         usuario.setApellidos(usuario.getApellidos().toUpperCase());
         usuariosServicio.createUsuario(usuario);
-        
+
+        if (usuario.getRol().getNivel() != 0) {
+            List<Credenciales> credenciales = credencialesServicio.getCredenciales();
+            System.out.println("USUARIO CON NIVEL DIFERENTE A 0");
+            boolean credencialExistente = true;
+
+            for (Credenciales credencial : credenciales) {
+                System.out.println("Empezando el bucle".toUpperCase());
+                if (usuario.getDni().equals(credencial.getUsuario().getDni())) {
+                    credencialExistente = false;
+                }
+            }
+
+            if (credencialExistente) {
+                Credenciales credencialNuevo = new Credenciales();
+
+                credencialNuevo.setUsuario(usuario);
+                credencialNuevo.setContrasena(usuario.getDni());
+
+                credencialesServicio.createCredencial(credencialNuevo);
+            }
+        }
+
         return "redirect:/admin/usuarios";
     }
-    
+
     @GetMapping("/editar/{id}")
     public String editarUsuarioForm(@PathVariable Long id, Model modelo) {
         List<Roles> roles = rolesRepositorio.findAll();
@@ -69,7 +96,7 @@ public class UsuariosController {
     }
 
     @PostMapping("/{id}")
-    public String actualizarUsuario(@PathVariable Long id, @ModelAttribute("usuario") Usuarios usuario , Model modelo) {
+    public String actualizarUsuario(@PathVariable Long id, @ModelAttribute("usuario") Usuarios usuario, Model modelo) {
         Usuarios usuarioExistente = usuariosServicio.getUsuarioById(id);
         usuarioExistente.setId_usuario(id);
         usuarioExistente.setNombres(usuario.getNombres().toUpperCase());
@@ -78,13 +105,36 @@ public class UsuariosController {
         usuarioExistente.setDni(usuario.getDni());
         usuarioExistente.setCelular(usuario.getCelular());
         usuarioExistente.setRol(usuario.getRol());
-        usuarioExistente.setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        
+        usuarioExistente
+                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        if (usuarioExistente.getRol().getNivel() != 0) {
+            List<Credenciales> credenciales = credencialesServicio.getCredenciales();
+            System.out.println("USUARIO CON NIVEL DIFERENTE A 0");
+            boolean credencialExistente = true;
+
+            for (Credenciales credencial : credenciales) {
+                System.out.println("Empezando el bucle".toUpperCase());
+                if (usuarioExistente.getDni().equals(credencial.getUsuario().getDni())) {
+                    credencialExistente = false;
+                }
+            }
+
+            if (credencialExistente) {
+                Credenciales credencialNuevo = new Credenciales();
+
+                credencialNuevo.setUsuario(usuarioExistente);
+                credencialNuevo.setContrasena(usuarioExistente.getDni());
+
+                credencialesServicio.createCredencial(credencialNuevo);
+            }
+        }
+
         usuariosServicio.updateUsuario(usuarioExistente);
 
         return "redirect:/admin/usuarios";
     }
-    
+
     @GetMapping("/{id}")
     public String eliminarUsuario(@PathVariable Long id) {
         usuariosServicio.deleteUsuario(id);
