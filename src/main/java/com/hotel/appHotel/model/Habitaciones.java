@@ -31,7 +31,7 @@ public class Habitaciones {
     private Integer capacidad;
 
     @ManyToOne
-    @JoinColumn(name = "estado", referencedColumnName = "id_habitaciones_estado")
+    @JoinColumn(name = "estado", referencedColumnName = "id_habitacion_estado")
     private HabitacionesEstado estado;
 
     @ManyToOne

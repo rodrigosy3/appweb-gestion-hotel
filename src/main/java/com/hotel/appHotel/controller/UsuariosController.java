@@ -98,12 +98,14 @@ public class UsuariosController {
     @PostMapping("/{id}")
     public String actualizarUsuario(@PathVariable Long id, @ModelAttribute("usuario") Usuarios usuario, Model modelo) {
         Usuarios usuarioExistente = usuariosServicio.getUsuarioById(id);
-        usuarioExistente.setId_usuario(id);
+
         usuarioExistente.setNombres(usuario.getNombres().toUpperCase());
         usuarioExistente.setApellidos(usuario.getApellidos().toUpperCase());
         usuarioExistente.setEdad(usuario.getEdad());
         usuarioExistente.setDni(usuario.getDni());
         usuarioExistente.setCelular(usuario.getCelular());
+        usuarioExistente.setEstado_vetado(usuario.getEstado_vetado());
+        usuarioExistente.setRazon_vetado(usuario.getRazon_vetado());
         usuarioExistente.setRol(usuario.getRol());
         usuarioExistente
                 .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));

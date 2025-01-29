@@ -59,7 +59,7 @@ public class RolesController {
     @PostMapping("/{id}")
     public String actualizarRol(@PathVariable Long id, @ModelAttribute("rol") Roles rol , Model modelo) {
         Roles rolExistente = rolesServicio.getRolById(id);
-        rolExistente.setId_rol(id);
+        
         rolExistente.setNombre(rol.getNombre().toUpperCase());
         rolExistente.setNivel(rol.getNivel());
         rolExistente.setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));

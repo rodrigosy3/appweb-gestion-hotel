@@ -56,6 +56,7 @@ public class CredencialesController {
     public String actualizarCredencial(@PathVariable Long id, @ModelAttribute("credencial") Credenciales credencial,
             Model modelo) {
         Credenciales credencialExistente = credencialesServicio.getCredencialById(id);
+        
         credencialExistente.setContrasena(credencial.getContrasena());
         credencialExistente
                 .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));

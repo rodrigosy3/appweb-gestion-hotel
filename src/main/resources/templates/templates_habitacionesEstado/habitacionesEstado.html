@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de credenciales</title>
+    <title>Listado del estado para habitaciones</title>
     <!-- Cambia 'static' a '/css/' para Thymeleaf -->
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/css/style.css}">
@@ -16,8 +16,11 @@
 
     <div class="container">
         <div class="d-flex justify-content-between">
-            <div class="mx-auto text-center">
-                <h1>LISTA DE CREDENCIALES</h1>
+            <div>
+                <h1 class="text-center">LISTA DE ESTADOS PARA HABITACIONES</h1>
+            </div>
+            <div class="my-auto">
+                <a class="btn btn-primary" th:href="@{/admin/habitacionesEstado/nuevo}" role="button">AGREGAR ESTADO PARA HABITACIÓN</a>
             </div>
         </div>
 
@@ -26,36 +29,30 @@
                 <tr>
                     <th class="text-center w-auto" colspan="2">ACCIONES</th>
                     <th class="text-center">ID</th>
-                    <th>NOMBRES</th>
-                    <th>APELLIDOS</th>
-                    <th>ROL</th>
-                    <th class="text-center">USUARIO PARA ACCESO</th>
-                    <th class="text-center">CONTRASEÑA</th>
+                    <th>NOMBRE DEL ESTADO</th>
+                    <th>MENSAJE</th>
                     <th class="text-center">FECHA DE CREACIÓN</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="credencial: ${credenciales}">
+                <tr th:each="habitacionEstado: ${habitacionesEstado}">
                     <td class="text-center" style="width: 12px;">
-                        <a class="btn btn-sm btn-primary" role="button" title="EDITAR CREDENCIAL"
-                            th:href="@{/admin/credenciales/editar/{id}(id=${credencial.id_credencial})}">
+                        <a class="btn btn-sm btn-primary" role="button" title="EDITAR ESTADO PARA HABITACIÓN"
+                            th:href="@{/admin/habitacionesEstado/editar/{id}(id=${habitacionEstado.id_habitacion_estado})}">
                             <i class="bi bi-pencil-square"></i>
                         </a>
                     </td>
                     <td class="text-center border" style="width: 12px;">
-                        <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR CREDENCIAL"
-                            th:href="@{/admin/credenciales/{id}(id=${credencial.id_credencial})}"
-                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta credencial?')">
+                        <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR ESTADO PARA HABITACIÓN"
+                            th:href="@{/admin/habitacionesEstado/{id}(id=${habitacionEstado.id_habitacion_estado})}"
+                            onclick="return confirm('¿Estás seguro de que deseas eliminar este estado para la habitación?')">
                             <i class="bi bi-trash-fill"></i>
                         </a>
                     </td>
-                    <td th:text="${credencial.id_credencial}" class="text-center">ID</td>
-                    <td th:text="${credencial.usuario.nombres}">NOMBRES</td>
-                    <td th:text="${credencial.usuario.apellidos}">APELLIDOS</td>
-                    <td th:text="${credencial.usuario.rol.nombre}">ROL</td>
-                    <td th:text="${credencial.usuario.dni}" class="text-center">USUARIO PARA ACCESO</td>
-                    <td th:text="${credencial.contrasena}" class="text-center">CONTRASEÑA</td>
-                    <td th:text="${credencial.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                    <td th:text="${habitacionEstado.id_habitacion_estado}" class="text-center">ID</td>
+                    <td th:text="${habitacionEstado.estado}">NOMBRE DEL ESTADO</td>
+                    <td th:text="${habitacionEstado.mensaje}">MENSAJE</td>
+                    <td th:text="${habitacionEstado.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
                 </tr>
             </tbody>
         </table>

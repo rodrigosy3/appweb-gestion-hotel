@@ -19,7 +19,7 @@ public class HabitacionesEstado {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_habitaciones_estado;
+    private Long id_habitacion_estado;
 
     @Column(name = "estado", nullable = false)
     private String estado;

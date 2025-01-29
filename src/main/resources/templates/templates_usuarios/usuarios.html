@@ -62,8 +62,11 @@
                     <td th:text="${usuario.celular}">CELULAR</td>
                     <td th:text="${usuario.edad}">EDAD</td>
                     <td th:text="${usuario.estado_vetado? 'VETADO' : 'NO VETADO'}"
-                        th:class="${usuario.estado_vetado? 'bg-danger text-light text-center' : 'bg-success text-light text-center'}">ESTADO DE VETO</td>
-                    <td th:text="${usuario.razon_vetado}">RAZÓN DE VETO</td>
+                        th:class="${usuario.estado_vetado? 'bg-danger text-light text-center' : 'bg-success text-light text-center'}">
+                        ESTADO DE VETO</td>
+                    <td th:text="${usuario.razon_vetado}"
+                        th:class="${usuario.razon_vetado == ''? 'bg-secondary-subtle' : ''}">
+                        RAZÓN DE VETO</td>
                     <td th:text="${usuario.rol.nombre}">ROL</td>
                     <td th:text="${usuario.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
                 </tr>
