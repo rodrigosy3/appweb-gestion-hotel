@@ -1,5 +1,10 @@
 package com.hotel.appHotel;
 
+// import java.sql.Connection;
+// import java.sql.DriverManager;
+// import java.sql.ResultSet;
+// import java.sql.Statement;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -9,7 +14,27 @@ public class AppHotelApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(AppHotelApplication.class, args);
+
+		// Llamar al método para obtener el tamaño de la BD
+		// long size = getDatabaseSize("jdbc:sqlite:db_hotel.db");
+		// System.out.println("Tamaño de la base de datos: " + size / 1024 + " KB");
 	}
+
+	// public static long getDatabaseSize(String dbUrl) {
+	// 	long size = 0;
+	// 	try (Connection conn = DriverManager.getConnection(dbUrl);
+	// 			Statement stmt = conn.createStatement();
+	// 			ResultSet rs = stmt.executeQuery(
+	// 					"SELECT (page_count * page_size) AS size_in_bytes FROM pragma_page_count(), pragma_page_size();")) {
+
+	// 		if (rs.next()) {
+	// 			size = rs.getLong("size_in_bytes");
+	// 		}
+	// 	} catch (Exception e) {
+	// 		e.printStackTrace();
+	// 	}
+	// 	return size;
+	// }
 
 	// @Autowired
 	// private RolesRepository rolesRepository;

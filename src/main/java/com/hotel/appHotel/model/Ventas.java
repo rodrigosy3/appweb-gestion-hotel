@@ -26,14 +26,17 @@ public class Ventas {
     private Usuarios usuario_responsable;
 
     @ManyToOne
-    @JoinColumn(name = "habitacion", referencedColumnName = "id_habitacion")
-    private Habitaciones habitacion;
+    @JoinColumn(name = "habitacion_precio", referencedColumnName = "id_habitacion_precio")
+    private HabitacionesPrecio habitacion_precio;
 
     @Column(name = "fecha_entrada")
     private String fecha_entrada; // Opcional para cotizaciones
 
     @Column(name = "fecha_salida")
     private String fecha_salida;
+
+    @Column(name = "descuento", nullable = false)
+    private Double descuento;
 
     @Column(name = "monto_total", nullable = false)
     private Double monto_total;
