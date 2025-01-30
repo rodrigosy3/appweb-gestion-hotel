@@ -12,7 +12,7 @@
 </head>
 
 <body>
-    <div th:insert="fragments/navbar :: navbar"></div>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
 
     <div class="container">
         <div class="col">
@@ -25,6 +25,10 @@
                     <div class="card-body">
                         <form th:action="@{/admin/historialVetos/{id}(id=${historialVeto.id_historial_veto})}"
                             th:object="${historialVeto}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">ID:</label>
+                                <input type="text" class="form-control" th:field="*{id_historial_veto}" disabled>
+                            </div>
                             <div class="mb-3">
                                 <label class="form-label">USUARIO RESPONSABLE DE GENERAR EL VETO</label>
                                 <select class="form-select" th:field="*{usuario_responsable}" required>
@@ -93,7 +97,8 @@
                     <tbody>
                         <tr th:each="historialVeto: ${historialVetos}">
                             <td class="text-center" style="width: 12px;">
-                                <a class="btn btn-sm btn-primary disabled-button" role="button"
+                                <a class="btn btn-sm btn-primary" role="button"
+                                    th:href="@{/admin/historialVetos/editar/{id}(id=${historialVeto.id_historial_veto})}"
                                     title="EDITAR HISTORIAL DE VETO">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>

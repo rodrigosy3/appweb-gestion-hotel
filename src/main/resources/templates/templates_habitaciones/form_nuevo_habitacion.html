@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear habitación</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container">
+        <div class="col">
+            <div class="mb-5">
+                <div class="card mx-auto shadow" style="width: 50%;">
+                    <div class="card-header text-center text-bg-secondary" style="font-size: xx-large;">FORMULARIO PARA
+                        CREAR UNA HABITACIÓN</div>
+
+                    <div class="card-body">
+                        <form th:action="@{/admin/habitaciones}" th:object="${habitacion}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">NÚMERO DE HABITACIÓN</label>
+                                <input type="number" class="form-control" th:field="*{numero}" autofocus required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">CATEGORÍA</label>
+                                <select class="form-select" th:field="*{categoria}" required>
+                                    <option th:value="MODERNO" th:text="MODERNO"> </option>
+                                    <option th:value="ANTIGUO" th:text="ANTIGUO"> </option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">CAPACIDAD DE CLIENTES</label>
+                                <input type="number" class="form-control" th:field="*{capacidad}" min="1">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">TIPO DE HABITACIÓN</label>
+                                <select class="form-select" th:field="*{tipo}" required>
+                                    <option th:each="habitacionTipo : ${habitacionesTipos}"
+                                        th:value="${habitacionTipo.id_habitacion_tipo}"
+                                        th:text="${'(' + habitacionTipo.abreviacion_tipo + ')' + ' ' + habitacionTipo.nombre_tipo}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">ESTADO DE LA HABITACIÓN</label>
+                                <select class="form-select" th:field="*{estado}" required>
+                                    <option th:each="habitacionEstado : ${habitacionesEstado}"
+                                        th:value="${habitacionEstado.id_habitacion_estado}"
+                                        th:text="${habitacionEstado.estado}">
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div class="row mx-5">
+                                <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal">CANCELAR</button>
+                                <button type="submit" class="btn btn-primary col mx-3">CREAR REGISTRO</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h1 class="text-center">LISTA DE HABITACIONES</h1>
+                    </div>
+                    <div class="my-auto">
+                        <a class="btn btn-primary disabled-button" role="button">AGREGAR
+                            REGISTRO</a>
+                    </div>
+                </div>
+
+                <table class="table border table-hover shadow">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center w-auto" colspan="2">ACCIONES</th>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">NÚMERO</th>
+                            <th class="text-center">CATEGORÍA</th>
+                            <th class="text-center">CAPACIDAD CLIENTES</th>
+                            <th class="text-center">ESTADO ACTUAL</th>
+                            <th class="text-center">TIPO DE HABITACIÓN</th>
+
+                            <th class="text-center">FECHA DE CREACIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="habitacion: ${habitaciones}">
+                            <td class="text-center" style="width: 12px;">
+                                <a class="btn btn-sm btn-primary disabled-button" role="button" title="EDITAR">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </td>
+                            <td class="text-center border disabled-button" style="width: 12px;">
+                                <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </td>
+                            <td th:text="${habitacion.id_habitacion}" class="text-center">ID</td>
+                            <td class="text-center" th:text="${habitacion.numero}">NÚMERO</td>
+                            <td class="text-center" th:text="${habitacion.categoria}">CATEGORÍA</td>
+                            <td class="text-center" th:text="${habitacion.capacidad}">CAPACIDAD CLIENTES</td>
+                            <td class="text-center" th:text="${habitacion.estado.estado}">ESTADO ACTUAL</td>
+                            <td class="text-center"
+                                th:text="${'(' + habitacion.tipo.abreviacion_tipo + ')' + ' ' + habitacion.tipo.nombre_tipo}">
+                                TIPO DE HABITACIÓN</th>
+
+                            <td th:text="${habitacion.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:insert="~{fragments/modal :: modal('/admin/habitaciones')}"></div>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

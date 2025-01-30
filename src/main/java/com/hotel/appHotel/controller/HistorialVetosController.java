@@ -53,9 +53,6 @@ public class HistorialVetosController {
             }
         }
 
-        System.out.println(usuarios_clientes.toString());
-        System.out.println(usuarios_responsables.toString());
-
         if (usuarios_responsables.isEmpty() || usuarios_clientes.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
                     "No hay usuarios con roles adecuados para crear un historial de vetos.");

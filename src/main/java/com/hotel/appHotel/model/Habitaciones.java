@@ -28,7 +28,7 @@ public class Habitaciones {
     private String categoria;
 
     @Column(name = "capacidad", nullable = false)
-    private Integer capacidad;
+    private Integer capacidad = 1;
 
     @ManyToOne
     @JoinColumn(name = "estado", referencedColumnName = "id_habitacion_estado")

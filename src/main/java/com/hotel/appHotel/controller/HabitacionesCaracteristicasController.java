@@ -66,7 +66,7 @@ public class HabitacionesCaracteristicasController {
     }
 
     @PostMapping("/{id}")
-    public String actualizarhabitacionCaracteristica(@PathVariable Long id, @ModelAttribute("habitacionCaracteristica") HabitacionesCaracteristicas habitacionCaracteristica , Model modelo) {
+    public String actualizarHabitacionCaracteristica(@PathVariable Long id, @ModelAttribute("habitacionCaracteristica") HabitacionesCaracteristicas habitacionCaracteristica , Model modelo) {
         HabitacionesCaracteristicas habitacionCaracteristicaExistente = servicio.getHabitacionCaracteristicaById(id);
         
         habitacionCaracteristicaExistente.setNombre(habitacionCaracteristica.getNombre().toUpperCase());

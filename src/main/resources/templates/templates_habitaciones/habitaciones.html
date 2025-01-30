@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de habitaciones</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h1 class="text-center">LISTA DE HABITACIONES</h1>
+            </div>
+            <div class="my-auto">
+                <a class="btn btn-primary" th:href="@{/admin/habitaciones/nuevo}" role="button">AGREGAR REGISTRO</a>
+            </div>
+        </div>
+
+        <table class="table border table-hover shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center w-auto" colspan="2">ACCIONES</th>
+                    <th class="text-center">ID</th>
+                    <th class="text-center">NÚMERO</th>
+                    <th class="text-center">CATEGORÍA</th>
+                    <th class="text-center">CAPACIDAD CLIENTES</th>
+                    <th class="text-center">ESTADO ACTUAL</th>
+                    <th class="text-center">TIPO DE HABITACIÓN</th>
+
+                    <th class="text-center">FECHA DE CREACIÓN</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="habitacion: ${habitaciones}">
+                    <td class="text-center" style="width: 12px;">
+                        <a class="btn btn-sm btn-primary" role="button" title="EDITAR"
+                            th:href="@{/admin/habitaciones/editar/{id}(id=${habitacion.id_habitacion})}">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </td>
+                    <td class="text-center border" style="width: 12px;">
+                        <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR"
+                            th:href="@{/admin/habitaciones/{id}(id=${habitacion.id_habitacion})}"
+                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta habitación?')">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </td>
+                    <td th:text="${habitacion.id_habitacion}" class="text-center">ID</td>
+                    <td class="text-center" th:text="${habitacion.numero}">NÚMERO</td>
+                    <td class="text-center" th:text="${habitacion.categoria}">CATEGORÍA</td>
+                    <td class="text-center" th:text="${habitacion.capacidad}">CAPACIDAD CLIENTES</td>
+                    <td class="text-center" th:text="${habitacion.estado.estado}">ESTADO ACTUAL</td>
+                    <td class="text-center"
+                        th:text="${'(' + habitacion.tipo.abreviacion_tipo + ')' + ' ' + habitacion.tipo.nombre_tipo}">TIPO DE
+                        HABITACIÓN</td>
+
+                    <td th:text="${habitacion.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>
