@@ -28,7 +28,7 @@ public class HabitacionesCaracteristicas {
     private String marca;
 
     @Column(name = "precio")
-    private Double precio;
+    private Double precio = 0.0;
 
     @Column(name = "fecha_creacion", nullable = false)
     private String fecha_creacion; // ISO 8601
