@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear precio de habitación</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container">
+        <div class="col">
+            <div class="mb-5">
+                <div class="card mx-auto shadow" style="width: 50%;">
+                    <div class="card-header text-center text-bg-secondary" style="font-size: x-large;">FORMULARIO PARA
+                        CREAR EL PRECIO BASE DE LA HABITACIÓN</div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/habitacionesPrecio}" th:object="${habitacionPrecio}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">NÚMERO DE HABITACIÓN</label>
+                                <select class="form-select" th:field="*{habitacion}" id="habitacionSelect" required>
+                                    <option th:each="habitacion : ${habitaciones}"
+                                        th:value="${habitacion.id_habitacion}"
+                                        th:data-tipo="${'(' + habitacion.tipo.abreviacion_tipo + ')' + ' ' + habitacion.tipo.nombre_tipo}"
+                                        th:text="${habitacion.numero}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">TIPO DE HABITACIÓN</label>
+                                <input type="text" class="form-control" id="tipoHabitacion" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">TIEMPO DE ESTADÍA (Horas)</label>
+                                <input type="number" class="form-control" th:field="*{tiempo_estadia}" min="1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">PRECIO</label>
+                                <input type="number" class="form-control" th:field="*{precio}" step="0.01" required>
+                            </div>
+
+                            <div class="row mx-5">
+                                <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal">CANCELAR</button>
+                                <button type="submit" class="btn btn-primary col mx-3">CREAR REGISTRO</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h1 class="text-center">LISTA DE PRECIOS DE LAS HABITACIONES</h1>
+                    </div>
+                    <div class="my-auto">
+                        <a class="btn btn-primary disabled-button" role="button">AGREGAR
+                            REGISTRO</a>
+                    </div>
+                </div>
+
+                <table class="table border table-hover shadow">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center w-auto" colspan="2">ACCIONES</th>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">NÚMERO</th>
+                            <th class="text-center">CAPACIDAD CLIENTES</th>
+                            <th class="text-center">TIPO DE HABITACIÓN</th>
+                            <th class="text-center">TIEMPO DE ESTADÍA</th>
+                            <th class="text-center">PRECIO</th>
+
+                            <th class="text-center">FECHA DE CREACIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="habitacionPrecio: ${habitacionesPrecio}">
+                            <td class="text-center" style="width: 12px;">
+                                <a class="btn btn-sm btn-primary disabled-button" role="button" title="EDITAR">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </td>
+                            <td class="text-center border" style="width: 12px;">
+                                <a class="btn btn-sm btn-danger disabled-button" role="button" title="ELIMINAR">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </td>
+                            <td th:text="${habitacionPrecio.id_habitacion_precio}" class="text-center">ID</td>
+                            <td class="text-center" th:text="${habitacionPrecio.habitacion.numero}">NÚMERO</td>
+                            <td class="text-center" th:text="${habitacionPrecio.habitacion.capacidad}">CAPACIDAD
+                                CLIENTES</td>
+                            <td class="text-center"
+                                th:text="${'(' + habitacionPrecio.habitacion.tipo.abreviacion_tipo + ')' + ' ' + habitacionPrecio.habitacion.tipo.nombre_tipo}">
+                                TIPO DE
+                                HABITACIÓN</td>
+                            <td class="text-center" th:text="${habitacionPrecio.tiempo_estadia}">TIEMPO DE ESTADÍA
+                            </td>
+                            <td class="text-center" th:text="${habitacionPrecio.precio}">PRECIO</td>
+
+                            <td th:text="${habitacionPrecio.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:insert="~{fragments/modal :: modal('/admin/habitacionesPrecio')}"></div>
+
+    <script th:src="@{/js/index.js}" defer></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const habitacionSelect = document.getElementById("habitacionSelect");
+            const tipoHabitacionInput = document.getElementById("tipoHabitacion");
+
+            if (!habitacionSelect || !tipoHabitacionInput) {
+                console.error("Los elementos no fueron encontrados en el DOM.");
+                return;
+            }
+
+            function actualizarTipoHabitacion() {
+                const selectedOption = habitacionSelect.options[habitacionSelect.selectedIndex];
+                if (selectedOption) {
+                    tipoHabitacionInput.value = selectedOption.getAttribute("data-tipo") || "";
+                    // console.log("Tipo de habitación seleccionado:", tipoHabitacionInput.value);
+                }
+            }
+
+            // Llamar a la función cuando se cambia la selección
+            habitacionSelect.addEventListener("change", actualizarTipoHabitacion);
+
+            // Verifica si hay una opción seleccionada al cargar la página
+            actualizarTipoHabitacion();
+        });
+    </script>
+</body>
+
+</html>

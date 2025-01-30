@@ -63,6 +63,12 @@
                                 </select>
                             </div>
 
+                            <div class="mb-3">
+                                <label class="form-label">FECHA DE CREACIÓN (Se cambiará por la fecha actual)</label>
+                                <input type="text" class="form-control" th:field="*{fecha_creacion}"
+                                    name="fecha_creacion" disabled>
+                            </div>
+
                             <div class="row mx-5">
                                 <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
                                     data-bs-target="#cancelModal">CANCELAR</button>

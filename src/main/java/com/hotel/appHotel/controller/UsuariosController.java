@@ -61,11 +61,9 @@ public class UsuariosController {
 
         if (usuario.getRol().getNivel() != 0) {
             List<Credenciales> credenciales = credencialesServicio.getCredenciales();
-            System.out.println("USUARIO CON NIVEL DIFERENTE A 0");
             boolean credencialExistente = true;
 
             for (Credenciales credencial : credenciales) {
-                System.out.println("Empezando el bucle".toUpperCase());
                 if (usuario.getDni().equals(credencial.getUsuario().getDni())) {
                     credencialExistente = false;
                 }
@@ -98,6 +96,7 @@ public class UsuariosController {
     @PostMapping("/{id}")
     public String actualizarUsuario(@PathVariable Long id, @ModelAttribute("usuario") Usuarios usuario, Model modelo) {
         Usuarios usuarioExistente = usuariosServicio.getUsuarioById(id);
+        List<Credenciales> credenciales = credencialesServicio.getCredenciales();
 
         usuarioExistente.setNombres(usuario.getNombres().toUpperCase());
         usuarioExistente.setApellidos(usuario.getApellidos().toUpperCase());
@@ -111,12 +110,9 @@ public class UsuariosController {
                 .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         if (usuarioExistente.getRol().getNivel() != 0) {
-            List<Credenciales> credenciales = credencialesServicio.getCredenciales();
-            System.out.println("USUARIO CON NIVEL DIFERENTE A 0");
             boolean credencialExistente = true;
 
             for (Credenciales credencial : credenciales) {
-                System.out.println("Empezando el bucle".toUpperCase());
                 if (usuarioExistente.getDni().equals(credencial.getUsuario().getDni())) {
                     credencialExistente = false;
                 }
@@ -129,6 +125,15 @@ public class UsuariosController {
                 credencialNuevo.setContrasena(usuarioExistente.getDni());
 
                 credencialesServicio.createCredencial(credencialNuevo);
+            }
+        } else {
+            Credenciales credencialEliminar = new Credenciales();
+
+            for (Credenciales credencial : credenciales) {
+                if (usuarioExistente.getId_usuario().equals(credencial.getUsuario().getId_usuario())) {
+                    credencialEliminar = credencial;
+                    credencialesServicio.deleteCredencial(credencialEliminar.getId_credencial());
+                }
             }
         }
 
