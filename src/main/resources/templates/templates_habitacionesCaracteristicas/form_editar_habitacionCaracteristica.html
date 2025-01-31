@@ -24,11 +24,11 @@
 
                     <div class="card-body">
                         <form
-                            th:action="@{/admin/habitacionesCaracteristicas/{id}(id=${habitacionCaracteristica.id_caracteristica_habitacion})}"
+                            th:action="@{/admin/habitacionesCaracteristicas/{id}(id=${habitacionCaracteristica.id_habitacion_caracteristica})}"
                             th:object="${habitacionCaracteristica}" method="post">
                             <div class="mb-3">
                                 <label class="form-label">ID:</label>
-                                <input type="text" class="form-control" th:field="*{id_caracteristica_habitacion}" disabled>
+                                <input type="text" class="form-control" th:field="*{id_habitacion_caracteristica}" disabled>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">CARACTERÍSTICA</label>
@@ -81,7 +81,7 @@
                         <tr th:each="habitacionCaracteristica: ${habitacionesCaracteristicas}">
                             <td class="text-center" style="width: 12px;">
                                 <a class="btn btn-sm btn-primary disabled-button" role="button" title="EDITAR"
-                                    th:href="@{/admin/habitacionesCaracteristicas/editar/{id}(id=${habitacionCaracteristica.id_caracteristica_habitacion})}">
+                                    th:href="@{/admin/habitacionesCaracteristicas/editar/{id}(id=${habitacionCaracteristica.id_habitacion_caracteristica})}">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
                             </td>
@@ -90,7 +90,7 @@
                                         class="bi bi-trash-fill"></i>
                                 </a>
                             </td>
-                            <td th:text="${habitacionCaracteristica.id_caracteristica_habitacion}" class="text-center">
+                            <td th:text="${habitacionCaracteristica.id_habitacion_caracteristica}" class="text-center">
                                 ID</td>
                             <td th:text="${habitacionCaracteristica.nombre}">CARACTERÍSTICA</td>
                             <td th:text="${habitacionCaracteristica.marca}">MARCA</td>

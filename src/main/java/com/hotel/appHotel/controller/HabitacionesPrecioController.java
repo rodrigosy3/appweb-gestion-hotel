@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hotel.appHotel.model.Habitaciones;
-// import com.hotel.appHotel.model.Habitaciones;
 import com.hotel.appHotel.model.HabitacionesPrecio;
 import com.hotel.appHotel.service.HabitacionesPrecioService;
 import com.hotel.appHotel.service.HabitacionesService;

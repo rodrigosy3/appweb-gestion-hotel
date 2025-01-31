@@ -15,7 +15,7 @@ public class HabitacionesCaracteristicasServiceImpl implements HabitacionesCarac
     private HabitacionesCaracteristicasRepository repositorio;
 
     @Override
-    public List<HabitacionesCaracteristicas> getHabitacionesCaracteristicas() {
+    public List<HabitacionesCaracteristicas> getHabitacionesCaracteristica() {
         return repositorio.findAll();
     }
 

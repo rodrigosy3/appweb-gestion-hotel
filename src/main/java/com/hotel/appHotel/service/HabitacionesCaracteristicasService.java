@@ -5,7 +5,7 @@ import java.util.List;
 import com.hotel.appHotel.model.HabitacionesCaracteristicas;
 
 public interface HabitacionesCaracteristicasService {
-    public List<HabitacionesCaracteristicas> getHabitacionesCaracteristicas();
+    public List<HabitacionesCaracteristicas> getHabitacionesCaracteristica();
 
     public HabitacionesCaracteristicas createHabitacionCaracteristica(HabitacionesCaracteristicas habitacionCaracteristica);
 

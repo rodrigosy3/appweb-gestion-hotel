@@ -19,7 +19,7 @@ public class HabitacionesCaracteristicas {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_caracteristica_habitacion;
+    private Long id_habitacion_caracteristica;
 
     @Column(name = "nombre", nullable = false)
     private String nombre;

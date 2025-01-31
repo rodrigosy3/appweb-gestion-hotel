@@ -22,8 +22,7 @@
                         EDITAR EL PRECIO BASE DE LA HABITACIÓN</div>
 
                     <div class="card-body">
-                        <form th:action="@{/admin/habitacionesPrecio}" th:object="${habitacionPrecio}" method="post">
-                            th:object="${habitacion}" method="post">
+                        <form th:action="@{/admin/habitacionesPrecio/{id}(id=${habitacionPrecio.id_habitacion_precio})}" th:object="${habitacionPrecio}" method="post">
                             <div class="mb-3">
                                 <label class="form-label">ID:</label>
                                 <input type="text" class="form-control" th:field="*{id_habitacion_precio}" disabled>

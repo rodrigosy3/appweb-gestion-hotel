@@ -32,7 +32,7 @@ public class HabitacionesCaracteristicasController {
 
     @GetMapping
     public String listarHabitacionesCaracteristicas(Model modelo) {
-        modelo.addAttribute("habitacionesCaracteristicas", servicio.getHabitacionesCaracteristicas());
+        modelo.addAttribute("habitacionesCaracteristicas", servicio.getHabitacionesCaracteristica());
         
         return VIEW_LISTAR;
     }
@@ -41,7 +41,7 @@ public class HabitacionesCaracteristicasController {
     public String nuevaHabitacionCaracteristicaForm(Model modelo) {
         HabitacionesCaracteristicas habitacionCaracteristica = new HabitacionesCaracteristicas();
         
-        modelo.addAttribute("habitacionesCaracteristicas", servicio.getHabitacionesCaracteristicas());
+        modelo.addAttribute("habitacionesCaracteristicas", servicio.getHabitacionesCaracteristica());
         modelo.addAttribute("habitacionCaracteristica", habitacionCaracteristica);
         
         return VIEW_NUEVO;
@@ -59,7 +59,7 @@ public class HabitacionesCaracteristicasController {
     
     @GetMapping("/editar/{id}")
     public String editarHabitacionCaracteristicaForm(@PathVariable Long id, Model modelo) {
-        modelo.addAttribute("habitacionesCaracteristicas", servicio.getHabitacionesCaracteristicas());
+        modelo.addAttribute("habitacionesCaracteristicas", servicio.getHabitacionesCaracteristica());
         modelo.addAttribute("habitacionCaracteristica", servicio.getHabitacionCaracteristicaById(id));
 
         return VIEW_EDITAR;
