@@ -16,15 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hotel.appHotel.model.Habitaciones;
-import com.hotel.appHotel.model.HabitacionesEstado;
 import com.hotel.appHotel.model.HabitacionesPrecio;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.model.Ventas;
 import com.hotel.appHotel.repository.HabitacionesEstadoRepository;
-import com.hotel.appHotel.repository.HabitacionesRepository;
 import com.hotel.appHotel.service.UsuariosService;
 import com.hotel.appHotel.service.VentasService;
-import com.hotel.appHotel.service.HabitacionesEstadoService;
 import com.hotel.appHotel.service.HabitacionesPrecioService;
 import com.hotel.appHotel.service.HabitacionesService;
 
@@ -100,7 +97,7 @@ public class A_VentasController {
     }
 
     @PostMapping
-    public String crearVenta(@ModelAttribute("Venta") Ventas venta) {
+    public String crearVenta(@ModelAttribute("venta") Ventas venta) {
         venta.setFecha_entrada(convertirFormatoFecha(venta.getFecha_entrada()));
         venta.setFecha_salida(convertirFormatoFecha(venta.getFecha_salida()));
 

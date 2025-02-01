@@ -19,7 +19,7 @@ public class VentasClientesHabitacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id_usuario_habitacion;
+    private Long id_venta_cliente_habitacion;
 
     @ManyToOne
     @JoinColumn(name = "usuario_alojado", referencedColumnName = "id_usuario")

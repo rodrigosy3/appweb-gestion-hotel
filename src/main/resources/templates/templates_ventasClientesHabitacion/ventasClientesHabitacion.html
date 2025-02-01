@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de ventas por cliente y habitación</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div class="mx-5">
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <div>
+                <h1 class="text-center">LISTA DE VENTAS POR CLIENTE Y HABITACIÓN</h1>
+            </div>
+            <div class="my-auto">
+                <a class="btn btn-primary" th:href="@{/admin/ventasClientesHabitacion/nuevo}" role="button">AGREGAR
+                    REGISTRO</a>
+            </div>
+        </div>
+
+        <table class="table border table-hover shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center w-auto" colspan="2">ACCIONES</th>
+                    <th class="text-center">ID</th>
+                    <th>USUARIO RESPONSABLE</th>
+                    <th>CLIENTE ALOJADO</th>
+                    <th>ID VENTA</th>
+                    <th>HABITACION</th>
+
+                    <th class="text-center">FECHA DE CREACIÓN</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ventaClienteHabitacion: ${ventasClientesHabitacion}">
+                    <td class="text-center" style="width: 12px;">
+                        <a class="btn btn-sm btn-primary" role="button" title="EDITAR"
+                            th:href="@{/admin/ventasClientesHabitacion/editar/{id}(id=${ventaClienteHabitacion.id_venta_cliente_habitacion})}">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </td>
+                    <td class="text-center border" style="width: 12px;">
+                        <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR"
+                            th:href="@{/admin/ventasClientesHabitacion/{id}(id=${ventaClienteHabitacion.id_venta_cliente_habitacion})}"
+                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta venta de cliente y habitación?')">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </td>
+                    <td th:text="${ventaClienteHabitacion.id_venta_cliente_habitacion}" class="text-center border">ID</td>
+
+                    <td
+                        th:text="${ventaClienteHabitacion.venta.usuario_responsable.nombres + ' ' + ventaClienteHabitacion.venta.usuario_responsable.apellidos}">
+                        USUARIO RESPONSABLE</td>
+                    <td class="text-center" th:text="${ventaClienteHabitacion.usuario_alojado.nombres + ' ' + ventaClienteHabitacion.usuario_alojado.apellidos}">CLIENTE ALOJADO</td>
+                    <td class="text-center" th:text="${ventaClienteHabitacion.venta.id_venta}">ID VENTA</td>
+                    <td
+                        th:text="${'['+ ventaClienteHabitacion.venta.habitacion_precio.habitacion.numero+']'+' (' + ventaClienteHabitacion.venta.habitacion_precio.habitacion.tipo.abreviacion_tipo + ')' + ' ' + ventaClienteHabitacion.venta.habitacion_precio.habitacion.tipo.nombre_tipo}">
+                        HABITACIÓN</td>
+
+                    <td th:text="${ventaClienteHabitacion.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>
