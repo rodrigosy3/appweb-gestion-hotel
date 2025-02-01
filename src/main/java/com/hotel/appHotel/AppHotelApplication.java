@@ -11,6 +11,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 // @Slf4j
 @SpringBootApplication
 public class AppHotelApplication {
+	// @Autowired
+	// HabitacionesRepository habitacionesRepository;
+
+	// @Autowired
+	// HabitacionesEstadoRepository habitacionesEstadoRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(AppHotelApplication.class, args);
@@ -20,20 +25,34 @@ public class AppHotelApplication {
 		// System.out.println("Tamaño de la base de datos: " + size / 1024 + " KB");
 	}
 
-	// public static long getDatabaseSize(String dbUrl) {
-	// 	long size = 0;
-	// 	try (Connection conn = DriverManager.getConnection(dbUrl);
-	// 			Statement stmt = conn.createStatement();
-	// 			ResultSet rs = stmt.executeQuery(
-	// 					"SELECT (page_count * page_size) AS size_in_bytes FROM pragma_page_count(), pragma_page_size();")) {
+	// @Bean
+	// CommandLineRunner init() {
+	// 	return args -> {
+	// 		Habitaciones habitaciones = habitacionesRepository.findById(1L).orElseThrow();
+	// 		HabitacionesEstado hEstado = habitacionesEstadoRepository.findById(1L).orElseThrow();
 
-	// 		if (rs.next()) {
-	// 			size = rs.getLong("size_in_bytes");
-	// 		}
-	// 	} catch (Exception e) {
-	// 		e.printStackTrace();
-	// 	}
-	// 	return size;
+	// 		habitaciones.setEstado(hEstado);
+	// 		habitacionesRepository.save(habitaciones);
+
+	// 		System.out.println(habitaciones);
+	// 		System.out.println(hEstado);
+	// 	};
+	// }
+	// public static long getDatabaseSize(String dbUrl) {
+	// long size = 0;
+	// try (Connection conn = DriverManager.getConnection(dbUrl);
+	// Statement stmt = conn.createStatement();
+	// ResultSet rs = stmt.executeQuery(
+	// "SELECT (page_count * page_size) AS size_in_bytes FROM pragma_page_count(),
+	// pragma_page_size();")) {
+
+	// if (rs.next()) {
+	// size = rs.getLong("size_in_bytes");
+	// }
+	// } catch (Exception e) {
+	// e.printStackTrace();
+	// }
+	// return size;
 	// }
 
 	// @Autowired

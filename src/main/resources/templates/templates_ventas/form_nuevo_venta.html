@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear venta</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div>
+        <div class="col">
+            <div class="mb-5">
+                <div class="card mx-auto shadow" style="width: 45%;">
+                    <div class="card-header text-center text-bg-secondary" style="font-size: x-large;">FORMULARIO PARA
+                        CREAR UNA VENTA</div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/ventas}" th:object="${venta}" method="post">
+                            <div class="row justify-content-between">
+                                <div class="mb-3 col-auto w-75">
+                                    <label class="form-label">USUARIO RESPONSABLE</label>
+                                    <select class="form-select" th:field="*{usuario_responsable}"
+                                        id="usuariosResponsablesSelect" required>
+                                        <option th:each="usuario : ${usuarios}" th:value="${usuario.id_usuario}"
+                                            th:data-rol="${usuario.rol.nombre}"
+                                            th:text="${usuario.nombres +  ' ' + usuario.apellidos}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-auto w-25 text-center">
+                                    <label class="form-label">ROL DEL USUARIO</label>
+                                    <input type="text" class="form-control text-center" id="rolUsuarioResponsable"
+                                        readonly>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">HABITACIÓN</label>
+                                <select class="form-select" id="habitacionSelect" required>
+                                    <option th:each="habitacion : ${habitaciones}"
+                                        th:value="${habitacion.id_habitacion}"
+                                        th:data-idHabitacion="${habitacion.id_habitacion}"
+                                        th:text="${habitacion.numero + '-> ' + '(' + habitacion.tipo.abreviacion_tipo + ')' + ' ' + habitacion.tipo.nombre_tipo}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="row justify-content-evenly">
+                                <div class="mb-3 col-auto text-center w-50">
+                                    <label class="form-label">TIEMPO DE ESTADÍA</label>
+                                    <select class="form-select text-center" th:field="*{habitacion_precio}"
+                                        id="habitacionPrecioSelect" required>
+                                        <option th:each="habitacionPrecio : ${habitacionesPrecio}"
+                                            th:value="${habitacionPrecio.id_habitacion_precio}"
+                                            th:data-idHabitacionEnHabitacionPrecio="${habitacionPrecio.habitacion.id_habitacion}"
+                                            th:data-tipo="${habitacionPrecio.precio}"
+                                            th:text="${habitacionPrecio.tiempo_estadia + ' hora(s)'}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-auto text-center w-50">
+                                    <label class="form-label">PRECIO DE HABITACIÓN</label>
+                                    <input type="text" class="form-control text-center" id="precioHabitacion" disabled>
+                                </div>
+                            </div>
+                            <div class="row justify-content-evenly">
+                                <div class="mb-3 col-auto text-center">
+                                    <label class="form-label">DESCUENTO</label>
+                                    <input type="number" class="form-control text-center" th:field="*{descuento}"
+                                        min="0" step="0.01" required>
+                                </div>
+                                <div class="mb-3 col-auto text-center">
+                                    <label class="form-label">MONTO ADELANTO</label>
+                                    <input type="number" class="form-control text-center" th:field="*{monto_adelanto}"
+                                        min="0" step="0.01" required>
+                                </div>
+                                <div class="mb-3 col-auto text-center">
+                                    <label class="form-label">MONTO TOTAL</label>
+                                    <input type="number" class="form-control text-center" th:field="*{monto_total}"
+                                        min="0" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="row justify-content-evenly">
+                                <div class="mb-3 col-auto text-center w-50">
+                                    <label class="form-label">FECHA DE ENTRADA</label>
+                                    <input type="datetime-local" class="form-control text-center"
+                                        th:field="*{fecha_entrada}">
+                                </div>
+                                <div class="mb-3 col-auto text-center w-50">
+                                    <label class="form-label">FECHA DE SALIDA</label>
+                                    <input type="datetime-local" class="form-control text-center"
+                                        th:field="*{fecha_salida}">
+                                </div>
+                            </div>
+                            <div class="row justify-content-evenly">
+                                <div class="mb-3 col-auto text-center w-50">
+                                    <label class="form-label">TIPO DE VENTA</label>
+                                    <select class="form-select text-center" th:field="*{tipo_venta}" required>
+                                        <option th:value="RESERVA">RESERVA</option>
+                                        <option th:value="ALQUILER">ALQUILER</option>
+                                        <option th:value="COTIZACIÓN">COTIZACIÓN</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-auto text-center w-50">
+                                    <label class="form-label">ESTADO</label>
+                                    <select class="form-select text-center" th:field="*{estado}" required>
+                                        <option th:value="CANCELADO">CANCELADO</option>
+                                        <option th:value="POR + ' ' + COBRAR">POR COBRAR</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="row mx-5 mt-3">
+                                <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal">CANCELAR</button>
+                                <button type="submit" class="btn btn-primary col mx-3">CREAR REGISTRO</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mx-5">
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h1 class="text-center">LISTA DE VENTAS</h1>
+                    </div>
+                    <div class="my-auto">
+                        <a class="btn btn-primary disabled-button" role="button">AGREGAR
+                            REGISTRO</a>
+                    </div>
+                </div>
+
+                <table class="table border table-hover shadow">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center w-auto" colspan="2">ACCIONES</th>
+                            <th class="text-center">ID</th>
+                            <th>HABITACIÓN</th>
+                            <th class="text-center">PRECIO DE LA HABITACIÓN</th>
+                            <th class="text-center">DESCUENTO</th>
+                            <th class="text-center">MONTO TOTAL</th>
+                            <th class="text-center">MONTO ADELANTO</th>
+                            <th class="text-center">TIPO DE VENTA</th>
+                            <th class="text-center">FECHA DE ENTRADA</th>
+                            <th class="text-center">FECHA DE SALIDA</th>
+                            <th class="text-center">ESTADO</th>
+                            <th>USUARIO RESPONSABLE</th>
+
+                            <th class="text-center">FECHA DE CREACIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="venta: ${ventas}">
+                            <td class="text-center" style="width: 12px;">
+                                <a class="btn btn-sm btn-primary disabled-button" role="button" title="EDITAR">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </td>
+                            <td class="text-center border" style="width: 12px;">
+                                <a class="btn btn-sm btn-danger disabled-button" role="button" title="ELIMINAR">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </td>
+                            <td th:text="${venta.id_venta}" class="text-center border">ID</td>
+                            <td
+                                th:text="${'['+venta.habitacion_precio.habitacion.numero+']'+' (' + venta.habitacion_precio.habitacion.tipo.abreviacion_tipo + ')' + ' ' + venta.habitacion_precio.habitacion.tipo.nombre_tipo}">
+                                HABITACIÓN</td>
+                            <td class="text-center" th:text="${venta.habitacion_precio.precio}">PRECIO DE LA HABITACIÓN
+                            </td>
+                            <td class="text-center" th:text="${venta.descuento}">DESCUENTO</td>
+                            <td class="text-center" th:text="${venta.monto_adelanto}">MONTO ADELANTO</td>
+                            <td class="text-center" th:text="${venta.monto_total}">MONTO TOTAL</td>
+                            <td class="text-center" th:text="${venta.tipo_venta}">TIPO DE VENTA</td>
+                            <td class="text-center" th:text="${venta.fecha_entrada}">FECHA DE ENTRADA</td>
+                            <td class="text-center" th:text="${venta.fecha_salida}">FECHA DE SALIDA</td>
+                            <td class="text-center" th:text="${venta.estado}">ESTADO</td>
+                            <td
+                                th:text="${venta.usuario_responsable.nombres + ' ' + venta.usuario_responsable.apellidos}">
+                                USUARIO RESPONSABLE</td>
+
+                            <td th:text="${venta.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:insert="~{fragments/modal :: modal('/admin/ventas')}"></div>
+
+    <script th:src="@{/js/index.js}" defer></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const habitacionSelect = document.getElementById("habitacionSelect");
+            const habitacionPrecioSelect = document.getElementById("habitacionPrecioSelect");
+            const precioHabitacionInput = document.getElementById("precioHabitacion");
+            const usuariosResponsablesSelect = document.getElementById("usuariosResponsablesSelect");
+            const rolUsuarioResponsableInput = document.getElementById("rolUsuarioResponsable");
+
+            if (!habitacionPrecioSelect || !precioHabitacionInput || !usuariosResponsablesSelect || !rolUsuarioResponsableInput || !habitacionSelect) {
+                console.error("Los elementos no fueron encontrados en el DOM.");
+                return;
+            }
+
+            function actualizarPrecioHabitacion() {
+                const selectedOptionHabitacionPrecio = habitacionPrecioSelect.options[habitacionPrecioSelect.selectedIndex];
+                const selectedOptionHabitacion = habitacionSelect.options[habitacionSelect.selectedIndex];
+
+                if (selectedOptionHabitacion && selectedOptionHabitacionPrecio) {
+                    id_habitacion = selectedOptionHabitacion.getAttribute("data-idHabitacion");
+                    id_habitacionPrecio = selectedOptionHabitacionPrecio.getAttribute("data-idHabitacionEnHabitacionPrecio");
+
+                    if (id_habitacion == id_habitacionPrecio) {
+                        precioHabitacionInput.value = selectedOptionHabitacionPrecio.getAttribute("data-tipo") || "";
+                    }
+                    // console.log("Tipo de habitación seleccionado:", precioHabitacionInput.value);
+                }
+            }
+
+            // Llamar a la función cuando se cambia la selección
+            habitacionPrecioSelect.addEventListener("change", actualizarPrecioHabitacion);
+
+            // Verifica si hay una opción seleccionada al cargar la página
+            actualizarPrecioHabitacion();
+
+            function actualizarRolUsuarioResponsable() {
+                const selectedOption = usuariosResponsablesSelect.options[usuariosResponsablesSelect.selectedIndex];
+                if (selectedOption) {
+                    rolUsuarioResponsableInput.value = selectedOption.getAttribute("data-rol") || "";
+                    // console.log("Tipo de habitación seleccionado:", PrecioHabitacionInputCaracteristica.value);
+                }
+            }
+
+            // Llamar a la función cuando se cambia la selección
+            usuariosResponsablesSelect.addEventListener("change", actualizarRolUsuarioResponsable);
+
+            // Verifica si hay una opción seleccionada al cargar la página
+            actualizarRolUsuarioResponsable();
+
+            const tiempoEstadiaSelect = document.getElementById("habitacionPrecioSelect");
+
+            habitacionSelect.addEventListener("change", function () {
+                const selectedHabitacionId = this.value; // ID de la habitación seleccionada
+
+                // Recorre todas las opciones del select de tiempo de estadía
+                Array.from(tiempoEstadiaSelect.options).forEach(option => {
+                    const habitacionIdEnTiempo = option.getAttribute("data-idHabitacionEnHabitacionPrecio");
+
+                    if (habitacionIdEnTiempo === selectedHabitacionId || habitacionIdEnTiempo === null) {
+                        option.hidden = false;
+                    } else {
+                        option.hidden = true;
+                    }
+                });
+
+                // Selecciona automáticamente el primer tiempo disponible
+                const firstVisibleOption = Array.from(tiempoEstadiaSelect.options).find(option => !option.hidden);
+                if (firstVisibleOption) {
+                    tiempoEstadiaSelect.value = firstVisibleOption.value;
+                }
+            });
+
+            // Disparar el evento 'change' al cargar la página para que filtre correctamente
+            habitacionSelect.dispatchEvent(new Event("change"));
+        });
+    </script>
+</body>
+
+</html>

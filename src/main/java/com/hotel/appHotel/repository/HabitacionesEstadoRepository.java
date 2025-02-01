@@ -7,4 +7,5 @@ import com.hotel.appHotel.model.HabitacionesEstado;
 
 @Repository
 public interface HabitacionesEstadoRepository extends JpaRepository<HabitacionesEstado, Long> {
+    HabitacionesEstado findByEstado(String estado);
 }

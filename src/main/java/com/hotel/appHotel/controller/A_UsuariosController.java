@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/admin/usuarios")
-public class UsuariosController {
+public class A_UsuariosController {
 
     @Autowired
     private UsuariosService usuariosServicio;

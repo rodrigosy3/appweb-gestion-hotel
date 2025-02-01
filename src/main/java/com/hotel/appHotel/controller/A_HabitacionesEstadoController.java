@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/admin/habitacionesEstado")
-public class HabitacionesEstadoController {
+public class A_HabitacionesEstadoController {
 
     @Autowired
     private HabitacionesEstadoService servicio;

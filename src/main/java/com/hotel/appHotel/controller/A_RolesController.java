@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/admin/roles")
-public class RolesController {
+public class A_RolesController {
 
     @Autowired
     private RolesService rolesServicio;

@@ -35,16 +35,22 @@ public class Ventas {
     @Column(name = "fecha_salida")
     private String fecha_salida;
 
-    @Column(name = "descuento", nullable = false)
-    private Double descuento;
+    @Column(name = "estado")
+    private String estado;
 
-    @Column(name = "monto_total", nullable = false)
-    private Double monto_total;
+    @Column(name = "descuento")
+    private Double descuento = 0.0;
 
-    @Column(name = "tipo_venta", nullable = false)
+    @Column(name = "monto_total")
+    private Double monto_total = 0.0;
+
+    @Column(name = "monto_adelanto")
+    private Double monto_adelanto = 0.0;
+
+    @Column(name = "tipo_venta")
     private String tipo_venta; // "Cotización", "Alquiler", "Venta"
 
-    @Column(name = "fecha_creacion", nullable = false)
+    @Column(name = "fecha_creacion")
     private String fecha_creacion; // ISO 8601
 
     @PrePersist

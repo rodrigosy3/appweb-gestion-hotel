@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Slf4j
 @Controller
 @RequestMapping(value = "/admin/credenciales")
-public class CredencialesController {
+public class A_CredencialesController {
 
     @Autowired
     private CredencialesService credencialesServicio;

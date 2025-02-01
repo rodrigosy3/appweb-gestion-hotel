@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/admin/historialVetos")
-public class HistorialVetosController {
+public class A_HistorialVetosController {
 
     @Autowired
     private HistorialVetosService historialVetosServicio;

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/admin/habitacionesCaracteristicas")
-public class HabitacionesCaracteristicasController {
+public class A_HabitacionesCaracteristicasController {
 
     private static final String CARPETA_BASE = "templates_habitacionesCaracteristicas/";
     private static final String VIEW_LISTAR = CARPETA_BASE + "habitacionesCaracteristicas";

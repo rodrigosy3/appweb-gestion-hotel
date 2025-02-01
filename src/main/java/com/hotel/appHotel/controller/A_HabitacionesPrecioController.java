@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/admin/habitacionesPrecio")
-public class HabitacionesPrecioController {
+public class A_HabitacionesPrecioController {
     
     private static final String CARPETA_BASE = "templates_habitacionesPrecio/";
     private static final String VIEW_LISTAR = CARPETA_BASE + "habitacionesPrecio";
