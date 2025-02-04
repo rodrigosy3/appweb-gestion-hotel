@@ -31,7 +31,7 @@
             </ul>
         </nav>
 
-        <button class="btn btn-primary" id="btn-hoy">Hoy</button>
+        <button type="button" class="btn btn-primary" id="btn-hoy">Hoy</button>
     </div>
 
     <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center me-5" role="alert">
@@ -39,74 +39,65 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-    <div class="mx-5">
-        <div class="container-fluid py-3">
-            <div class="row">
-                <!-- Primera tabla: lado izquierdo -->
-                <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center">
-                    <table class="table table-bordered table-striped table-hover">
-                        <thead class="table-primary">
-                            <tr>
-                                <th>#</th>
-                                <th>Columna 1</th>
-                                <th>Columna 2</th>
-                                <th>Columna 3</th>
-                                <th>Columna 4</th>
-                                <th>Columna 5</th>
-                                <th>Columna 6</th>
-                                <th>Columna 7</th>
-                                <th>Columna 8</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Dato 1</td>
-                                <td>Dato 2</td>
-                                <td>Dato 3</td>
-                                <td>Dato 4</td>
-                                <td>Dato 5</td>
-                                <td>Dato 6</td>
-                                <td>Dato 7</td>
-                                <td>Dato 8</td>
-                            </tr>
-                            <!-- Más filas si es necesario -->
-                        </tbody>
-                    </table>
-                </div>
 
-                <!-- Segunda tabla: lado derecho -->
-                <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center">
-                    <table class="table table-bordered table-striped table-hover">
-                        <thead class="table-success">
-                            <tr>
-                                <th>#</th>
-                                <th>Columna 1</th>
-                                <th>Columna 2</th>
-                                <th>Columna 3</th>
-                                <th>Columna 4</th>
-                                <th>Columna 5</th>
-                                <th>Columna 6</th>
-                                <th>Columna 7</th>
-                                <th>Columna 8</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>Dato A</td>
-                                <td>Dato B</td>
-                                <td>Dato C</td>
-                                <td>Dato D</td>
-                                <td>Dato E</td>
-                                <td>Dato F</td>
-                                <td>Dato G</td>
-                                <td>Dato H</td>
-                            </tr>
-                            <!-- Más filas si es necesario -->
-                        </tbody>
-                    </table>
-                </div>
+    <div class="container-fluid py-3">
+        <div class="row">
+            <!-- Primera tabla: lado izquierdo -->
+            <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center"
+                th:if="${!hab_antiguas.isEmpty()}">
+                <table class="table table-hover">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th class="text-center">N°</th>
+                            <th class="text-center">HORA DE INGRESO</th>
+                            <th>NOMBRES Y APELLIDOS</th>
+                            <th class="text-center">EDAD</th>
+                            <th class="text-center">D.N.I.</th>
+                            <th class="text-center">TOTAL</th>
+                            <th class="text-center">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="hab : ${hab_antiguas}">
+                            <td class="text-center fw-bold" th:text="${hab.numero}" th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' +hab.tipo.nombre_tipo}">N°</td>
+                            <td class="text-center">HORA DE INGRESO</td>
+                            <td>NOMBRES Y APELLIDOS</td>
+                            <td class="text-center">EDAD</td>
+                            <td class="text-center">D.N.I.</td>
+                            <td class="text-center">TOTAL</td>
+                            <td class="text-center">ACCIONES</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Segunda tabla: lado derecho -->
+            <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center"
+                th:if="${!hab_modernas.isEmpty()}">
+                <table class="table table-hover">
+                    <thead class="table-info">
+                        <tr>
+                            <th class="text-center">N°</th>
+                            <th class="text-center">HORA DE INGRESO</th>
+                            <th>NOMBRES Y APELLIDOS</th>
+                            <th class="text-center">EDAD</th>
+                            <th class="text-center">D.N.I.</th>
+                            <th class="text-center">TOTAL</th>
+                            <th class="text-center">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="hab : ${hab_modernas}">
+                            <td class="text-center fw-bold" th:text="${hab.numero}" th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' +hab.tipo.nombre_tipo}">N°</td>
+                            <td class="text-center">HORA DE INGRESO</td>
+                            <td>NOMBRES Y APELLIDOS</td>
+                            <td class="text-center">EDAD</td>
+                            <td class="text-center">D.N.I.</td>
+                            <td class="text-center">TOTAL</td>
+                            <td class="text-center">ACCIONES</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -152,7 +143,7 @@
                 // Botón anterior
                 let liPrev = document.createElement("li");
                 liPrev.classList.add("page-item");
-                liPrev.innerHTML = `<a class="page-link" href="#" id="prev">«</a>`;
+                liPrev.innerHTML = `<a class="page-link" id="prev">«</a>`;
                 barraFechas.appendChild(liPrev);
 
                 // Fechas dinámicas (3 días antes y 3 después)
@@ -170,14 +161,14 @@
                         li.classList.add("opacity-75");
                     }
 
-                    li.innerHTML = `<a class="page-link" href="#" data-fecha="${fechaTempStr}">${datosTemp.dia}</a>`;
+                    li.innerHTML = `<a class="page-link" data-fecha="${fechaTempStr}">${datosTemp.dia}</a>`;
                     barraFechas.appendChild(li);
                 }
 
                 // Botón siguiente
                 let liNext = document.createElement("li");
                 liNext.classList.add("page-item");
-                liNext.innerHTML = `<a class="page-link" href="#" id="next">»</a>`;
+                liNext.innerHTML = `<a class="page-link" id="next">»</a>`;
                 barraFechas.appendChild(liNext);
 
                 // Reasignar eventos a los nuevos elementos generados

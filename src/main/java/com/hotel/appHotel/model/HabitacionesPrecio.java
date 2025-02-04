@@ -2,6 +2,8 @@ package com.hotel.appHotel.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
+import java.util.Set;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -33,6 +35,9 @@ public class HabitacionesPrecio {
 
     @Column(name = "fecha_creacion", nullable = false)
     private String fecha_creacion; // ISO 8601
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "habitacion_precio")
+    private Set<Ventas> habitacionesPrecios_Ventas = new HashSet<>();
 
     @PrePersist
     private void prePersist() {
