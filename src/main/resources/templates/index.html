@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <!-- Título con Mes y Año -->
+    <div class="d-flex justify-content-center align-items-start">
+        <h5 class="mt-2" id="mes-anio"></h5>
+
+        <!-- Barra de Fechas -->
+        <nav class="mx-3" aria-label="Navegación de fechas">
+            <ul class="pagination" id="barra-fechas">
+                <li class="page-item" id="prev">
+                    <a class="page-link" href="#">«</a>
+                </li>
+                <!-- Fechas dinámicas generadas con JS -->
+                <li class="page-item" id="next">
+                    <a class="page-link" href="#">»</a>
+                </li>
+            </ul>
+        </nav>
+
+        <button class="btn btn-primary" id="btn-hoy">Hoy</button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center me-5" role="alert">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="mx-5">
+        <div class="container-fluid py-3">
+            <div class="row">
+                <!-- Primera tabla: lado izquierdo -->
+                <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center">
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>#</th>
+                                <th>Columna 1</th>
+                                <th>Columna 2</th>
+                                <th>Columna 3</th>
+                                <th>Columna 4</th>
+                                <th>Columna 5</th>
+                                <th>Columna 6</th>
+                                <th>Columna 7</th>
+                                <th>Columna 8</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Dato 1</td>
+                                <td>Dato 2</td>
+                                <td>Dato 3</td>
+                                <td>Dato 4</td>
+                                <td>Dato 5</td>
+                                <td>Dato 6</td>
+                                <td>Dato 7</td>
+                                <td>Dato 8</td>
+                            </tr>
+                            <!-- Más filas si es necesario -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Segunda tabla: lado derecho -->
+                <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center">
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead class="table-success">
+                            <tr>
+                                <th>#</th>
+                                <th>Columna 1</th>
+                                <th>Columna 2</th>
+                                <th>Columna 3</th>
+                                <th>Columna 4</th>
+                                <th>Columna 5</th>
+                                <th>Columna 6</th>
+                                <th>Columna 7</th>
+                                <th>Columna 8</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Dato A</td>
+                                <td>Dato B</td>
+                                <td>Dato C</td>
+                                <td>Dato D</td>
+                                <td>Dato E</td>
+                                <td>Dato F</td>
+                                <td>Dato G</td>
+                                <td>Dato H</td>
+                            </tr>
+                            <!-- Más filas si es necesario -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const mesAnio = document.getElementById("mes-anio");
+            const barraFechas = document.getElementById("barra-fechas");
+            const btnHoy = document.getElementById("btn-hoy");
+
+            let fechaActual = new Date();
+            let fechaSeleccionada = formatearFecha(fechaActual);
+
+            // Función para obtener la fecha en formato yyyy-MM-dd HH:mm:ss
+            function formatearFecha(fecha) {
+                const año = fecha.getFullYear();
+                const mes = String(fecha.getMonth() + 1).padStart(2, "0");
+                const dia = String(fecha.getDate()).padStart(2, "0");
+                const horas = String(fecha.getHours()).padStart(2, "0");
+                const minutos = String(fecha.getMinutes()).padStart(2, "0");
+                const segundos = String(fecha.getSeconds()).padStart(2, "0");
+
+                return `${año}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
+            }
+
+            function obtenerDatosFecha(fechaStr) {
+                const fecha = new Date(fechaStr);
+                return {
+                    fechaCompleta: fechaStr,
+                    dia: fecha.getDate(),
+                    mesTexto: fecha.toLocaleString("es-ES", { month: "long" }),
+                    anio: fecha.getFullYear(),
+                    mes: fecha.getMonth() + 1, // Mes en formato numérico 1-12
+                };
+            }
+
+            function actualizarBarra(fechaStr) {
+                barraFechas.innerHTML = ''; // Limpiar la barra de fechas
+
+                let datosFecha = obtenerDatosFecha(fechaStr);
+                mesAnio.textContent = `${datosFecha.mesTexto.charAt(0).toUpperCase() + datosFecha.mesTexto.slice(1)}, ${datosFecha.anio}`;
+
+                // Botón anterior
+                let liPrev = document.createElement("li");
+                liPrev.classList.add("page-item");
+                liPrev.innerHTML = `<a class="page-link" href="#" id="prev">«</a>`;
+                barraFechas.appendChild(liPrev);
+
+                // Fechas dinámicas (3 días antes y 3 después)
+                for (let i = -3; i <= 3; i++) {
+                    let fechaTemp = new Date(fechaStr);
+                    fechaTemp.setDate(fechaTemp.getDate() + i);
+                    let fechaTempStr = formatearFecha(fechaTemp);
+                    let datosTemp = obtenerDatosFecha(fechaTempStr);
+
+                    let li = document.createElement("li");
+                    li.classList.add("page-item");
+                    if (fechaTempStr === fechaSeleccionada) {
+                        li.classList.add("active");
+                    } else {
+                        li.classList.add("opacity-75");
+                    }
+
+                    li.innerHTML = `<a class="page-link" href="#" data-fecha="${fechaTempStr}">${datosTemp.dia}</a>`;
+                    barraFechas.appendChild(li);
+                }
+
+                // Botón siguiente
+                let liNext = document.createElement("li");
+                liNext.classList.add("page-item");
+                liNext.innerHTML = `<a class="page-link" href="#" id="next">»</a>`;
+                barraFechas.appendChild(liNext);
+
+                // Reasignar eventos a los nuevos elementos generados
+                asignarEventos();
+            }
+
+            function asignarEventos() {
+                document.querySelectorAll(".page-link").forEach(link => {
+                    link.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        let nuevaFecha = this.getAttribute("data-fecha");
+                        if (nuevaFecha) {
+                            fechaSeleccionada = nuevaFecha;
+                            actualizarBarra(fechaSeleccionada);
+                        }
+                    });
+                });
+
+                document.getElementById("prev").addEventListener("click", function () {
+                    let nuevaFecha = new Date(fechaSeleccionada);
+                    nuevaFecha.setDate(nuevaFecha.getDate() - 1);
+                    fechaSeleccionada = formatearFecha(nuevaFecha);
+                    actualizarBarra(fechaSeleccionada);
+                });
+
+                document.getElementById("next").addEventListener("click", function () {
+                    let nuevaFecha = new Date(fechaSeleccionada);
+                    nuevaFecha.setDate(nuevaFecha.getDate() + 1);
+                    fechaSeleccionada = formatearFecha(nuevaFecha);
+                    actualizarBarra(fechaSeleccionada);
+                });
+            }
+
+            btnHoy.addEventListener("click", function () {
+                fechaSeleccionada = formatearFecha(new Date());
+                actualizarBarra(fechaSeleccionada);
+            });
+
+            // Inicializar la barra de fechas
+            actualizarBarra(fechaSeleccionada);
+        });
+    </script>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.min.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

@@ -1,5 +1,5 @@
 body {
-  padding-bottom: 10rem;
+  background-color: #f8f9fa;
 }
 
 .disabled-button {
@@ -30,4 +30,89 @@ body {
   top: 10px; /* Posicionar encima del reloj */
   left: 50%;
   transform: translateX(-50%);
+}
+
+/* FLECHAS DE VISTA ADMIN */
+.arrow-horizontal-derecha {
+  position: relative;
+  height: 4px; /* Grosor de la línea */
+  background-color: gray; /* Color de la línea */
+  display: block;
+}
+
+.arrow-horizontal-derecha::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -0.7rem;
+  transform: translateY(-50%);
+  border-width: 10px; /* Tamaño de la flecha */
+  border-style: solid;
+  border-color: transparent transparent transparent gray;
+}
+
+.arrow-horizontal-izquierda {
+  position: relative;
+  height: 4px; /* Grosor de la línea */
+  background-color: gray; /* Color de la línea */
+  display: block;
+  /* width: 100%; */
+}
+
+.arrow-horizontal-izquierda::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -0.7rem;
+  transform: translateY(-50%);
+  border-width: 10px; /* Tamaño de la flecha */
+  border-style: solid;
+  border-color: transparent gray transparent transparent;
+  /* width: 100%; */
+}
+
+.arrow-vertical-abajo {
+  position: relative;
+  width: 4px; /* Grosor de la línea */
+  top: -0.15rem;;
+  height: calc(95%); /* Altura ajustada dinámicamente */
+  background-color: gray; /* Color de la línea */
+  margin: 0 auto; /* Centrar horizontalmente */
+}
+
+.arrow-vertical-abajo::after {
+  content: '';
+  position: absolute;
+  bottom: -0.9rem; /* Ajustar para tocar el borde */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px; /* Tamaño de la flecha */
+  border-style: solid;
+  border-color: gray transparent transparent transparent;
+}
+
+.arrow-vertical-arriba {
+  position: relative;
+  bottom: -0.15rem;
+  width: 4px; /* Grosor de la línea */
+  height: calc(95%); /* Altura ajustada dinámicamente */
+  background-color: gray; /* Color de la línea */
+  margin: 0 auto; /* Centrar horizontalmente */
+}
+
+.arrow-vertical-arriba::after {
+  content: '';
+  position: absolute;
+  top: -0.9rem; /* Ajustar para tocar el borde */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 10px; /* Tamaño de la flecha */
+  border-style: solid;
+  border-color: transparent transparent gray transparent;
+}
+
+.celda-tabla {
+  font-family: 'Roboto Mono', monospace;
+  width: 12rem;
+  height: 5rem;
 }
