@@ -13,5 +13,9 @@ public interface VentasClientesHabitacionService {
 
     public VentasClientesHabitacion updateVentaClienteHabitacion(VentasClientesHabitacion ventaClienteHabitacion);
 
-    public void deleteVentaClienteHabitacion(Long id);
+    public void deleteVentaClienteHabitacionById(Long id);
+
+    public VentasClientesHabitacion getByVentaCliente(Long id_venta, Long id_usuario);
+
+    public void deleteByVentaCliente(Long id_venta, Long id_usuario);
 }

@@ -42,4 +42,9 @@ public class UsuariosServiceImpl implements UsuariosService {
     public List<Usuarios> getUsuariosExcluyendoRol(String rol) {
         return repositorio.findByRol_NombreNot(rol);
     } 
+
+    @Override
+    public Usuarios getUsuarioByDni(String dni) {
+        return repositorio.findByDni(dni);
+    }
 }

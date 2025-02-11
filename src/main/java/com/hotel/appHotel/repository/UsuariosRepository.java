@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface UsuariosRepository extends JpaRepository<Usuarios, Long> {
     List<Usuarios> findByRol_NombreNot(String rol);
+    Usuarios findByDni(String dni);
 }

@@ -35,7 +35,17 @@ public class VentasClientesHabitacionServiceImpl implements VentasClientesHabita
     }
 
     @Override
-    public void deleteVentaClienteHabitacion(Long id) {
+    public void deleteVentaClienteHabitacionById(Long id) {
         repositorio.deleteById(id);
+    }
+
+    @Override
+    public VentasClientesHabitacion getByVentaCliente(Long id_venta, Long id_usuario) {
+        return repositorio.findByVentaIdAndUsuarioId(id_venta, id_usuario);
+    }
+
+    @Override
+    public void deleteByVentaCliente(Long id_venta, Long id_usuario) {
+        repositorio.deleteByVentaIdAndUsuarioId(id_venta, id_usuario);
     }
 }

@@ -1,21 +1,33 @@
 package com.hotel.appHotel;
 
-// import java.sql.Connection;
-// import java.sql.DriverManager;
-// import java.sql.ResultSet;
-// import java.sql.Statement;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 
-// @Slf4j
+import com.hotel.appHotel.model.HabitacionesEstado;
+import com.hotel.appHotel.model.HabitacionesTipos;
+import com.hotel.appHotel.model.Roles;
+import com.hotel.appHotel.repository.HabitacionesEstadoRepository;
+import com.hotel.appHotel.repository.HabitacionesTiposRepository;
+import com.hotel.appHotel.repository.RolesRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @SpringBootApplication
 public class AppHotelApplication {
-	// @Autowired
-	// HabitacionesRepository habitacionesRepository;
+	@Autowired
+	RolesRepository repoRoles;
 
-	// @Autowired
-	// HabitacionesEstadoRepository habitacionesEstadoRepository;
+	@Autowired
+	HabitacionesEstadoRepository repoHabitacionesEstado;
+
+	@Autowired
+	HabitacionesTiposRepository repoHabitacionesTipos;
 
 	public static void main(String[] args) {
 		SpringApplication.run(AppHotelApplication.class, args);
@@ -25,86 +37,93 @@ public class AppHotelApplication {
 		// System.out.println("Tamaño de la base de datos: " + size / 1024 + " KB");
 	}
 
-	// @Bean
-	// CommandLineRunner init() {
-	// 	return args -> {
-	// 		Habitaciones habitaciones = habitacionesRepository.findById(1L).orElseThrow();
-	// 		HabitacionesEstado hEstado = habitacionesEstadoRepository.findById(1L).orElseThrow();
+	@Bean
+	CommandLineRunner init() {
+		return args -> {
+			List<Roles> roles = repoRoles.findAll();
+			List<HabitacionesEstado> habitacionesEstado = repoHabitacionesEstado.findAll();
+			List<HabitacionesTipos> habitacionesTipos = repoHabitacionesTipos.findAll();
+			
+			if (roles.isEmpty()) {
+				Roles rol_1 = new Roles();
+				rol_1.setNombre("cliente".toUpperCase());
+				rol_1.setNivel(0);
+				repoRoles.save(rol_1);
 
-	// 		habitaciones.setEstado(hEstado);
-	// 		habitacionesRepository.save(habitaciones);
+				Roles rol_2 = new Roles();
+				rol_2.setNombre("owmner".toUpperCase());
+				rol_2.setNivel(1);
+				repoRoles.save(rol_2);
 
-	// 		System.out.println(habitaciones);
-	// 		System.out.println(hEstado);
-	// 	};
-	// }
-	// public static long getDatabaseSize(String dbUrl) {
-	// long size = 0;
-	// try (Connection conn = DriverManager.getConnection(dbUrl);
-	// Statement stmt = conn.createStatement();
-	// ResultSet rs = stmt.executeQuery(
-	// "SELECT (page_count * page_size) AS size_in_bytes FROM pragma_page_count(),
-	// pragma_page_size();")) {
+				Roles rol_3 = new Roles();
+				rol_3.setNombre("administrador".toUpperCase());
+				rol_3.setNivel(2);
+				repoRoles.save(rol_3);
 
-	// if (rs.next()) {
-	// size = rs.getLong("size_in_bytes");
-	// }
-	// } catch (Exception e) {
-	// e.printStackTrace();
-	// }
-	// return size;
-	// }
+				Roles rol_4 = new Roles();
+				rol_4.setNombre("recepcionista".toUpperCase());
+				rol_4.setNivel(3);
+				repoRoles.save(rol_4);
 
-	// @Autowired
-	// private RolesRepository rolesRepository;
+				Roles rol_5 = new Roles();
+				rol_5.setNombre("limpieza".toUpperCase());
+				rol_5.setNivel(4);
+				repoRoles.save(rol_5);				
+			}
+			
+			if (habitacionesEstado.isEmpty()) {
+				HabitacionesEstado hEstado_1 = new HabitacionesEstado();
+				hEstado_1.setEstado("Ocupado".toUpperCase());
+				repoHabitacionesEstado.save(hEstado_1);
 
-	// @Autowired
-	// private UsuariosRepository usuariosRepository;
+				HabitacionesEstado hEstado_2 = new HabitacionesEstado();
+				hEstado_2.setEstado("Disponible".toUpperCase());
+				repoHabitacionesEstado.save(hEstado_2);
 
-	// @Bean
-	// CommandLineRunner init() {
-	// return args -> {
-	// // Usuarios usuario = new Usuarios();
-	// // Roles rol_1 = rolesRepository.findById(1L).orElseThrow(() -> new
-	// RuntimeException("Rol no encontrado"));
+				HabitacionesEstado hEstado_3 = new HabitacionesEstado();
+				hEstado_3.setEstado("limpieza".toUpperCase());
+				repoHabitacionesEstado.save(hEstado_3);
 
-	// // usuario.setNombres("RODRIGO");
-	// // usuario.setApellidos("SIHUES YANQUI");
-	// // usuario.setDni("74663928");
-	// // usuario.setCelular("961211119");
-	// // usuario.setEdad(23);
-	// // usuario.setRol(rol_1);
+				HabitacionesEstado hEstado_4 = new HabitacionesEstado();
+				hEstado_4.setEstado("Mantenimiento".toUpperCase());
+				repoHabitacionesEstado.save(hEstado_4);
 
-	// // usuariosRepository.save(usuario);
+				HabitacionesEstado hEstado_5 = new HabitacionesEstado();
+				hEstado_5.setEstado("reservada".toUpperCase());
+				repoHabitacionesEstado.save(hEstado_5);
+			}
 
-	// usuariosRepository.findAll().forEach(usuario -> {
-	// log.info(usuario.getNombres() + " estado: " + usuario.getEstado_vetado());
-	// });
-	// };
-	// }
+			if (habitacionesTipos.isEmpty()) {
+				HabitacionesTipos hTipo_1 = new HabitacionesTipos();
+                hTipo_1.setNombre_tipo("simple con baño privado".toUpperCase());
+				hTipo_1.setAbreviacion_tipo("scb".toUpperCase());
+                repoHabitacionesTipos.save(hTipo_1);
 
-	// @Bean
-	// CommandLineRunner init() {
-	// // return args -> {
-	// // rolesRepository.findAll().forEach(rol -> {
-	// // log.info(rol.getNombre() + rol.getNivel());
-	// // });
-	// // };
+                HabitacionesTipos hTipo_2 = new HabitacionesTipos();
+                hTipo_2.setNombre_tipo("simple".toUpperCase());
+				hTipo_2.setAbreviacion_tipo("s".toUpperCase());
+                repoHabitacionesTipos.save(hTipo_2);
 
-	// return args -> {
-	// // Crear un nuevo rol
-	// // Roles developerRole = new Roles();
-	// // developerRole.setNombre("DEVELOPER");
-	// // developerRole.setNivel(0);
+                HabitacionesTipos hTipo_3 = new HabitacionesTipos();
+                hTipo_3.setNombre_tipo("doble con baño privado".toUpperCase());
+				hTipo_3.setAbreviacion_tipo("dcb".toUpperCase());
+                repoHabitacionesTipos.save(hTipo_3);
 
-	// // // Guardar el rol en la base de datos
-	// // rolesRepository.save(developerRole);
+                HabitacionesTipos hTipo_4 = new HabitacionesTipos();
+                hTipo_4.setNombre_tipo("doble".toUpperCase());
+				hTipo_4.setAbreviacion_tipo("d".toUpperCase());
+                repoHabitacionesTipos.save(hTipo_4);
 
-	// // Mostrar todos los roles para verificar la inserción
-	// rolesRepository.findAll().forEach(rol -> {
-	// log.info("Rol: {}, Nivel: {}, Fecha de creacion: {}", rol.getNombre(),
-	// rol.getNivel(), rol.getFecha_creacion());
-	// });
-	// };
-	// }
+				HabitacionesTipos hTipo_5 = new HabitacionesTipos();
+				hTipo_5.setNombre_tipo("matrimonial con baño privado".toUpperCase());
+				hTipo_5.setAbreviacion_tipo("mcb".toUpperCase());
+				repoHabitacionesTipos.save(hTipo_5);
+
+				HabitacionesTipos hTipo_6 = new HabitacionesTipos();
+				hTipo_6.setNombre_tipo("matrimonial".toUpperCase());
+				hTipo_6.setAbreviacion_tipo("m".toUpperCase());
+				repoHabitacionesTipos.save(hTipo_6);
+			}
+		};
+	}
 }

@@ -14,4 +14,6 @@ public interface HabitacionesEstadoService {
     public HabitacionesEstado updateHabitacionEstado(HabitacionesEstado habitacionEstado);
 
     public void deleteHabitacionEstado(Long id);
+
+    public HabitacionesEstado getByEstado(String estado);
 }

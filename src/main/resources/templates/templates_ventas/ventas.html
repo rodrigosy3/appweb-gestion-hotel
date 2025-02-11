@@ -37,9 +37,11 @@
                     <th class="text-center">ID</th>
                     <th>HABITACIÓN</th>
                     <th class="text-center">PRECIO DE LA HABITACIÓN</th>
+                    <th class="text-center">TIEMPO DE ESTADÍA</th>
+                    <th class="text-center">TIPO DE SERVICIO</th>
                     <th class="text-center">DESCUENTO</th>
-                    <th class="text-center">MONTO TOTAL</th>
                     <th class="text-center">MONTO ADELANTO</th>
+                    <th class="text-center">MONTO TOTAL</th>
                     <th class="text-center">TIPO DE VENTA</th>
                     <th class="text-center">FECHA DE ENTRADA</th>
                     <th class="text-center">FECHA DE SALIDA</th>
@@ -66,9 +68,11 @@
                     </td>
                     <td th:text="${venta.id_venta}" class="text-center border">ID</td>
                     <td
-                        th:text="${'['+venta.habitacion_precio.habitacion.numero+']'+' (' + venta.habitacion_precio.habitacion.tipo.abreviacion_tipo + ')' + ' ' + venta.habitacion_precio.habitacion.tipo.nombre_tipo}">
+                        th:text="${'['+venta.habitacion.numero+']'+' (' + venta.habitacion.tipo.abreviacion_tipo + ')' + ' ' + venta.habitacion.tipo.nombre_tipo}">
                         HABITACIÓN</td>
-                    <td class="text-center" th:text="${venta.habitacion_precio.precio}">PRECIO DE LA HABITACIÓN</td>
+                    <td class="text-center" th:text="${venta.habitacion.precio}">PRECIO DE LA HABITACIÓN</td>
+                    <td class="text-center" th:text="${venta.tiempo_estadia}">TIEMPO DE ESTADÍA</td>
+                    <td class="text-center" th:text="${venta.tipo_servicio}">TIPO DE SERVICIO</td>
                     <td class="text-center" th:text="${venta.descuento}">DESCUENTO</td>
                     <td class="text-center" th:text="${venta.monto_adelanto}">MONTO ADELANTO</td>
                     <td class="text-center" th:text="${venta.monto_total}">MONTO TOTAL</td>

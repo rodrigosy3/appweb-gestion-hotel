@@ -25,7 +25,7 @@ public class HabitacionesEstado {
     private String estado;
 
     @Column(name = "mensaje")
-    private String mensaje;
+    private String mensaje = "";
 
     @Column(name = "fecha_creacion", nullable = false)
     private String fecha_creacion;

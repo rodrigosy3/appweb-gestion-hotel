@@ -117,6 +117,7 @@ public class A_HabitacionesController {
         habitacionExistente.setNumero(habitacion.getNumero());
         habitacionExistente.setCategoria(habitacion.getCategoria().toUpperCase());
         habitacionExistente.setCapacidad(habitacion.getCapacidad());
+        habitacionExistente.setPrecio(habitacion.getPrecio());
         habitacionExistente.setTipo(habitacion.getTipo());
         habitacionExistente.setEstado(habitacion.getEstado());
 

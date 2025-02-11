@@ -16,13 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hotel.appHotel.model.Habitaciones;
-import com.hotel.appHotel.model.HabitacionesPrecio;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.model.Ventas;
 import com.hotel.appHotel.repository.HabitacionesEstadoRepository;
 import com.hotel.appHotel.service.UsuariosService;
 import com.hotel.appHotel.service.VentasService;
-import com.hotel.appHotel.service.HabitacionesPrecioService;
 import com.hotel.appHotel.service.HabitacionesService;
 
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,9 +37,6 @@ public class A_VentasController {
 
     @Autowired
     private VentasService servicio;
-
-    @Autowired
-    private HabitacionesPrecioService habitacionesPrecioServicio;
 
     @Autowired
     private UsuariosService usuariosServicio;
@@ -62,7 +57,6 @@ public class A_VentasController {
     @GetMapping("/nuevo")
     public String nuevaVentaForm(Model modelo, RedirectAttributes redirectAttributes) {
         Ventas venta = new Ventas();
-        List<HabitacionesPrecio> habitacionesPrecio = habitacionesPrecioServicio.getHabitacionesPrecio();
         List<Habitaciones> habitaciones = habitacionServicio.getHabitaciones();
         List<Usuarios> usuarios = usuariosServicio.getUsuarios();
         List<Usuarios> usuarios_responsables = new ArrayList<>();
@@ -73,9 +67,9 @@ public class A_VentasController {
             }
         }
 
-        if (habitacionesPrecio.isEmpty()) {
+        if (habitaciones.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
-                    "No hay PRECIOS DE HABITACIONES necesarias para crear un nuevo registro aquí.");
+                    "No hay HABITACIONES necesarias para crear un nuevo registro aquí.");
 
             return REDIRECT_LISTAR;
         }
@@ -87,7 +81,6 @@ public class A_VentasController {
             return REDIRECT_LISTAR;
         }
 
-        modelo.addAttribute("habitacionesPrecio", habitacionesPrecio);
         modelo.addAttribute("habitaciones", habitaciones);
         modelo.addAttribute("usuarios", usuarios_responsables);
         modelo.addAttribute("ventas", servicio.getVentas());
@@ -102,11 +95,13 @@ public class A_VentasController {
         venta.setFecha_salida(convertirFormatoFecha(venta.getFecha_salida()));
 
         servicio.createVenta(venta);
+
         List<Habitaciones> habitaciones = habitacionServicio.getHabitaciones();
 
         for (Habitaciones habitacion : habitaciones) {
-            if (habitacion.getId_habitacion().equals(venta.getHabitacion_precio().getHabitacion().getId_habitacion())) {
+            if (habitacion.getId_habitacion().equals(venta.getHabitacion().getId_habitacion())) {
                 habitacion.setEstado(habitacionesEstadoRepository.findByEstado("OCUPADO"));
+
                 habitacionServicio.updateHabitacion(habitacion);
 
                 return REDIRECT_LISTAR;
@@ -118,7 +113,6 @@ public class A_VentasController {
 
     @GetMapping("/editar/{id}")
     public String editarVentaForm(@PathVariable Long id, Model modelo, RedirectAttributes redirectAttributes) {
-        List<HabitacionesPrecio> habitacionesPrecio = habitacionesPrecioServicio.getHabitacionesPrecio();
         List<Habitaciones> habitaciones = habitacionServicio.getHabitaciones();
         List<Usuarios> usuarios = usuariosServicio.getUsuarios();
         List<Usuarios> usuarios_responsables = new ArrayList<>();
@@ -129,9 +123,9 @@ public class A_VentasController {
             }
         }
 
-        if (habitacionesPrecio.isEmpty()) {
+        if (habitaciones.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
-                    "No hay PRECIOS DE HABITACIONES necesarias para crear un nuevo registro aquí.");
+                    "No hay HABITACIONES necesarias para crear un nuevo registro aquí.");
 
             return REDIRECT_LISTAR;
         }
@@ -143,8 +137,11 @@ public class A_VentasController {
             return REDIRECT_LISTAR;
         }
 
+        Ventas venta = servicio.getVentaById(id);
+        venta.setFecha_entrada(convertirFormatoFechaVista(venta.getFecha_entrada()));
+        venta.setFecha_salida(convertirFormatoFechaVista(venta.getFecha_salida()));
+
         modelo.addAttribute("habitaciones", habitaciones);
-        modelo.addAttribute("habitacionesPrecio", habitacionesPrecio);
         modelo.addAttribute("usuarios", usuarios_responsables);
         modelo.addAttribute("ventas", servicio.getVentas());
         modelo.addAttribute("venta", servicio.getVentaById(id));
@@ -158,7 +155,6 @@ public class A_VentasController {
         Ventas ventaExistente = servicio.getVentaById(id);
 
         ventaExistente.setUsuario_responsable(venta.getUsuario_responsable());
-        ventaExistente.setHabitacion_precio(venta.getHabitacion_precio());
         ventaExistente.setFecha_entrada(convertirFormatoFecha(venta.getFecha_entrada()));
         ventaExistente.setFecha_salida(convertirFormatoFecha(venta.getFecha_salida()));
         ventaExistente.setDescuento(venta.getDescuento());
@@ -166,6 +162,9 @@ public class A_VentasController {
         ventaExistente.setMonto_total(venta.getMonto_total());
         ventaExistente.setEstado(venta.getEstado());
         ventaExistente.setTipo_venta(venta.getTipo_venta());
+        ventaExistente.setTiempo_estadia(venta.getTiempo_estadia());
+        ventaExistente.setHabitacion(venta.getHabitacion());
+        ventaExistente.setTipo_servicio(venta.getTipo_servicio());
 
         ventaExistente
                 .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
@@ -177,7 +176,7 @@ public class A_VentasController {
         if (!ventaExistente.getTipo_venta().equals("COTIZACIÓN")) {
             for (Habitaciones habitacion : habitaciones) {
                 if (habitacion.getId_habitacion()
-                        .equals(venta.getHabitacion_precio().getHabitacion().getId_habitacion())
+                        .equals(venta.getHabitacion().getId_habitacion())
                         && habitacion.getEstado().getEstado().equals("LIBRE")
                         && ventaExistente.getEstado().equals("POR COBRAR")) {
 
@@ -208,11 +207,17 @@ public class A_VentasController {
     }
 
     private String convertirFormatoFecha(String fecha) {
-        if (fecha == null || fecha.isEmpty()) {
-            return fecha;
-        }
         DateTimeFormatter inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME; // Formato recibido
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"); // Formato deseado
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a"); // Formato deseado
+
         return LocalDateTime.parse(fecha, inputFormatter).format(outputFormatter);
+    }
+
+    private String convertirFormatoFechaVista(String fecha) {
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a"); // Formato con "p. m."
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"); // Formato para datetime-local
+    
+        LocalDateTime dateTime = LocalDateTime.parse(fecha, inputFormatter);
+        return dateTime.format(outputFormatter); // Convertir a formato compatible con datetime-local
     }
 }

@@ -17,7 +17,6 @@ document.getElementById("btnBuscarDNI").addEventListener("click", function () {
       return response.json();
     })
     .then((data) => {
-      // console.log("Datos recibidos del backend:", data);
       if (data.numeroDocumento) {
         document.getElementById("inputNombres").value = data.nombres || "";
         document.getElementById("inputApellidos").value = `${

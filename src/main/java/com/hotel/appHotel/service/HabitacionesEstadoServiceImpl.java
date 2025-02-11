@@ -38,4 +38,9 @@ public class HabitacionesEstadoServiceImpl implements HabitacionesEstadoService 
     public void deleteHabitacionEstado(Long id) {
         repositorio.deleteById(id);
     }
+
+    @Override
+    public HabitacionesEstado getByEstado(String estado) {
+        return repositorio.findByEstado(estado);
+    }
 }

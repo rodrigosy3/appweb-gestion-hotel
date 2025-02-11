@@ -137,7 +137,7 @@ public class A_VentasClientesHabitacionController {
 
     @GetMapping("/{id}")
     public String eliminarVentaClienteHabitacion(@PathVariable Long id) {
-        servicio.deleteVentaClienteHabitacion(id);
+        servicio.deleteVentaClienteHabitacionById(id);
 
         return REDIRECT_LISTAR;
     }

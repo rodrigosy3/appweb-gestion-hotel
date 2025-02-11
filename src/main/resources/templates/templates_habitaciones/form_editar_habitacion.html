@@ -25,9 +25,15 @@
                     <div class="card-body">
                         <form th:action="@{/admin/habitaciones/{id}(id=${habitacion.id_habitacion})}"
                             th:object="${habitacion}" method="post">
-                            <div class="mb-3">
-                                <label class="form-label">ID:</label>
-                                <input type="text" class="form-control" th:field="*{id_habitacion}" disabled>
+                            <div class="mb-3 row">
+                                <div class="col-6">
+                                    <label class="form-label">NÚMERO DE HABITACIÓN</label>
+                                    <input type="number" class="form-control" th:field="*{numero}" autofocus required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label">PRECIO</label>
+                                    <input type="number" class="form-control" th:field="*{precio}" required min="0" step="0.01">
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">NÚMERO DE HABITACIÓN</label>
@@ -42,7 +48,7 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">CAPACIDAD DE CLIENTES</label>
-                                <input type="number" class="form-control" th:field="*{capacidad}" min="1">
+                                <input type="number" class="form-control" th:field="*{capacidad}" min="1" required>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">TIPO DE HABITACIÓN</label>
@@ -102,6 +108,7 @@
                             <th class="text-center">NÚMERO</th>
                             <th class="text-center">CATEGORÍA</th>
                             <th class="text-center">CAPACIDAD CLIENTES</th>
+                            <th class="text-center">PRECIO</th>
                             <th class="text-center">ESTADO ACTUAL</th>
                             <th class="text-center">TIPO DE HABITACIÓN</th>
 
@@ -126,6 +133,7 @@
                             <td class="text-center" th:text="${habitacion.numero}">NÚMERO</td>
                             <td class="text-center" th:text="${habitacion.categoria}">CATEGORÍA</td>
                             <td class="text-center" th:text="${habitacion.capacidad}">CAPACIDAD CLIENTES</td>
+                            <td class="text-center" th:text="${habitacion.precio}">PRECIO</td>
                             <td class="text-center" th:text="${habitacion.estado.estado}">ESTADO ACTUAL</td>
                             <td class="text-center"
                                 th:text="${'(' + habitacion.tipo.abreviacion_tipo + ')' + ' ' + habitacion.tipo.nombre_tipo}">

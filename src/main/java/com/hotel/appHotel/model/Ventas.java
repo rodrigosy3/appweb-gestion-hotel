@@ -28,8 +28,8 @@ public class Ventas {
     private Usuarios usuario_responsable;
 
     @ManyToOne
-    @JoinColumn(name = "habitacion_precio", referencedColumnName = "id_habitacion_precio")
-    private HabitacionesPrecio habitacion_precio;
+    @JoinColumn(name = "habitacion", referencedColumnName = "id_habitacion")
+    private Habitaciones habitacion;
 
     @Column(name = "fecha_entrada")
     private String fecha_entrada; // Opcional para cotizaciones
@@ -37,26 +37,35 @@ public class Ventas {
     @Column(name = "fecha_salida")
     private String fecha_salida;
 
+    @Column(name = "tiempo_estadia")
+    private Integer tiempo_estadia = 1;
+
     @Column(name = "estado")
     private String estado;
 
+    @Column(name = "estado_estadia")
+    private String estado_estadia = "SIN PROBLEMAS";
+
     @Column(name = "descuento")
-    private Double descuento = 0.0;
+    private Double descuento;
 
     @Column(name = "monto_total")
-    private Double monto_total = 0.0;
+    private Double monto_total;
 
     @Column(name = "monto_adelanto")
-    private Double monto_adelanto = 0.0;
+    private Double monto_adelanto;
+
+    @Column(name = "tipo_servicio")
+    private String tipo_servicio = "COMPLETO";
 
     @Column(name = "tipo_venta")
-    private String tipo_venta; // "Cotización", "Alquiler", "Venta"
+    private String tipo_venta = "ALQUILER";
 
     @Column(name = "fecha_creacion")
     private String fecha_creacion; // ISO 8601
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "venta")
-    private Set<VentasClientesHabitacion> ventas_VentasClientesHabiatcion = new HashSet<>();
+    private Set<VentasClientesHabitacion> ventasClientesHabitacion = new HashSet<>();
 
     @PrePersist
     private void prePersist() {

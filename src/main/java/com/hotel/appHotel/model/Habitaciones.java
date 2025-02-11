@@ -23,28 +23,37 @@ public class Habitaciones {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_habitacion;
 
-    @Column(name = "numero", nullable = false, unique = true)
+    @Column(name = "numero", unique = true)
     private Integer numero;
 
-    @Column(name = "categoria", nullable = false)
+    @Column(name = "categoria")
     private String categoria;
 
-    @Column(name = "capacidad", nullable = false)
-    private Integer capacidad = 1;
+    @Column(name = "capacidad")
+    private Integer capacidad;
 
     @ManyToOne
     @JoinColumn(name = "estado", referencedColumnName = "id_habitacion_estado")
     private HabitacionesEstado estado;
 
+    @Column(name = "razon_estado")
+    private String razon_estado = "";
+
     @ManyToOne
     @JoinColumn(name = "tipo", referencedColumnName = "id_habitacion_tipo")
     private HabitacionesTipos tipo;
 
-    @Column(name = "fecha_creacion", nullable = false)
+    @Column(name = "precio")
+    private Double precio;
+
+    @Column(name = "fecha_creacion")
     private String fecha_creacion;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "habitacion")
-    private Set<HabitacionesPrecio> habitaciones_HabitacionesPrecios = new HashSet<>();
+    private Set<Ventas> habitacionesVentas = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "habitacion")
+    private Set<HabitacionesContenido> habitacionesContenido = new HashSet<>();
 
     @PrePersist
     private void prePersist() {

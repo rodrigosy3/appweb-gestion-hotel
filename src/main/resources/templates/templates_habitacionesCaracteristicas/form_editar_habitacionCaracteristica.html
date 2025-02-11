@@ -48,7 +48,7 @@
                             <div class="row mx-5">
                                 <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
                                     data-bs-target="#cancelModal">CANCELAR</button>
-                                <button type="submit" class="btn btn-primary col mx-3">CREAR REGISTRO</button>
+                                <button type="submit" class="btn btn-primary col mx-3">GUARDAR REGISTRO</button>
                             </div>
                         </form>
                     </div>
@@ -80,7 +80,7 @@
                     <tbody>
                         <tr th:each="habitacionCaracteristica: ${habitacionesCaracteristicas}">
                             <td class="text-center" style="width: 12px;">
-                                <a class="btn btn-sm btn-primary disabled-button" role="button" title="EDITAR"
+                                <a class="btn btn-sm btn-primary" role="button" title="EDITAR"
                                     th:href="@{/admin/habitacionesCaracteristicas/editar/{id}(id=${habitacionCaracteristica.id_habitacion_caracteristica})}">
                                     <i class="bi bi-pencil-square"></i>
                                 </a>

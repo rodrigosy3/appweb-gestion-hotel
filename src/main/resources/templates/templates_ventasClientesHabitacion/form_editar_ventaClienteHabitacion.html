@@ -113,24 +113,24 @@
                             </td>
                             <td class="text-center border" style="width: 12px;">
                                 <a class="btn btn-sm btn-danger disabled-button" role="button" title="ELIMINAR"> <i
-                                    class="bi bi-trash-fill"></i>
+                                        class="bi bi-trash-fill"></i>
                                 </a>
                             </td>
                             <td th:text="${ventaClienteHabitacion.id_venta_cliente_habitacion}"
                                 class="text-center border">ID</td>
-
                             <td
                                 th:text="${ventaClienteHabitacion.venta.usuario_responsable.nombres + ' ' + ventaClienteHabitacion.venta.usuario_responsable.apellidos}">
                                 USUARIO RESPONSABLE</td>
-                            <td class="text-center"
+                            <td
                                 th:text="${ventaClienteHabitacion.usuario_alojado.nombres + ' ' + ventaClienteHabitacion.usuario_alojado.apellidos}">
                                 CLIENTE ALOJADO</td>
                             <td class="text-center" th:text="${ventaClienteHabitacion.venta.id_venta}">ID VENTA</td>
                             <td
-                                th:text="${'['+ ventaClienteHabitacion.venta.habitacion_precio.habitacion.numero+']'+' (' + ventaClienteHabitacion.venta.habitacion_precio.habitacion.tipo.abreviacion_tipo + ')' + ' ' + ventaClienteHabitacion.venta.habitacion_precio.habitacion.tipo.nombre_tipo}">
+                                th:text="${'['+ ventaClienteHabitacion.venta.habitacion.numero+']'+' (' + ventaClienteHabitacion.venta.habitacion.tipo.abreviacion_tipo + ')' + ' ' + ventaClienteHabitacion.venta.habitacion.tipo.nombre_tipo}">
                                 HABITACIÓN</td>
 
                             <td th:text="${ventaClienteHabitacion.fecha_creacion}" class="text-center">FECHA DE CREACIÓN
+                            </td>
                             </td>
                         </tr>
                     </tbody>

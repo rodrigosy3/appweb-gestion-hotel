@@ -16,4 +16,6 @@ public interface UsuariosService {
     public void deleteUsuario(Long id);
 
     public List<Usuarios> getUsuariosExcluyendoRol(String rol);
+
+    public Usuarios getUsuarioByDni(String dni);
 }

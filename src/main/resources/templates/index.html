@@ -43,58 +43,114 @@
     <div class="container-fluid py-3">
         <div class="row">
             <!-- Primera tabla: lado izquierdo -->
-            <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center"
-                th:if="${!hab_antiguas.isEmpty()}">
+            <div class="col-12 col-lg-6 justify-content-center" th:if="${!hab_antiguas.isEmpty()}">
                 <table class="table table-hover">
-                    <thead class="table-secondary">
+                    <thead class="table-secondary border-light">
                         <tr>
                             <th class="text-center">N°</th>
-                            <th class="text-center">HORA DE INGRESO</th>
+                            <th class="text-center">INGRESO</th>
                             <th>NOMBRES Y APELLIDOS</th>
-                            <th class="text-center">EDAD</th>
-                            <th class="text-center">D.N.I.</th>
+                            <th class="text-center px-0">EDAD</th>
+                            <th class="text-center px-0">D.N.I.</th>
                             <th class="text-center">TOTAL</th>
-                            <th class="text-center">ACCIONES</th>
+                            <th class="text-center px-0">ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="hab : ${hab_antiguas}">
-                            <td class="text-center fw-bold" th:text="${hab.numero}" th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' +hab.tipo.nombre_tipo}">N°</td>
-                            <td class="text-center">HORA DE INGRESO</td>
-                            <td>NOMBRES Y APELLIDOS</td>
-                            <td class="text-center">EDAD</td>
-                            <td class="text-center">D.N.I.</td>
-                            <td class="text-center">TOTAL</td>
-                            <td class="text-center">ACCIONES</td>
+                            <td class="text-center fw-bold border-light bg-body-secondary align-middle"
+                                th:text="${hab.numero}"
+                                th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' +hab.tipo.nombre_tipo}">N°</td>
+                            <td class="text-center"
+                                th:text="${ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null ? #temporals.format(ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion], 'hh:mm a') : ''}">
+                                INGRESO
+                            </td>
+                            <td>
+                                <span
+                                    th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                    <span
+                                        th:text="${cliente.usuario_alojado.nombres + ' ' + cliente.usuario_alojado.apellidos}">NOMBRES
+                                        Y APELLIDOS</span><br />
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span
+                                    th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                    <span th:text="${cliente.usuario_alojado.edad}">EDAD</span><br />
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span
+                                    th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                    <span th:text="${cliente.usuario_alojado.dni}">D.N.I.</span><br />
+                                </span>
+                            </td>
+                            <td class="text-center align-middle"
+                                th:text="${ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null ? #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : ''}">
+                                TOTAL</td>
+                            <td class="text-center align-middle">
+                                <a class="btn btn-sm btn-primary" role="button" title="EDITAR"
+                                    th:href="@{/editar/{id}(id=${hab.id_habitacion})}">
+                                    Editar
+                                </a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
             <!-- Segunda tabla: lado derecho -->
-            <div class="col-12 col-lg-6 d-flex justify-content-center align-items-center"
-                th:if="${!hab_modernas.isEmpty()}">
+            <div class="col-12 col-lg-6 justify-content-center" th:if="${!hab_modernas.isEmpty()}">
                 <table class="table table-hover">
-                    <thead class="table-info">
+                    <thead class="table-info border-light">
                         <tr>
                             <th class="text-center">N°</th>
-                            <th class="text-center">HORA DE INGRESO</th>
+                            <th class="text-center">INGRESO</th>
                             <th>NOMBRES Y APELLIDOS</th>
-                            <th class="text-center">EDAD</th>
-                            <th class="text-center">D.N.I.</th>
+                            <th class="text-center px-0">EDAD</th>
+                            <th class="text-center px-0">D.N.I.</th>
                             <th class="text-center">TOTAL</th>
-                            <th class="text-center">ACCIONES</th>
+                            <th class="text-center px-0">ACCIONES</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="hab : ${hab_modernas}">
-                            <td class="text-center fw-bold" th:text="${hab.numero}" th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' +hab.tipo.nombre_tipo}">N°</td>
-                            <td class="text-center">HORA DE INGRESO</td>
-                            <td>NOMBRES Y APELLIDOS</td>
-                            <td class="text-center">EDAD</td>
-                            <td class="text-center">D.N.I.</td>
-                            <td class="text-center">TOTAL</td>
-                            <td class="text-center">ACCIONES</td>
+                            <td class="text-center fw-bold border-light bg-info-subtle align-middle"
+                                th:text="${hab.numero}"
+                                th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' + hab.tipo.nombre_tipo}">N°</td>
+                            <td class="text-center"
+                                th:text="${ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null ? #temporals.format(ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion], 'hh:mm a') : ''}">
+                                INGRESO
+                            </td>
+                            <td>
+                                <span
+                                    th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                    <span
+                                        th:text="${cliente.usuario_alojado.nombres + '  ' + cliente.usuario_alojado.apellidos}">NOMBRES
+                                        Y APELLIDOS</span><br />
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span
+                                    th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                    <span th:text="${cliente.usuario_alojado.edad}">EDAD</span><br />
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <span
+                                    th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                    <span th:text="${cliente.usuario_alojado.dni}">D.N.I.</span><br />
+                                </span>
+                            </td>
+                            <td class="text-center"
+                                th:text="${ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null && !ultimaVentaPorHabitacion[hab.id_habitacion] ?.estado_estadia.equals('RETIRADO') ? #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : ''}">
+                                TOTAL</td>
+                            <td class="text-center align-middle">
+                                <a class="btn btn-sm btn-primary align-middle" role="button" title="EDITAR"
+                                    th:href="@{/editar/{id}(id=${hab.id_habitacion})}">
+                                    Editar
+                                </a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
