@@ -11,9 +11,11 @@ import org.springframework.context.annotation.Bean;
 import com.hotel.appHotel.model.HabitacionesEstado;
 import com.hotel.appHotel.model.HabitacionesTipos;
 import com.hotel.appHotel.model.Roles;
+import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.repository.HabitacionesEstadoRepository;
 import com.hotel.appHotel.repository.HabitacionesTiposRepository;
 import com.hotel.appHotel.repository.RolesRepository;
+import com.hotel.appHotel.repository.UsuariosRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,6 +31,9 @@ public class AppHotelApplication {
 	@Autowired
 	HabitacionesTiposRepository repoHabitacionesTipos;
 
+	@Autowired
+	UsuariosRepository repoUsuarios;
+
 	public static void main(String[] args) {
 		SpringApplication.run(AppHotelApplication.class, args);
 
@@ -43,6 +48,7 @@ public class AppHotelApplication {
 			List<Roles> roles = repoRoles.findAll();
 			List<HabitacionesEstado> habitacionesEstado = repoHabitacionesEstado.findAll();
 			List<HabitacionesTipos> habitacionesTipos = repoHabitacionesTipos.findAll();
+			List<Usuarios> usuarios = repoUsuarios.findAll();
 			
 			if (roles.isEmpty()) {
 				Roles rol_1 = new Roles();
@@ -124,6 +130,18 @@ public class AppHotelApplication {
 				hTipo_6.setAbreviacion_tipo("m".toUpperCase());
 				repoHabitacionesTipos.save(hTipo_6);
 			}
+
+			if (usuarios.isEmpty()) {
+				Usuarios usuario = new Usuarios();
+
+				usuario.setDni("74663928");
+				usuario.setNombres("Rodrigo");
+				usuario.setApellidos("Sihues Yanqui");
+
+				repoUsuarios.save(usuario);
+			}
+
+
 		};
 	}
 }

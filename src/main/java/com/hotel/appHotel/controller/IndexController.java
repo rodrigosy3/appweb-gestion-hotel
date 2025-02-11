@@ -47,6 +47,7 @@ public class IndexController {
     private static final String VIEW_EDITAR = "indexEditar";
     private static final String REDIRECT_INICIO = "redirect:/";
     boolean existeVenta = false;
+    boolean existeVentaReservada = false;
 
     @Autowired
     HabitacionesService servicioHabitaciones;
@@ -82,29 +83,26 @@ public class IndexController {
 
         for (Ventas venta : ventas) {
             LocalDate fechaEntrada = parseLocalDateTime(venta.getFecha_entrada()).toLocalDate();
+            LocalDate fechaSalida = parseLocalDateTime(venta.getFecha_salida()).toLocalDate();
             LocalDateTime fechaEntradaCompleto = parseLocalDateTime(venta.getFecha_entrada());
+            Long id_habitacion = venta.getHabitacion().getId_habitacion();
 
-            if (!venta.getEstado_estadia().equals("RETIRADO")) {
-                if (fechaEntrada.equals(fecha)) {
-                    Long id_habitacion = venta.getHabitacion().getId_habitacion();
-
-                    if (!ultimaVentaPorHabitacion.containsKey(id_habitacion)
-                            || parseLocalDateTime(venta.getFecha_entrada()).isAfter(
-                                    parseLocalDateTime(
-                                            ultimaVentaPorHabitacion.get(id_habitacion).getFecha_entrada()))) {
-                        ultimaVentaPorHabitacion.put(id_habitacion, venta);
-                    }
+            if (venta.getEstado_estadia().equals("SIN PROBLEMAS")
+                    && venta.getTipo_venta().equals("ALQUILER")
+                    && (fechaEntrada.equals(fecha) || (fechaEntrada.isBefore(fecha) && fechaSalida.isAfter(fecha)))) {
+                if (!ultimaVentaPorHabitacion.containsKey(id_habitacion)
+                        || parseLocalDateTime(venta.getFecha_entrada()).isAfter(
+                                parseLocalDateTime(
+                                        ultimaVentaPorHabitacion.get(id_habitacion).getFecha_entrada()))) {
+                    ultimaVentaPorHabitacion.put(id_habitacion, venta);
                 }
 
-                if (fechaEntradaCompleto.toLocalDate().equals(fecha) && !venta.getEstado().equals("RETIRADO")) {
-                    Long id_habitacion = venta.getHabitacion().getId_habitacion();
+                if (!ultimaVentaPorHabitacionFechaFormateada.containsKey(id_habitacion)
+                        || parseLocalDateTime(venta.getFecha_entrada()).isAfter(
+                                ultimaVentaPorHabitacionFechaFormateada.get(id_habitacion))) {
 
-                    if (!ultimaVentaPorHabitacionFechaFormateada.containsKey(id_habitacion)
-                            || parseLocalDateTime(venta.getFecha_entrada()).isAfter(
-                                    ultimaVentaPorHabitacionFechaFormateada.get(id_habitacion))) {
+                    ultimaVentaPorHabitacionFechaFormateada.put(id_habitacion, fechaEntradaCompleto);
 
-                        ultimaVentaPorHabitacionFechaFormateada.put(id_habitacion, fechaEntradaCompleto);
-                    }
                 }
             }
         }
@@ -127,7 +125,7 @@ public class IndexController {
         Optional<Ventas> ultimaVentaOpt = ventas.stream()
                 .filter(venta -> venta.getHabitacion().getId_habitacion().equals(id) &&
                         parseLocalDateTime(venta.getFecha_entrada()).toLocalDate().equals(fecha)
-                        && !venta.getEstado_estadia().equals("RETIRADO"))
+                        && venta.getEstado_estadia().equals("SIN PROBLEMAS"))
                 .max((v1, v2) -> parseLocalDateTime(v1.getFecha_entrada())
                         .compareTo(parseLocalDateTime(v2.getFecha_entrada())));
 
@@ -143,41 +141,68 @@ public class IndexController {
         List<Habitaciones> hab_modernas = habitaciones.stream()
                 .filter(hab -> !hab.getCategoria().equals("MODERNO")).collect(Collectors.toList());
         Map<Long, Ventas> ultimaVentaPorHabitacion = new HashMap<>();
+        Map<Long, Ventas> ultimaVentaReservadaPorHabitacion = new HashMap<>();
         Map<Long, LocalDateTime> ultimaVentaPorHabitacionFechaFormateada = new HashMap<>();
 
         for (Ventas venta : ventas) {
             LocalDate fechaEntrada = parseLocalDateTime(venta.getFecha_entrada()).toLocalDate();
+            LocalDate fechaSalida = parseLocalDateTime(venta.getFecha_salida()).toLocalDate();
             LocalDateTime fechaEntradaCompleto = parseLocalDateTime(venta.getFecha_entrada());
+            Long id_habitacion = venta.getHabitacion().getId_habitacion();
 
-            if (fechaEntrada.equals(fecha) && !venta.getEstado_estadia().equals("RETIRADO")) {
-                Long id_habitacion = venta.getHabitacion().getId_habitacion();
+            if (venta.getEstado_estadia().equals("SIN PROBLEMAS")
+                    && (fechaEntrada.equals(fecha) || (fechaEntrada.isBefore(fecha) && fechaSalida.isAfter(fecha)))) {
+                if (venta.getTipo_venta().equals("ALQUILER")) {
 
-                if (!ultimaVentaPorHabitacion.containsKey(id_habitacion)
-                        || parseLocalDateTime(venta.getFecha_entrada()).isAfter(
-                                parseLocalDateTime(ultimaVentaPorHabitacion.get(id_habitacion).getFecha_entrada()))) {
-                    ultimaVentaPorHabitacion.put(id_habitacion, venta);
+                    if (!ultimaVentaPorHabitacion.containsKey(id_habitacion)
+                            || parseLocalDateTime(venta.getFecha_entrada()).isAfter(
+                                    parseLocalDateTime(
+                                            ultimaVentaPorHabitacion.get(id_habitacion).getFecha_entrada()))) {
+                        ultimaVentaPorHabitacion.put(id_habitacion, venta);
+                    }
+
+                    if (!ultimaVentaPorHabitacionFechaFormateada.containsKey(id_habitacion)
+                            || parseLocalDateTime(venta.getFecha_entrada()).isAfter(
+                                    ultimaVentaPorHabitacionFechaFormateada.get(id_habitacion))) {
+
+                        ultimaVentaPorHabitacionFechaFormateada.put(id_habitacion, fechaEntradaCompleto);
+                    }
                 }
-            }
 
-            if (fechaEntradaCompleto.toLocalDate().equals(fecha) && !venta.getEstado_estadia().equals("RETIRADO")) {
-                Long id_habitacion = venta.getHabitacion().getId_habitacion();
-
-                if (!ultimaVentaPorHabitacionFechaFormateada.containsKey(id_habitacion)
-                        || parseLocalDateTime(venta.getFecha_entrada()).isAfter(
-                                ultimaVentaPorHabitacionFechaFormateada.get(id_habitacion))) {
-
-                    ultimaVentaPorHabitacionFechaFormateada.put(id_habitacion, fechaEntradaCompleto);
+                if (venta.getTipo_venta().equals("RESERVA")) {
+                    if (!ultimaVentaReservadaPorHabitacion.containsKey(id_habitacion)
+                            || parseLocalDateTime(venta.getFecha_entrada()).isAfter(
+                                    parseLocalDateTime(
+                                            ultimaVentaReservadaPorHabitacion.get(id_habitacion)
+                                                    .getFecha_entrada()))) {
+                        ultimaVentaReservadaPorHabitacion.put(id_habitacion, venta);
+                    }
                 }
             }
         }
 
         modelo.addAttribute("hab_antiguas", hab_antiguas);
         modelo.addAttribute("hab_modernas", hab_modernas);
-        modelo.addAttribute("ventasClientesHabitacion", ventasClientesHabitacion);
         modelo.addAttribute("ultimaVentaPorHabitacion", ultimaVentaPorHabitacion);
         modelo.addAttribute("ultimaVentaPorHabitacionFechaFormateada", ultimaVentaPorHabitacionFechaFormateada);
+
+        modelo.addAttribute("ventasClientesHabitacion", ventasClientesHabitacion);
         modelo.addAttribute("habitacion", habitacion);
         modelo.addAttribute("ventaHabitacion", ventaHabitacion);
+
+        // Filtrar las ventas por la habitación y que sean del día actual
+        Optional<Ventas> ultimaVentaReservadaOpt = ventas.stream()
+                .filter(venta -> venta.getHabitacion().getId_habitacion().equals(id) &&
+                        parseLocalDateTime(venta.getFecha_entrada()).toLocalDate().equals(fecha)
+                        && venta.getTipo_venta().equals("RESERVA") && !venta.getEstado_estadia().equals("RETIRADO"))
+                .max((v1, v2) -> parseLocalDateTime(v1.getFecha_entrada())
+                        .compareTo(parseLocalDateTime(v2.getFecha_entrada())));
+
+        // Si hay una venta activa hoy, usarla; si no, crear una nueva
+        existeVentaReservada = ultimaVentaReservadaOpt.isEmpty() ? false : true;
+        Ventas ventaParaReserva = ultimaVentaReservadaOpt.orElse(new Ventas());
+        modelo.addAttribute("ultimaVentaReservadaPorHabitacion", ultimaVentaReservadaPorHabitacion);
+        modelo.addAttribute("ventaParaReserva", ventaParaReserva);
 
         return VIEW_EDITAR;
     }
@@ -214,12 +239,118 @@ public class IndexController {
 
         // Guardar la venta
         if (!existeVenta) {
+            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
+                    : servicioUsuarios.getUsuarioById(1L);
+            ventaHabitacion.setUsuario_responsable(usuario_admin);
+
             ventaGuardada = servicioVentas.createVenta(ventaHabitacion);
         } else {
             Ventas ventaExistente = servicioVentas.getVentaById(ventaHabitacion.getId_venta());
+            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
+                    : servicioUsuarios.getUsuarioById(1L);
 
             // Copiar los datos de la venta a la venta existente
             BeanUtils.copyProperties(ventaHabitacion, ventaExistente, "usuario_responsable");
+            ventaExistente.setUsuario_responsable(usuario_admin);
+            servicioVentas.updateVenta(ventaExistente);
+
+            ventaGuardada = servicioVentas.getVentaById(ventaExistente.getId_venta());
+        }
+
+        habitacion.setEstado(estadoOcupado);
+        habitacion.setRazon_estado("");
+        servicioHabitaciones.updateHabitacion(habitacion);
+
+        // FUNCIONES PARA CLIENTES POR HABITACIÓN
+        // Convertir el JSON recibido en una lista de objetos Cliente
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<ClienteDTO> clientes = new ArrayList<>();
+
+        try {
+            clientes = objectMapper.readValue(clientesJson, new TypeReference<List<ClienteDTO>>() {
+            });
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        // Procesar clientes
+        for (ClienteDTO cliente : clientes) {
+            Usuarios usuario = servicioUsuarios.getUsuarioByDni(cliente.getDni());
+
+            if (usuario == null) {
+                usuario = new Usuarios();
+
+                usuario.setDni(cliente.getDni());
+                usuario.setNombres(cliente.getNombres());
+                usuario.setApellidos(cliente.getApellidos());
+                usuario.setRol(servicioRoles.getRolById(1L));
+
+                usuario = servicioUsuarios.createUsuario(usuario);
+            }
+
+            VentasClientesHabitacion ventaClienteHabitacionExistente = servicioVentasClientesHabitacion
+                    .getByVentaCliente(ventaGuardada.getId_venta(), usuario.getId_usuario());
+
+            if (!cliente.isEliminado() && ventaClienteHabitacionExistente == null) {
+                ventaClienteHabitacionExistente = new VentasClientesHabitacion();
+
+                ventaClienteHabitacionExistente.setUsuario_alojado(usuario);
+                ventaClienteHabitacionExistente.setVenta(ventaGuardada);
+
+                servicioVentasClientesHabitacion.createVentaClienteHabitacion(ventaClienteHabitacionExistente);
+            } else if (cliente.isEliminado() && ventaClienteHabitacionExistente != null) {
+                servicioVentasClientesHabitacion.deleteByVentaCliente(ventaGuardada.getId_venta(),
+                        usuario.getId_usuario());
+            }
+        }
+
+        redirectAttributes.addFlashAttribute("mensaje", "Venta guardada correctamente");
+
+        return REDIRECT_INICIO;
+    }
+
+    @PostMapping("/reservar-habitacion/{id}")
+    public String actualizarVentaReservada(@PathVariable Long id,
+            @ModelAttribute("ventaHabitacion") Ventas ventaHabitacion,
+            @RequestParam("clientesTemporales") String clientesJson,
+            RedirectAttributes redirectAttributes) {
+        Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
+        HabitacionesEstado estadoOcupado = servicioHabitacionesEstado.getByEstado("OCUPADO");
+
+        System.out.println("============================================");
+        System.out.println("Tipode servicio: " + ventaHabitacion.getTipo_servicio());
+        System.out.println("Estado: " + ventaHabitacion.getEstado());
+        System.out.println("Estado de estadia: " + ventaHabitacion.getEstado_estadia());
+        System.out.println("Descuento: " + ventaHabitacion.getDescuento());
+        System.out.println("Monto adelanto: " + ventaHabitacion.getMonto_adelanto());
+        System.out.println("Monto total: " + ventaHabitacion.getMonto_total());
+        System.out.println("Tipo de venta: " + ventaHabitacion.getTipo_venta());
+        System.out.println("Fecha entrada: " + ventaHabitacion.getFecha_entrada());
+        System.out.println("Fecha salida: " + ventaHabitacion.getFecha_salida());
+        System.out.println("Fecha creacion: " + ventaHabitacion.getFecha_creacion());
+        System.out.println("Usuario responsable: " + ventaHabitacion.getUsuario_responsable());
+        System.out.println("Tiempo estadia: " + ventaHabitacion.getTiempo_estadia());
+        System.out.println("Estado estadia: " + ventaHabitacion.getEstado_estadia());
+        System.out.println("Clientes: " + ventaHabitacion.getVentasClientesHabitacion().size());
+        System.out.println("Clientes temporales: " + clientesJson);
+        System.out.println("============================================");
+
+        Ventas ventaGuardada = new Ventas();
+        ventaHabitacion.setHabitacion(habitacion);
+        ventaHabitacion
+                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+        // Guardar la venta
+        if (!existeVenta) {
+            ventaGuardada = servicioVentas.createVenta(ventaHabitacion);
+        } else {
+            Ventas ventaExistente = servicioVentas.getVentaById(ventaHabitacion.getId_venta());
+            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
+                    : servicioUsuarios.getUsuarioById(1L);
+
+            // Copiar los datos de la venta a la venta existente
+            BeanUtils.copyProperties(ventaHabitacion, ventaExistente, "usuario_responsable");
+            ventaExistente.setUsuario_responsable(usuario_admin);
             servicioVentas.updateVenta(ventaExistente);
 
             ventaGuardada = servicioVentas.getVentaById(ventaExistente.getId_venta());
@@ -320,13 +451,21 @@ public class IndexController {
     public String actualizarEstadoHabitacion(@RequestParam("id") Long id,
             @RequestParam("nuevoEstado") String nuevoEstado,
             @RequestParam("msgEstado") String msgEstado,
+            @RequestParam(value = "id_ventaHabitacion", required = false) String id_ventaHabitacion,
             RedirectAttributes redirectAttributes) {
         HabitacionesEstado estadoNuevo = servicioHabitacionesEstado.getByEstado(nuevoEstado);
         Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
 
+        if (id_ventaHabitacion != null) {
+            Ventas venta = servicioVentas.getVentaById(Long.parseLong(id_ventaHabitacion));
+
+            venta.setEstado_estadia("SIN PROBLEMAS");
+            servicioVentas.updateVenta(venta);
+        }
+
         habitacion.setEstado(estadoNuevo);
         habitacion.setRazon_estado(msgEstado);
-        
+
         servicioHabitaciones.updateHabitacion(habitacion);
 
         return REDIRECT_INICIO;
