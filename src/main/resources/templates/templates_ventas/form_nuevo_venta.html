@@ -72,12 +72,12 @@
                                 <div class="mb-3 col-auto text-center">
                                     <label class="form-label">DESCUENTO</label>
                                     <input type="number" class="form-control text-center" id="descuentoInput"
-                                        th:field="*{descuento}" min="0" step="0.01">
+                                        name="descuento" min="0" step="0.01" value="0.00">
                                 </div>
                                 <div class="mb-3 col-auto text-center">
                                     <label class="form-label">MONTO ADELANTO</label>
                                     <input type="number" class="form-control text-center" id="montoAdelantoInput"
-                                        th:field="*{monto_adelanto}" min="0" step="0.01">
+                                        name="monto_adelanto" min="0" step="0.01" value="0.00">
                                 </div>
                                 <div class="mb-3 col-auto text-center">
                                     <label class="form-label">MONTO TOTAL</label>
@@ -216,7 +216,7 @@
             const descuentoInput = document.getElementById("descuentoInput");
             const montoAdelantoInput = document.getElementById("montoAdelantoInput");
             const montoTotalInput = document.getElementById("montoTotalInput");
-
+            console.log(descuentoInput.value)
             // Verificar que los elementos existen
             if (!habitacionTipoServicioSelect || !precioHabitacionInput || !usuarioResponsableSelect || !rolUsuarioResponsableInput || !habitacionSelect || !descuentoInput || !montoAdelantoInput || !montoTotalInput) {
                 console.error("Uno o más elementos no fueron encontrados.");
@@ -261,14 +261,14 @@
                 const precioHabitacionInputValue = parseFloat(precioHabitacionInput.value);
                 const descuentoInputValue = parseFloat(descuentoInput.value);
                 const montoAdelantoInputValue = parseFloat(montoAdelantoInput.value);
-                const montoTotalInputValue = parseFloat(montoTotalInput.value);
-
+                console.log(precioHabitacionInputValue, descuentoInputValue, montoAdelantoInput.value)
                 montoTotalInput.value = precioHabitacionInputValue - (descuentoInputValue + montoAdelantoInputValue);
             }
 
             descuentoInput.addEventListener("change", actualizarMontoTotal);
             montoAdelantoInput.addEventListener("change", actualizarMontoTotal);
             precioHabitacionInput.addEventListener("change", actualizarMontoTotal);
+
             actualizarMontoTotal();
         });
     </script>

@@ -43,8 +43,8 @@
     <div class="container-fluid py-3">
         <div class="row">
             <!-- Primera tabla: lado izquierdo -->
-            <div class="col-12 col-lg-6 justify-content-center" th:if="${!hab_antiguas.isEmpty()}">
-                <table class="table table-hover">
+            <div class="col-12 col-lg-6 justify-content-center">
+                <table class="table table-hover" th:if="${!hab_antiguas.isEmpty()}">
                     <thead class="table-secondary border-light">
                         <tr>
                             <th class="text-center">N°</th>
@@ -100,8 +100,8 @@
             </div>
 
             <!-- Segunda tabla: lado derecho -->
-            <div class="col-12 col-lg-6 justify-content-center" th:if="${!hab_modernas.isEmpty()}">
-                <table class="table table-hover">
+            <div class="col-12 col-lg-6 justify-content-center">
+                <table class="table table-hover" th:if="${!hab_modernas.isEmpty()}">
                     <thead class="table-info border-light">
                         <tr>
                             <th class="text-center">N°</th>

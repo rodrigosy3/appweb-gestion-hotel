@@ -96,17 +96,10 @@ public class A_VentasController {
 
         servicio.createVenta(venta);
 
-        List<Habitaciones> habitaciones = habitacionServicio.getHabitaciones();
+        Habitaciones habitacion = habitacionServicio.getHabitacionById(venta.getHabitacion().getId_habitacion());
 
-        for (Habitaciones habitacion : habitaciones) {
-            if (habitacion.getId_habitacion().equals(venta.getHabitacion().getId_habitacion())) {
-                habitacion.setEstado(habitacionesEstadoRepository.findByEstado("OCUPADO"));
-
-                habitacionServicio.updateHabitacion(habitacion);
-
-                return REDIRECT_LISTAR;
-            }
-        }
+        habitacion.setEstado(habitacionesEstadoRepository.findByEstado("OCUPADO"));
+        habitacionServicio.updateHabitacion(habitacion);
 
         return REDIRECT_LISTAR;
     }
@@ -171,36 +164,25 @@ public class A_VentasController {
 
         servicio.updateVenta(ventaExistente);
 
-        List<Habitaciones> habitaciones = habitacionServicio.getHabitaciones();
+        Habitaciones habitacion = habitacionServicio
+                .getHabitacionById(ventaExistente.getHabitacion().getId_habitacion());
 
-        if (!ventaExistente.getTipo_venta().equals("COTIZACIÓN")) {
-            for (Habitaciones habitacion : habitaciones) {
-                if (habitacion.getId_habitacion()
-                        .equals(venta.getHabitacion().getId_habitacion())
-                        && habitacion.getEstado().getEstado().equals("LIBRE")
-                        && ventaExistente.getEstado().equals("POR COBRAR")) {
-
-                    habitacion.setEstado(habitacionesEstadoRepository.findByEstado("OCUPADO"));
-                    habitacionServicio.updateHabitacion(habitacion);
-
-                    return REDIRECT_LISTAR;
-                } else if (habitacion.getEstado().getEstado().equals("OCUPADO")
-                        && ventaExistente.getEstado().equals("CANCELADO")) {
-
-                    habitacion.setEstado(habitacionesEstadoRepository.findByEstado("LIBRE"));
-                    habitacionServicio.updateHabitacion(habitacion);
-
-                    return REDIRECT_LISTAR;
-                }
-
-            }
+        if (ventaExistente.getTipo_venta().equals("ALQUILER")) {
+            habitacion.setEstado(habitacionesEstadoRepository.findByEstado("OCUPADO"));
+        } else if (ventaExistente.getEstado().equals("RESERVA")) {
+            habitacion.setEstado(habitacionesEstadoRepository.findByEstado("RESERVADA"));
+        } else {
+            habitacion.setEstado(habitacionesEstadoRepository.findByEstado("DISPONIBLE"));
         }
+        
+        habitacionServicio.updateHabitacion(habitacion);
 
         return REDIRECT_LISTAR;
     }
 
     @GetMapping("/{id}")
     public String eliminarVenta(@PathVariable Long id) {
+        System.out.println("Eliminando venta: " + id);
         servicio.deleteVenta(id);
 
         return REDIRECT_LISTAR;
@@ -215,8 +197,9 @@ public class A_VentasController {
 
     private String convertirFormatoFechaVista(String fecha) {
         DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a"); // Formato con "p. m."
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"); // Formato para datetime-local
-    
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"); // Formato para
+                                                                                               // datetime-local
+
         LocalDateTime dateTime = LocalDateTime.parse(fecha, inputFormatter);
         return dateTime.format(outputFormatter); // Convertir a formato compatible con datetime-local
     }

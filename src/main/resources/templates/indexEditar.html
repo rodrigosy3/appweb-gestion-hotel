@@ -514,7 +514,8 @@
                                             <label class="col-form-label">NOMBRES <span class="end-0">:</span></label>
                                         </div>
                                         <div class="col-9 w-75 pe-0">
-                                            <input type="text" id="reservainputNombres" class="form-control text-uppercase">
+                                            <input type="text" id="reservainputNombres"
+                                                class="form-control text-uppercase">
                                         </div>
                                     </div>
                                     <div class="row row-cols-2 mb-2">
@@ -523,7 +524,8 @@
                                             <label class="col-form-label">APELLIDOS <span class="end-0">:</span></label>
                                         </div>
                                         <div class="col-9 w-75 pe-0">
-                                            <input type="text" id="reservainputApellidos" class="form-control text-uppercase">
+                                            <input type="text" id="reservainputApellidos"
+                                                class="form-control text-uppercase">
                                         </div>
                                     </div>
                                     <div class="row">
@@ -597,7 +599,7 @@
                                 <div class="col mb-3">
                                     <div class="row m-2 shadow rounded-4 align-items-center justify-content-center">
                                         <div class="row mb-3 bg-primary text-light fs-5 fw-bold align-content-center justify-content-center rounded-top-4"
-                                            style="height: 2.2rem;">RESUMEN DE LA VENTA</div>
+                                            style="height: 2.2rem;">RESUMEN DE LA RESERVA</div>
 
                                         <div class="row row-cols-2 mb-4">
                                             <div class="col align-content-center bg-primary-subtle fw-bold rounded-2">
@@ -615,7 +617,8 @@
                                                 DE ALOJAMIENTO: </div>
                                             <div class="col">
                                                 <input type="number" class="text-center form-control"
-                                                    th:field="*{tiempo_estadia}" id="reservatiempoEstadiaResumen" min="1">
+                                                    th:field="*{tiempo_estadia}" id="reservatiempoEstadiaResumen"
+                                                    min="1">
                                             </div>
                                         </div>
                                         <div class="row row-cols-2 mb-2">
@@ -649,7 +652,8 @@
                                                 DESCUENTO: </div>
                                             <div class="col">
                                                 <input type="number" class="text-center form-control" placeholder="0.00"
-                                                    th:field="*{descuento}" id="reservadescuentoResumen" min="0" step="0.01">
+                                                    th:field="*{descuento}" id="reservadescuentoResumen" min="0"
+                                                    step="0.01">
                                             </div>
                                         </div>
                                         <div class="row row-cols-2 mb-2">
@@ -657,8 +661,8 @@
                                                 ADELANTO DEL TOTAL: </div>
                                             <div class="col">
                                                 <input type="number" class="text-center form-control" placeholder="0.00"
-                                                    th:field="*{monto_adelanto}" id="reservamontoAdelantoResumen" min="0"
-                                                    step="0.01">
+                                                    th:field="*{monto_adelanto}" id="reservamontoAdelantoResumen"
+                                                    min="0" step="0.01">
                                             </div>
                                         </div>
                                         <div class="row row-cols-2 mb-4">
@@ -668,8 +672,8 @@
                                             <div class="col">
                                                 <input type="number"
                                                     class="text-center form-control bg-success-subtle fw-bold rounded-2"
-                                                    th:field="*{monto_total}" id="reservamontoTotalResumen" min="0" step="0.01"
-                                                    readonly>
+                                                    th:field="*{monto_total}" id="reservamontoTotalResumen" min="0"
+                                                    step="0.01" readonly>
                                             </div>
                                         </div>
                                         <div class="row row-cols-2 mb-4">
@@ -1275,6 +1279,22 @@
                 if (event.target.id === "btnVerDetallesReserva") {
                     cambiarTabEstado("RESERVADA");
                 }
+
+                if (event.target.id === "reservabtnRetirarCliente") {
+                    reservaCancelarReserva();
+                }
+                if (event.target.id === "reservabtnAgregarCliente") {
+                    reservaagregarCliente();
+                }
+                if (event.target.id === "reservabtnBuscarDNI") {
+                    reservabuscarClienteEnBD();
+                }
+                if (event.target.id === "reservabtnGuardar") {
+                    reservaguardarReserva(event);
+                }
+                /*if (event.target.id === "btnConcretarReserva") {
+                    ();
+                }*/
             });
 
 
@@ -1323,12 +1343,12 @@
                     return;
                 }
 
-                let reservaclienteExistente = reservaclientesTemporales.find(cliente => cliente.dni === dni);
+                let ClienteExistente = reservaclientesTemporales.find(cliente => cliente.dni === dni);
 
-                if (reservaclienteExistente) {
-                    if (reservaclienteExistente.eliminado) {
+                if (ClienteExistente) {
+                    if (ClienteExistente.eliminado) {
                         // Si estaba eliminado, lo reactivamos
-                        reservaclienteExistente.eliminado = false;
+                        ClienteExistente.eliminado = false;
                     } else {
                         alert("Este cliente ya está agregado.");
                         return;
@@ -1347,7 +1367,7 @@
                         <button type="button" class="btn btn-danger btn-sm" onclick="reservaeliminarCliente(this, '${dni}')">X</button>
                     </td>
                 `;
-                tablaClientesBody.appendChild(fila);
+                reservatablaClientesBody.appendChild(fila);
 
                 reservainputDNI.value = "";
                 reservainputNombres.value = "";
@@ -1430,7 +1450,7 @@
                 }
             }
 
-            function reservaguardarVenta(event) {
+            function reservaguardarReserva(event) {
                 event.preventDefault(); // Evita el envío normal del formulario
 
                 // Obtener el formulario
@@ -1455,21 +1475,20 @@
                 }).catch(error => console.error("Error:", error));
             };
 
-            function reservaretirarCliente() {
+            function reservaCancelarReserva() {
                 const idVenta = reservaidVentaInput.value;  // Obtiene el ID de la venta
-                const estadoEstadia = "RETIRADO";
 
                 if (!idVenta) {
-                    alert("No se puede actualizar el estado sin una venta registrada.");
+                    alert("No se puede cancelar una reserva no registrada.");
                     return;
                 }
 
-                fetch(`/actualizar-estado/${idVenta}`, {
+                fetch(`/cancelar-reserva/${idVenta}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ estado_estadia: estadoEstadia })
+                    body: JSON.stringify()
                 })
                     .then(response => {
                         if (!response.ok) {
@@ -1478,13 +1497,13 @@
                         return response.json();
                     })
                     .then(data => {
-                        console.log("Estado actualizado correctamente");
+                        console.log("Reserva cancelada correctamente");
                         //location.reload(); // Recargar la página para ver el cambio reflejado
                         window.location.href = "/";
                     })
                     .catch(error => {
                         console.error("Error:", error);
-                        alert("Hubo un problema al actualizar el estado.");
+                        alert("Hubo un problema al cancelar la reserva.");
                     });
             };
 
@@ -1500,16 +1519,60 @@
             const reservamontoAdelantoResumen = document.getElementById("reservamontoAdelantoResumen");
             const reservamontoTotalResumen = document.getElementById("reservamontoTotalResumen");
 
-            const reservaprecioInput = document.getElementById("reservahabitacionPrecio");
+            const reservaprecioInput = document.getElementById("habitacionPrecio");
             const reservatablaFechasBody = document.getElementById("reservatableBodyFechasAlojamiento");
 
             let reservafechaActual = new Date();
 
+            function reservaconvertirFechaParaInput(dateString) {
+                let [fecha, hora, meridiano] = dateString.split(" ");
+                let [year, month, day] = fecha.split("-").map(num => num.padStart(2, "0"));
+                let [hour, minute] = hora.split(":").map(num => num.padStart(2, "0"));
+
+                // Convertir a 24 horas si es necesario
+                if (meridiano === "PM" && hour !== "12") {
+                    hour = String(parseInt(hour) + 12);
+                } else if (meridiano === "AM" && hour === "12") {
+                    hour = "00"; // Medianoche
+                }
+
+                return `${year}-${month}-${day}T${hour}:${minute}`;
+            }
+
+
+            function convertirFechaAStringReserva(fechaInput) {
+                let fecha = new Date(fechaInput);
+                let year = fecha.getFullYear();
+                let month = String(fecha.getMonth() + 1).padStart(2, "0");
+                let day = String(fecha.getDate()).padStart(2, "0");
+                let hour = fecha.getHours();
+                let minute = String(fecha.getMinutes()).padStart(2, "0");
+                let meridiano = hour >= 12 ? "PM" : "AM";
+
+                // Convertir a formato 12 horas
+                hour = hour % 12 || 12; // 12 AM y 12 PM deben mostrarse correctamente
+
+                return `${year}-${month}-${day} ${String(hour).padStart(2, "0")}:${minute} ${meridiano}`;
+            }
+
+            function formatearFechaParaInput(date) {
+                let year = date.getFullYear();
+                let month = String(date.getMonth() + 1).padStart(2, "0"); // Meses van de 0-11
+                let day = String(date.getDate()).padStart(2, "0");
+                let hours = String(date.getHours()).padStart(2, "0");
+                let minutes = String(date.getMinutes()).padStart(2, "0");
+
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
             // **(1) La fecha de entrada vacía tomará la del resumen o la actual**
             if (reservafechaEntradaResumen) {
                 if (!reservafechaEntradaResumen.value) {
-                    reservafechaEntradaResumen.value = fechaParseString(reservafechaActual);
+                    reservafechaEntradaResumen.value = formatearFechaParaInput(reservafechaActual);
+                } else {
+                    reservafechaEntradaResumen.value = reservaconvertirFechaParaInput(reservafechaEntradaResumen.value);
                 }
+
                 // Inicializar
                 reservaactualizarFilas();
             }
@@ -1560,7 +1623,7 @@
                 } else {
                     fechaSalida.setHours(18, 0, 0); // 6 PM del mismo día
                 }
-                return fechaParseString(fechaSalida);
+                return reservafechaParseString(fechaSalida);
             }
 
             // **(2) Manejar el cambio de días de alojamiento**
@@ -1568,7 +1631,7 @@
                 const dias = parseInt(reservadiasAlojamientoResumen.value) || 1;
                 reservatablaFechasBody.innerHTML = ""; // Limpiar la tabla antes de reconstruirla
 
-                let fechaBase = new Date(stringParseFecha(reservafechaEntradaResumen.value));
+                let fechaBase = new Date(reservastringParseFecha(convertirFechaAStringReserva(reservafechaEntradaResumen.value)));
 
                 for (let i = 0; i < dias; i++) {
                     let nuevaFila = document.createElement("tr");
@@ -1613,7 +1676,7 @@
                 } else {
                     reservaselectServicio.removeAttribute("disabled");
                 }
-                reservareservaactualizarFilas();
+                reservaactualizarFilas();
             }
 
             // **(6) Calcular monto total**
@@ -1638,7 +1701,7 @@
 
             // **Actualizar el resumen final**
             function reservaactualizarResumen() {
-                let fechaEntrada = reservastringParseFecha(reservafechaEntradaResumen.value);
+                let fechaEntrada = reservastringParseFecha(convertirFechaAStringReserva(reservafechaEntradaResumen.value));
                 let dias = parseInt(reservadiasAlojamientoResumen.value) || 1;
                 let fechaSalida;
 

@@ -79,12 +79,12 @@ public class AppHotelApplication {
 			
 			if (habitacionesEstado.isEmpty()) {
 				HabitacionesEstado hEstado_1 = new HabitacionesEstado();
-				hEstado_1.setEstado("Ocupado".toUpperCase());
+				hEstado_1.setEstado("Disponible".toUpperCase());
 				repoHabitacionesEstado.save(hEstado_1);
-
+				
 				HabitacionesEstado hEstado_2 = new HabitacionesEstado();
-				hEstado_2.setEstado("Disponible".toUpperCase());
-				repoHabitacionesEstado.save(hEstado_2);
+				hEstado_2.setEstado("Ocupado".toUpperCase());
+				repoHabitacionesEstado.save(hEstado_2);				
 
 				HabitacionesEstado hEstado_3 = new HabitacionesEstado();
 				hEstado_3.setEstado("limpieza".toUpperCase());
@@ -137,6 +137,7 @@ public class AppHotelApplication {
 				usuario.setDni("74663928");
 				usuario.setNombres("Rodrigo");
 				usuario.setApellidos("Sihues Yanqui");
+				usuario.setRol(repoRoles.findByNombre("ADMINISTRADOR"));
 
 				repoUsuarios.save(usuario);
 			}
