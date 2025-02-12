@@ -216,7 +216,7 @@
             const descuentoInput = document.getElementById("descuentoInput");
             const montoAdelantoInput = document.getElementById("montoAdelantoInput");
             const montoTotalInput = document.getElementById("montoTotalInput");
-            console.log(descuentoInput.value)
+
             // Verificar que los elementos existen
             if (!habitacionTipoServicioSelect || !precioHabitacionInput || !usuarioResponsableSelect || !rolUsuarioResponsableInput || !habitacionSelect || !descuentoInput || !montoAdelantoInput || !montoTotalInput) {
                 console.error("Uno o más elementos no fueron encontrados.");
@@ -244,9 +244,11 @@
 
                     if (tipo_servicio === "COMPLETO") {
                         precioHabitacionInput.value = precio_habitacion;
+                        
                         actualizarMontoTotal();
                     } else if (tipo_servicio === "MEDIO") {
                         precioHabitacionInput.value = precio_habitacion / 2;
+
                         actualizarMontoTotal();
                     }
                 }
@@ -261,7 +263,7 @@
                 const precioHabitacionInputValue = parseFloat(precioHabitacionInput.value);
                 const descuentoInputValue = parseFloat(descuentoInput.value);
                 const montoAdelantoInputValue = parseFloat(montoAdelantoInput.value);
-                console.log(precioHabitacionInputValue, descuentoInputValue, montoAdelantoInput.value)
+                
                 montoTotalInput.value = precioHabitacionInputValue - (descuentoInputValue + montoAdelantoInputValue);
             }
 

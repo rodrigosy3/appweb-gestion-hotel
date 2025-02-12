@@ -52,6 +52,7 @@
 
             <!-- Contenido de cada sección -->
             <div class="tab-content mt-3 mx-3">
+                
                 <!-- Sección de Clientes -->
                 <div th:switch="${habitacion.estado.estado}" class="tab-pane fade show active" id="venta-tab">
                     <!-- Caso: LIMPIEZA -->
@@ -82,7 +83,7 @@
                         <div class="alert alert-warning text-center" id="mantenimientoDivPrevio">
                             <h4 class="fs-2 text-uppercase">Habitación en Mantenimiento</h4>
                             <p class="fs-4 mt-4">Esta habitación no está disponible para limpieza ni ventas. <br>
-                                Presion en el botón azul "VER DETALLES" para editar el estado actual de la habitacion.
+                                Presiona en el botón azul "VER DETALLES" para editar el estado actual de la habitacion.
                             </p>
 
                             <div class="col text-center mt-5 mb-3">
@@ -100,7 +101,7 @@
                         <div class="alert alert-dark text-center" id="noDisponibleDivPrevio">
                             <h4 class="fs-2 text-uppercase">Habitación No Disponible</h4>
                             <p class="fs-4 mt-4">Actualmente esta habitación está fuera de servicio. <br>
-                                Presion en el botón azul "VER DETALLES" para editar el estado actual de la habitacion.
+                                Presiona en el botón azul "VER DETALLES" para editar el estado actual de la habitacion.
                             </p>
 
                             <div class="col text-center mt-5 mb-3">
@@ -429,7 +430,7 @@
                         <div class="alert alert-warning text-center" id="mantenimientoDivPrevio">
                             <h4 class="fs-2 text-uppercase">Habitación en Mantenimiento</h4>
                             <p class="fs-4 mt-4">Esta habitación no está disponible para limpieza ni ventas. <br>
-                                Presion en el botón azul "VER DETALLES" para editar el estado actual de la habitacion.
+                                Presiona en el botón azul "VER DETALLES" para editar el estado actual de la habitacion.
                             </p>
 
                             <div class="col text-center mt-5 mb-3">
@@ -447,7 +448,7 @@
                         <div class="alert alert-dark text-center" id="noDisponibleDivPrevio">
                             <h4 class="fs-2 text-uppercase">Habitación No Disponible</h4>
                             <p class="fs-4 mt-4">Actualmente esta habitación está fuera de servicio. <br>
-                                Presion en el botón azul "VER DETALLES" para editar el estado actual de la habitacion.
+                                Presiona en el botón azul "VER DETALLES" para editar el estado actual de la habitacion.
                             </p>
 
                             <div class="col text-center mt-5 mb-3">
@@ -722,10 +723,177 @@
                     </div>
                 </div>
 
-                <!-- Sección de Historial -->
-                <div class="tab-pane fade" id="estado-tab">
-                    <h5>Historial de la Habitación</h5>
-                    <p>Aquí puedes mostrar el historial de clientes o reservas.</p>
+                <!-- Sección de estado de habitación -->
+                <div th:switch="${habitacion.estado.estado}" class="tab-pane fade" id="estado-tab">
+                    <div th:case="'MANTENIMIENTO'">
+                        <div class="alert alert-warning">
+                            <h4 class="fs-2 text-uppercase text-center mb-3">Habitación en Mantenimiento</h4>
+
+                            <form th:action="@{/editar-estado/habitacion/{id}(id=${habitacion.id_habitacion})}"
+                                th:object="${habitacion}" method="post" class="w-50 mx-auto">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Estado de la Habitación:</label>
+                                    <select class="form-select" th:field="*{estado}" th>
+                                        <option class="text-center" th:each="estado : ${habEstados}"
+                                            th:if="${estado.estado != 'OCUPADO' && estado.estado != 'RESERVADA'}"
+                                            th:value="${estado.id_habitacion_estado}" th:text="${estado.estado}">ESTADO
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Razón:</label>
+                                    <textarea class="form-control" th:field="*{razon_estado}" rows="3"
+                                        placeholder="Especifica la razón"></textarea>
+                                </div>
+
+                                <div class="d-flex justify-content-center">
+                                    <button type="button" class="btn btn-danger w-25 me-3" data-bs-toggle="modal"
+                                        data-bs-target="#cancelModal">VOLVER</button>
+
+                                    <button type="submit" class="btn btn-primary ms-3">GUARDAR ESTADO EDITADO DE LA
+                                        HABITACION</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Caso: NO DISPONIBLE -->
+                    <div th:case="'NO DISPONIBLE'">
+                        <div class="alert alert-dark">
+                            <h4 class="fs-2 text-uppercase text-center mb-3">Habitación no disponible</h4>
+
+                            <form th:action="@{/editar-estado/habitacion/{id}(id=${habitacion.id_habitacion})}"
+                                th:object="${habitacion}" method="post" class="w-50 mx-auto">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Estado de la Habitación:</label>
+                                    <select class="form-select" th:field="*{estado}" th>
+                                        <option class="text-center" th:each="estado : ${habEstados}"
+                                            th:if="${estado.estado != 'OCUPADO' && estado.estado != 'RESERVADA'}"
+                                            th:value="${estado.id_habitacion_estado}" th:text="${estado.estado}">ESTADO
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Razón:</label>
+                                    <textarea class="form-control" th:field="*{razon_estado}" rows="3"
+                                        placeholder="Especifica la razón"></textarea>
+                                </div>
+
+                                <div class="d-flex justify-content-center">
+                                    <button type="button" class="btn btn-danger w-25 me-3" data-bs-toggle="modal"
+                                        data-bs-target="#cancelModal">VOLVER</button>
+
+                                    <button type="submit" class="btn btn-primary ms-3">GUARDAR ESTADO EDITADO DE LA
+                                        HABITACION</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Caso: LIMPIEZA -->
+                    <div th:case="'LIMPIEZA'">
+                        <div class="alert alert-info text-center">
+                            <h4 class="fs-2 text-uppercase">Habitación en Limpieza</h4>
+                            <p class="fs-4 mt-4">Una vez terminada la limpieza, presiona el botón azul "LIMPIEZA
+                                TERMINADA"</p>
+
+                            <form th:action="@{/actualizar-estado-habitacion}" method="post">
+                                <input type="hidden" name="id" th:value="${habitacion.id_habitacion}">
+                                <input type="hidden" name="nuevoEstado" value="DISPONIBLE">
+                                <input type="hidden" name="msgEstado" value="">
+
+                                <div class="col text-center mt-5 mb-3">
+                                    <button type="submit" class="btn btn-primary w-25 me-3"
+                                        id="btnLimpiezaTerminada">LIMPIEZA
+                                        TERMINADA</button>
+                                    <button type="button" class="btn btn-danger w-25 ms-3" data-bs-toggle="modal"
+                                        data-bs-target="#cancelModal">VOLVER</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Caso: OCUPADO -->
+                    <div th:case="'OCUPADO'">
+                        <div class="alert alert-info text-center" id="mantenimientoDivPrevio">
+                            <h4 class="fs-2 text-uppercase">Habitación ocupada</h4>
+                            <p class="fs-4 mt-4">Esta habitación ha sido alquilada. <br>
+                                Presiona en el botón azul "VER DETALLES" para editar el alquiler actual de la habitacion.
+                            </p>
+
+                            <div class="col text-center mt-5 mb-3">
+                                <button type="button" class="btn btn-primary w-25 me-3" id="btnVerDetallesOcupado">VER
+                                    DETALLES</button>
+                                <button type="button" class="btn btn-danger w-25 ms-3" data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal">VOLVER</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Caso: RESERVA -->
+                    <div th:case="'RESERVADA'">
+                        <div class="alert alert-success text-center" id="reservadaDivPrevio">
+                            <h4 class="fs-2 text-uppercase">Habitación Reservada</h4>
+                            <p class="fs-4 mt-5">
+                                Presiona en el botón azul "VER DETALLES" para editar la Reserva. <br>
+                                Presiona en el botón verde "OCUPAR HABITACIÓN" para finalizar la reserva y generar la
+                                venta.
+                            </p>
+
+                            <form th:action="@{/actualizar-estado-habitacion}" method="post">
+                                <input type="hidden" name="id" th:value="${habitacion.id_habitacion}">
+                                <input type="hidden" name="nuevoEstado" value="OCUPADO">
+                                <input type="hidden" name="msgEstado" value="">
+                                <input type="hidden" name="id_ventaHabitacion" th:value="${ventaParaReserva.id_venta}">
+
+                                <div class="col text-center mt-5 mb-3">
+                                    <button type="button" class="btn btn-primary w-25" id="btnVerDetallesReserva">VER
+                                        DETALLES
+                                    </button>
+                                    <button type="submit" class="btn btn-success w-25 mx-3"
+                                        id="btnConcretarReserva">OCUPAR HABITACIÓN</button>
+                                    <button type="button" class="btn btn-danger w-25" data-bs-toggle="modal"
+                                        data-bs-target="#cancelModal">VOLVER</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Caso por defecto: Formulario para agregar un nuevo estado -->
+                    <div th:case="*">
+                        <div class="alert shadow w-50 mx-auto">
+                            <h4 class="fs-2 text-uppercase text-center mb-3">Habitación disponible</h4>
+
+                            <form th:action="@{/editar-estado/habitacion/{id}(id=${habitacion.id_habitacion})}"
+                                th:object="${habitacion}" method="post" class="mx-auto">
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Estado de la Habitación:</label>
+                                    <select class="form-select" th:field="*{estado}" th>
+                                        <option class="text-center" th:each="estado : ${habEstados}"
+                                            th:if="${estado.estado != 'OCUPADO' && estado.estado != 'RESERVADA'}"
+                                            th:value="${estado.id_habitacion_estado}" th:text="${estado.estado}">ESTADO
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label fw-bold">Razón:</label>
+                                    <textarea class="form-control" th:field="*{razon_estado}" rows="3"
+                                        placeholder="Especifica la razón"></textarea>
+                                </div>
+
+                                <div class="d-flex justify-content-center">
+                                    <button type="button" class="btn btn-danger w-25 me-3" data-bs-toggle="modal"
+                                        data-bs-target="#cancelModal">VOLVER</button>
+
+                                    <button type="submit" class="btn btn-primary ms-3">GUARDAR ESTADO EDITADO DE LA
+                                        HABITACION</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Sección de Detalles -->
@@ -879,9 +1047,9 @@
                     let apellidos = row.cells[2].innerText;
                     clientesTemporales.push({ dni, nombres, apellidos, eliminado: false });
                 });
-                actualizarEstadoBoton();
             }
 
+            if (idVentaInput) { actualizarEstadoBoton() };
             // Función para agregar un cliente temporalmente
             function agregarCliente() {
                 const dni = inputDNI.value.trim();
@@ -1247,6 +1415,11 @@
                     if (estadoTab) {
                         new bootstrap.Tab(estadoTab).show();
                     }
+                } else if (estado === "OCUPADO") {
+                    let estadoTab = document.querySelector('[data-bs-target="#venta-tab"]');
+                    if (estadoTab) {
+                        new bootstrap.Tab(estadoTab).show();
+                    }
                 } else {
                     let estadoTab = document.querySelector('[data-bs-target="#estado-tab"]');
                     if (estadoTab) {
@@ -1278,6 +1451,9 @@
                 }
                 if (event.target.id === "btnVerDetallesReserva") {
                     cambiarTabEstado("RESERVADA");
+                }
+                if (event.target.id === "btnVerDetallesOcupado") {
+                    cambiarTabEstado("OCUPADO");
                 }
 
                 if (event.target.id === "reservabtnRetirarCliente") {
@@ -1329,8 +1505,8 @@
                     let apellidos = row.cells[2].innerText;
                     reservaclientesTemporales.push({ dni, nombres, apellidos, eliminado: false });
                 });
-                actualizarEstadoBoton();
             }
+            if (reservaidVentaInput) { reservaactualizarEstadoBoton(); }
 
             // Función para agregar un cliente temporalmente
             function reservaagregarCliente() {
@@ -1682,7 +1858,7 @@
             // **(6) Calcular monto total**
             function reservacalcularMontoTotal() {
                 let dias = parseInt(reservadiasAlojamientoResumen.value) || 1;
-                let precioBase = calcularImporte(parseFloat(reservaprecioInput.getAttribute("data-precio")) || 0);
+                let precioBase = reservacalcularImporte(parseFloat(reservaprecioInput.getAttribute("data-precio")) || 0);
                 let descuento = parseFloat(reservadescuentoResumen.value) || 0;
                 let adelanto = parseFloat(reservamontoAdelantoResumen.value) || 0;
 

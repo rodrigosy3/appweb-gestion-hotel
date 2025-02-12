@@ -87,7 +87,7 @@ public class IndexController {
             LocalDateTime fechaEntradaCompleto = parseLocalDateTime(venta.getFecha_entrada());
             Long id_habitacion = venta.getHabitacion().getId_habitacion();
 
-            if (venta.getEstado_estadia().equals("SIN PROBLEMAS")) {
+            if (venta.getEstado_estadia().equals("SIN PROBLEMAS") && (fechaEntrada.equals(fecha))) {
                 if (venta.getTipo_venta().equals("ALQUILER")) {
                     if (fechaEntrada.equals(fecha) && (!ultimaVentaPorHabitacion.containsKey(id_habitacion)
                             || parseLocalDateTime(venta.getFecha_entrada()).isAfter(
@@ -169,7 +169,6 @@ public class IndexController {
             if (venta.getEstado_estadia().equals("SIN PROBLEMAS")
                     && (fechaEntrada.equals(fecha) || (fechaEntrada.isBefore(fecha) && fechaSalida.isAfter(fecha)))) {
                 if (venta.getTipo_venta().equals("ALQUILER")) {
-
                     if (!ultimaVentaPorHabitacion.containsKey(id_habitacion)
                             || parseLocalDateTime(venta.getFecha_entrada()).isAfter(
                                     parseLocalDateTime(
@@ -219,6 +218,8 @@ public class IndexController {
         Ventas ventaParaReserva = ultimaVentaReservadaOpt.orElse(new Ventas());
         modelo.addAttribute("ultimaVentaReservadaPorHabitacion", ultimaVentaReservadaPorHabitacion);
         modelo.addAttribute("ventaParaReserva", ventaParaReserva);
+
+        modelo.addAttribute("habEstados", servicioHabitacionesEstado.getHabitacionesEstado());
 
         return VIEW_EDITAR;
     }
@@ -310,7 +311,7 @@ public class IndexController {
     @PostMapping("/reservar-habitacion/{id}")
     public String actualizarVentaReservada(@PathVariable Long id,
             @ModelAttribute("ventaParaReserva") Ventas ventaParaReserva,
-            @RequestParam("clientesTemporales") String clientesJson,
+            @RequestParam("reservaclientesTemporales") String clientesJson,
             RedirectAttributes redirectAttributes) {
         Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
         HabitacionesEstado estadoReservada = servicioHabitacionesEstado.getByEstado("RESERVADA");
@@ -336,6 +337,8 @@ public class IndexController {
 
         Ventas ventaReservada = new Ventas();
         ventaParaReserva.setHabitacion(habitacion);
+        ventaParaReserva.setTipo_venta("RESERVA");
+        ;
         ventaParaReserva
                 .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
@@ -503,4 +506,17 @@ public class IndexController {
 
         return REDIRECT_INICIO;
     }
+
+    @PostMapping("/editar-estado/habitacion/{id}")
+    public String actualizarEstadoHabitacion(@PathVariable Long id,
+            @ModelAttribute("habitacion") Habitaciones habitacion) {
+        Habitaciones habitacionExistente = servicioHabitaciones.getHabitacionById(id);
+        habitacionExistente.setEstado(habitacion.getEstado());
+        habitacionExistente.setRazon_estado(habitacion.getRazon_estado());
+
+        servicioHabitaciones.updateHabitacion(habitacionExistente);
+
+        return REDIRECT_INICIO;
+    }
+
 }
