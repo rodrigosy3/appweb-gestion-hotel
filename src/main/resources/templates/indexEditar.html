@@ -135,7 +135,7 @@
                                         DETALLES
                                     </button>
                                     <button type="submit" class="btn btn-success w-25 mx-3"
-                                        id="btnConcretarReserva">OCUPAR HABITACIÓN</button>
+                                        id="reservabtnHabilitarReserva">OCUPAR HABITACIÓN</button>
                                     <button type="button" class="btn btn-danger w-25" data-bs-toggle="modal"
                                         data-bs-target="#cancelModal">VOLVER</button>
                                 </div>
@@ -859,7 +859,7 @@
                                         DETALLES
                                     </button>
                                     <button type="submit" class="btn btn-success w-25 mx-3"
-                                        id="btnConcretarReserva">OCUPAR HABITACIÓN</button>
+                                        id="reservabtnHabilitarReserva">OCUPAR HABITACIÓN</button>
                                     <button type="button" class="btn btn-danger w-25" data-bs-toggle="modal"
                                         data-bs-target="#cancelModal">VOLVER</button>
                                 </div>
@@ -1245,7 +1245,8 @@
                     if (response.ok) {
                         window.location.href = "/"; // Redirigir a la página principal después de guardar
                     } else {
-                        alert("Error al guardar la venta");
+                        console.log("Error al guardar la venta");
+                        window.location.href = "/";
                     }
                 }).catch(error => console.error("Error:", error));
             };
@@ -1527,9 +1528,6 @@
                 if (event.target.id === "reservabtnGuardar") {
                     reservaguardarReserva(event);
                 }
-                /*if (event.target.id === "btnConcretarReserva") {
-                    ();
-                }*/
             });
 
 
@@ -1714,12 +1712,12 @@
                 const idVentaReservada = reservaidVentaInput.value;
                 console.log(idVentaReservada);
                 if (!idVentaReservada) {
-                    alert("No se puede cancelar una reserva no registrada.");
+                    console.log("No se puede cancelar una reserva no registrada.");
                     return;
                 }
 
                 fetch(`/cancelar-reserva/${idVentaReservada}`, {
-                    method: "POST",
+                    method: "GET",
                     headers: {
                         "Content-Type": "application/json"
                     },
@@ -1746,7 +1744,7 @@
                 const idVenta = reservaidVentaInput.value;  // Obtiene el ID de la venta
 
                 if (!idVenta) {
-                    alert("No se puede cancelar una reserva no registrada.");
+                    console.log("No se puede finalizar reserva no registrada.");
                     return;
                 }
 
@@ -1805,7 +1803,6 @@
 
                 return `${year}-${month}-${day}T${hour}:${minute}`;
             }
-
 
             function convertirFechaAStringReserva(fechaInput) {
                 let fecha = new Date(fechaInput);
@@ -2008,9 +2005,6 @@
 
 
 
-
-            
-
             let selects = document.querySelectorAll(".estado-selector");
 
             if (selects) {
@@ -2054,7 +2048,6 @@
     </script>
 
     <script th:src="@{/js/index.js}"></script>
-    <script th:src="@{/js/bootstrap.min.js}"></script>
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 

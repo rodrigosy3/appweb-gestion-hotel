@@ -159,9 +159,6 @@
 
     <div th:insert="~{fragments/modal :: modal('/admin/habitacionesContenido')}"></div>
 
-    <script th:src="@{/js/index.js}"></script>
-    <script th:src="@{/js/bootstrap.min.js}"></script>
-    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const habitacionSelect = document.getElementById("habitacionSelect");
@@ -203,6 +200,9 @@
             actualizarPrecioHabitacionCaracteristica();
         });
     </script>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 
 </html>

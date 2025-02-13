@@ -477,9 +477,8 @@ public class IndexController {
         return ResponseEntity.ok().body(Collections.singletonMap("mensaje", "Estado actualizado correctamente"));
     }
 
-    @PostMapping("/cancelar-reserva/{id}")
-    @ResponseBody
-    public ResponseEntity<?> cancelarReserva(@PathVariable Long id) {
+    @GetMapping("/cancelar-reserva/{id}")
+    public String cancelarReserva(@PathVariable Long id) {
         Ventas venta = servicioVentas.getVentaById(id);
         Habitaciones habitacion = servicioHabitaciones.getHabitacionById(venta.getHabitacion().getId_habitacion());
         HabitacionesEstado estadoDisponible = servicioHabitacionesEstado.getByEstado("DISPONIBLE");
@@ -489,8 +488,25 @@ public class IndexController {
         habitacion.setEstado(estadoDisponible);
         servicioHabitaciones.updateHabitacion(habitacion);
 
-        return ResponseEntity.ok().body(Collections.singletonMap("mensaje", "Reserva cancelada correctamente"));
+        return REDIRECT_INICIO;
     }
+
+    @PostMapping("/habilitar-reserva/{id}")
+    public String actualizarVentaReservada(@PathVariable Long id) {
+        Ventas venta = servicioVentas.getVentaById(id);
+
+        venta.setTipo_venta("ALQUILER");
+        servicioVentas.updateVenta(venta);
+
+        Habitaciones habitacionExistente = servicioHabitaciones.getHabitacionById(id);
+        HabitacionesEstado habEstado = servicioHabitacionesEstado.getByEstado("OCUPADO");
+
+        habitacionExistente.setEstado(habEstado);
+        servicioHabitaciones.updateHabitacion(habitacionExistente);
+        
+        return REDIRECT_INICIO;
+    }
+
 
     @PostMapping("/actualizar-estado-habitacion")
     public String actualizarEstadoHabitacion(@RequestParam("id") Long id,

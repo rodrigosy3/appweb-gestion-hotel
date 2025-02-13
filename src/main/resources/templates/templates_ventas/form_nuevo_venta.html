@@ -202,10 +202,6 @@
 
     <div th:insert="~{fragments/modal :: modal('/admin/ventas')}"></div>
 
-    <script th:src="@{/js/index.js}" defer></script>
-    <script th:src="@{/js/bootstrap.min.js}"></script>
-    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const usuarioResponsableSelect = document.getElementById("usuarioResponsableSelect");
@@ -274,6 +270,9 @@
             actualizarMontoTotal();
         });
     </script>
+    
+    <script th:src="@{/js/index.js}" defer></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 
 </html>
