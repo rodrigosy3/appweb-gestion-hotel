@@ -36,6 +36,11 @@
                                     placeholder="(Opcional) Escribe la marca de la característica de la habitación">
                             </div>
                             <div class="mb-3">
+                                <label class="form-label">CARACTERÍSTICA</label>
+                                <textarea type="text" class="form-control" th:field="*{descripcion}"
+                                    placeholder="Escribe una descripción de para esta nueva característica de la habitación"></textarea>
+                            </div>
+                            <div class="mb-3">
                                 <label class="form-label">PRECIO PARA DESCUENTO</label>
                                 <input type="number" class="form-control" th:field="*{precio}" step="0.01" min="0">
                             </div>
@@ -67,6 +72,7 @@
                             <th class="text-center">ID</th>
                             <th>CARACTERÍSTICA</th>
                             <th>MARCA</th>
+                            <th>DESCRIPCIÓN</th>
                             <th class="text-center">PRECIO PARA DESCUENTO</th>
                             <th class="text-center">FECHA DE CREACIÓN</th>
                         </tr>
@@ -87,6 +93,7 @@
                                 ID</td>
                             <td th:text="${habitacionCaracteristica.nombre}">CARACTERÍSTICA</td>
                             <td th:text="${habitacionCaracteristica.marca}">MARCA</td>
+                            <td th:text="${habitacionCaracteristica.descripcion}">DESCRIPCION</td>
                             <td th:text="${habitacionCaracteristica.precio}" class="text-center">PRECIO PARA DESCUENTO
                             </td>
                             <td th:text="${habitacionCaracteristica.fecha_creacion}" class="text-center">FECHA DE

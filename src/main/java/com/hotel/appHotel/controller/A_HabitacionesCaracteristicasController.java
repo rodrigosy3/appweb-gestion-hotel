@@ -71,6 +71,7 @@ public class A_HabitacionesCaracteristicasController {
         
         habitacionCaracteristicaExistente.setNombre(habitacionCaracteristica.getNombre().toUpperCase());
         habitacionCaracteristicaExistente.setMarca(habitacionCaracteristica.getMarca().toUpperCase());
+        habitacionCaracteristicaExistente.setDescripcion(habitacionCaracteristica.getDescripcion());
         habitacionCaracteristicaExistente.setPrecio(habitacionCaracteristica.getPrecio());
 
         habitacionCaracteristicaExistente.setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));

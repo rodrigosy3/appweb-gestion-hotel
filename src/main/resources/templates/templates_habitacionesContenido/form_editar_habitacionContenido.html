@@ -62,9 +62,15 @@
                             <div class="mb-3">
                                 <label class="form-label">ESTADO DE LA CARACTERÍSTICA</label>
                                 <select class="form-select" th:field="*{estado_caracteristica}" required>
-                                    <option th:value="DISPONIBLE">DISPONIBLE</option>
-                                    <option th:value="MANTENIMIENTO">MANTENIMIENTO</option>
-                                    <option th:value="'INDISPONIBLE COMPLETAMENTE'">INDISPONIBLE COMPLETAMENTE</option>
+                                    <option value="DISPONIBLE"
+                                        th:selected="${estado_caracteristica == 'DISPONIBLE'}">
+                                        DISPONIBLE</option>
+                                    <option value="EN MANTENIMIENTO"
+                                        th:selected="${estado_caracteristica == 'EN MANTENIMIENTO'}">
+                                        EN MANTENIMIENTO</option>
+                                    <option value="MALOGRADO"
+                                        th:selected="${estado_caracteristica == 'MALOGRADO'}">
+                                        MALOGRADO</option>
                                 </select>
                             </div>
                             <div class="mb-3">

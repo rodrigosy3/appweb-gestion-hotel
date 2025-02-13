@@ -52,7 +52,7 @@
 
             <!-- Contenido de cada sección -->
             <div class="tab-content mt-3 mx-3">
-                
+
                 <!-- Sección de Clientes -->
                 <div th:switch="${habitacion.estado.estado}" class="tab-pane fade show active" id="venta-tab">
                     <!-- Caso: LIMPIEZA -->
@@ -694,7 +694,7 @@
 
                                         <input type="hidden" th:field="*{estado_estadia}" id="reservaestadoEstadia">
                                         <input type="hidden" th:field="*{tipo_venta}" id="reservatipoVenta"
-                                            th:value="${ALQUILER}">
+                                            th:value="${RESERVA}">
                                         <input type="hidden" th:field="*{id_venta}" id="reservaidVenta">
 
                                         <div class="row mb-4">
@@ -709,15 +709,20 @@
                             </div>
                         </form>
 
-                        <div class="row my-3">
-                            <div class="col text-center">
-                                <button type="button" class="btn btn-secondary w-50" id="reservabtnRetirarCliente">
-                                    RETIRAR CLIENTE
+                        <div class="row alert alert-dark">                            
+                            <div class="col text-start w-25">
+                                <button type="button" class="btn btn-danger" id="reservabtnRetirarReserva">
+                                    CANCELAR Y ELIMINAR RESERVA
                                 </button>
                             </div>
-                            <div class="col text-center">
-                                <button type="button" class="btn btn-danger w-50" data-bs-toggle="modal"
-                                    data-bs-target="#cancelModal">CANCELAR Y VOLVER</button>
+                            <div class="col text-start w-25">
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal">VOLVER AL INICIO</button>
+                            </div>
+                            <div class="col text-center w-50">
+                                <button type="button" class="btn btn-success" id="reservabtnHabilitarReserva">
+                                    OCUPAR HABITACION Y FINALIZAR RESERVA
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -820,7 +825,8 @@
                         <div class="alert alert-info text-center" id="mantenimientoDivPrevio">
                             <h4 class="fs-2 text-uppercase">Habitación ocupada</h4>
                             <p class="fs-4 mt-4">Esta habitación ha sido alquilada. <br>
-                                Presiona en el botón azul "VER DETALLES" para editar el alquiler actual de la habitacion.
+                                Presiona en el botón azul "VER DETALLES" para editar el alquiler actual de la
+                                habitacion.
                             </p>
 
                             <div class="col text-center mt-5 mb-3">
@@ -898,8 +904,58 @@
 
                 <!-- Sección de Detalles -->
                 <div class="tab-pane fade" id="detalles-tab">
-                    <h5>Detalles de la Habitación</h5>
-                    <p>Puedes incluir información detallada sobre la habitación aquí.</p>
+                    <h4 class="text-center fw-bold mt-3">Detalles de la Habitación</h4>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover shadow-sm border">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Característica</th>
+                                    <th>Descripción</th>
+                                    <th class="text-center">Precio</th>
+                                    <th class="text-center">Estado</th>
+                                    <th class="text-center">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="contenido : ${habitacion.habitacionesContenido}">
+                                    <td class="align-middle">
+                                        <span th:text="${contenido.caracteristica.nombre}"></span>
+                                    </td>
+                                    <td class="align-middle">
+                                        <span th:text="${contenido.caracteristica.descripcion}"></span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <span th:text="'S/. ' + ${contenido.caracteristica.precio}"></span>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <select class="form-select text-center estado-selector"
+                                            th:id="'estado_' + ${contenido.id_habitacion_contenido}"
+                                            th:data-id="${contenido.id_habitacion_contenido}">
+                                            <option class="text-uppercase" value="DISPONIBLE"
+                                                th:selected="${contenido.estado_caracteristica == 'DISPONIBLE'}">
+                                                DISPONIBLE</option>
+                                            <option class="text-uppercase" value="EN MANTENIMIENTO"
+                                                th:selected="${contenido.estado_caracteristica == 'EN MANTENIMIENTO'}">
+                                                EN MANTENIMIENTO</option>
+                                            <option class="text-uppercase" value="MALOGRADO"
+                                                th:selected="${contenido.estado_caracteristica == 'MALOGRADO'}">
+                                                MALOGRADO</option>
+                                        </select>
+                                    </td>
+                                    <td class="align-middle text-center">
+                                        <button class="btn btn-success guardar-btn"
+                                            th:id="'guardar_' + ${contenido.id_habitacion_contenido}"
+                                            disabled>GUARDAR</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="text-center">
+                            <button type="button" class="btn btn-danger w-25 mt-5 mb-2" data-bs-toggle="modal"
+                                        data-bs-target="#cancelModal">VOLVER</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1455,9 +1511,12 @@
                 if (event.target.id === "btnVerDetallesOcupado") {
                     cambiarTabEstado("OCUPADO");
                 }
-
-                if (event.target.id === "reservabtnRetirarCliente") {
-                    reservaCancelarReserva();
+                
+                if (event.target.id === "reservabtnRetirarReserva") {
+                    reservaEliminarReserva();
+                }
+                if (event.target.id === "reservabtnHabilitarReserva") {
+                    reservaCambiarEstadoReserva();
                 }
                 if (event.target.id === "reservabtnAgregarCliente") {
                     reservaagregarCliente();
@@ -1651,7 +1710,39 @@
                 }).catch(error => console.error("Error:", error));
             };
 
-            function reservaCancelarReserva() {
+            function reservaEliminarReserva () {
+                const idVentaReservada = reservaidVentaInput.value;
+                console.log(idVentaReservada);
+                if (!idVentaReservada) {
+                    alert("No se puede cancelar una reserva no registrada.");
+                    return;
+                }
+
+                fetch(`/cancelar-reserva/${idVentaReservada}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify()
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Error al cancelar la reserva");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log("Reserva cancelada correctamente");
+                        location.reload(); // Recargar la página para ver el cambio reflejado
+                        //window.location.href = "/";
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("Hubo un problema al cancelar la reserva.");
+                    });
+            }
+
+            function reservaCambiarEstadoReserva() {
                 const idVenta = reservaidVentaInput.value;  // Obtiene el ID de la venta
 
                 if (!idVenta) {
@@ -1659,7 +1750,7 @@
                     return;
                 }
 
-                fetch(`/cancelar-reserva/${idVenta}`, {
+                fetch(`/habilitar-reserva/${idVenta}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -1906,6 +1997,58 @@
             }
             if (reservamontoAdelantoResumen) {
                 reservamontoAdelantoResumen.addEventListener("input", reservaactualizarResumen);
+            }
+
+
+
+
+
+
+
+
+
+
+
+            
+
+            let selects = document.querySelectorAll(".estado-selector");
+
+            if (selects) {
+                selects.forEach(select => {
+                    let id = select.getAttribute("data-id");
+                    let btnGuardar = document.getElementById("guardar_" + id);
+                    let estadoInicial = select.value; // Guardamos el estado inicial
+
+                    // Detectar cambios en el estado
+                    select.addEventListener("change", function () {
+                        if (select.value !== estadoInicial) {
+                            btnGuardar.removeAttribute("disabled");
+                        } else {
+                            btnGuardar.setAttribute("disabled", "true");
+                        }
+                    });
+
+                    // Evento para guardar cambios al hacer clic en el botón
+                    btnGuardar.addEventListener("click", function () {
+                        let nuevoEstado = select.value;
+
+                        fetch(`/habitaciones/contenido/actualizar/${id}`, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ estado_caracteristica: nuevoEstado })
+                        })
+                            .then(response => {
+                                if (response.ok) {
+                                    console.log("Estado actualizado correctamente");
+                                    estadoInicial = nuevoEstado; // Actualizar estado inicial
+                                    btnGuardar.setAttribute("disabled", "true");
+                                } else {
+                                    alert("Error al actualizar el estado");
+                                }
+                            })
+                            .catch(error => console.error("Error:", error));
+                    });
+                });
             }
         });
     </script>

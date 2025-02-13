@@ -28,11 +28,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hotel.appHotel.model.ClienteDTO;
 import com.hotel.appHotel.model.Habitaciones;
+import com.hotel.appHotel.model.HabitacionesContenido;
 import com.hotel.appHotel.model.HabitacionesEstado;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.model.Ventas;
 import com.hotel.appHotel.model.VentasClientesHabitacion;
 import com.hotel.appHotel.repository.VentasRepository;
+import com.hotel.appHotel.service.HabitacionesContenidoService;
 import com.hotel.appHotel.service.HabitacionesEstadoService;
 import com.hotel.appHotel.service.HabitacionesService;
 import com.hotel.appHotel.service.RolesService;
@@ -40,6 +42,7 @@ import com.hotel.appHotel.service.UsuariosService;
 import com.hotel.appHotel.service.VentasClientesHabitacionService;
 import com.hotel.appHotel.service.VentasService;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class IndexController {
@@ -68,6 +71,9 @@ public class IndexController {
 
     @Autowired
     HabitacionesEstadoService servicioHabitacionesEstado;
+
+    @Autowired
+    HabitacionesContenidoService servicioHabitacionesContenido;
 
     @GetMapping
     public String getDatos(@RequestParam(value = "fechaFiltro", required = false) String fechaFiltro, Model modelo) {
@@ -316,6 +322,8 @@ public class IndexController {
         Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
         HabitacionesEstado estadoReservada = servicioHabitacionesEstado.getByEstado("RESERVADA");
         HabitacionesEstado estadoDisponible = servicioHabitacionesEstado.getByEstado("DISPONIBLE");
+        Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
+                    : servicioUsuarios.getUsuarioById(1L);
 
         System.out.println("============================================");
         System.out.println("Tipode servicio: " + ventaParaReserva.getTipo_servicio());
@@ -345,23 +353,24 @@ public class IndexController {
         // Guardar la venta
         if (!existeVentaReservada) {
             ventaParaReserva.setFecha_entrada(convertirFormatoFecha(ventaParaReserva.getFecha_entrada()));
+            ventaParaReserva.setUsuario_responsable(usuario_admin);
+            ventaParaReserva.setTipo_venta("RESERVA");
             ventaReservada = servicioVentas.createVenta(ventaParaReserva);
         } else {
-            Ventas ventaReservadaExistente = servicioVentas.getVentaById(ventaParaReserva.getId_venta());
-            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
-                    : servicioUsuarios.getUsuarioById(1L);
+            Ventas ventaReservadaExistente = servicioVentas.getVentaById(ventaParaReserva.getId_venta());           
 
             // Copiar los datos de la venta a la venta existente
             BeanUtils.copyProperties(ventaParaReserva, ventaReservadaExistente, "usuario_responsable");
+            ventaReservadaExistente.setFecha_entrada(convertirFormatoFecha(ventaParaReserva.getFecha_entrada()));
             ventaReservadaExistente.setUsuario_responsable(usuario_admin);
+            ventaReservadaExistente.setTipo_venta("RESERVA");
             servicioVentas.updateVenta(ventaReservadaExistente);
 
             ventaReservada = servicioVentas.getVentaById(ventaReservadaExistente.getId_venta());
         }
 
         LocalDate fecha_entrada_reserva = parseLocalDateTime(ventaReservada.getFecha_entrada()).toLocalDate();
-        System.out.println(fecha_entrada_reserva);
-        System.out.println(LocalDate.now());
+
         if (fecha_entrada_reserva.isEqual(LocalDate.now())) {
             habitacion.setEstado(estadoReservada);
             habitacion.setRazon_estado("");
@@ -519,4 +528,17 @@ public class IndexController {
         return REDIRECT_INICIO;
     }
 
+    @PostMapping("/habitaciones/contenido/actualizar/{id}")
+    public ResponseEntity<String> actualizarEstado(@PathVariable Long id, @RequestBody HabitacionesContenido datos) {
+        HabitacionesContenido contenido = servicioHabitacionesContenido.getHabitacionContenidoById(id);
+
+        if (contenido == null) {
+            return ResponseEntity.badRequest().body("Error: No se encontró la característica.");
+        }
+
+        contenido.setEstado_caracteristica(datos.getEstado_caracteristica()); // Actualiza el estado
+        servicioHabitacionesContenido.updateHabitacionContenido(contenido); // Guarda en la BD
+
+        return ResponseEntity.ok("Estado actualizado correctamente.");
+    }
 }

@@ -27,6 +27,9 @@ public class HabitacionesCaracteristicas {
     @Column(name = "marca")
     private String marca;
 
+    @Column(name = "descripcion")
+    private String descripcion;
+
     @Column(name = "precio")
     private Double precio = 0.0;
 
