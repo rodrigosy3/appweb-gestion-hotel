@@ -78,12 +78,12 @@
                                 <div class="mb-3 col-auto text-center">
                                     <label class="form-label">DESCUENTO</label>
                                     <input type="number" class="form-control text-center" id="descuentoInput"
-                                        th:field="*{descuento}" min="0" step="0.01">
+                                        th:field="*{descuento}" min="0" step="0.01" placeholder="0.00">
                                 </div>
                                 <div class="mb-3 col-auto text-center">
                                     <label class="form-label">MONTO ADELANTO</label>
                                     <input type="number" class="form-control text-center" id="montoAdelantoInput"
-                                        th:field="*{monto_adelanto}" min="0" step="0.01">
+                                        th:field="*{monto_adelanto}" min="0" step="0.01" placeholder="0.00">
                                 </div>
                                 <div class="mb-3 col-auto text-center">
                                     <label class="form-label">MONTO TOTAL</label>
@@ -260,8 +260,8 @@
 
             function actualizarMontoTotal() {
                 const precioHabitacionInputValue = parseFloat(precioHabitacionInput.value);
-                const descuentoInputValue = parseFloat(descuentoInput.value);
-                const montoAdelantoInputValue = parseFloat(montoAdelantoInput.value);
+                const descuentoInputValue = parseFloat(descuentoInput.value) || 0;
+                const montoAdelantoInputValue = parseFloat(montoAdelantoInput.value) || 0; 
 
                 montoTotalInput.value = precioHabitacionInputValue - (descuentoInputValue + montoAdelantoInputValue);
             }

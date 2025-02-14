@@ -18,6 +18,10 @@
         <span th:text="${error}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    <div th:if="${mensaje}" class="alert alert-danger alert-dismissible fade show text-center me-5" role="alert">
+        <span th:text="${mensaje}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 
     <div class="card mx-auto shadow mb-5" style="width: 75%;">
         <div class="card-header text-bg-dark" style="font-size: x-large;">
@@ -371,7 +375,7 @@
 
                                         <input type="hidden" th:field="*{estado_estadia}" id="estadoEstadia">
                                         <input type="hidden" th:field="*{tipo_venta}" id="tipoVenta"
-                                            th:value="${ALQUILER}">
+                                            th:value="${'ALQUILER'}">
                                         <input type="hidden" th:field="*{id_venta}" id="idVenta">
 
                                         <div class="row mb-4">
@@ -388,7 +392,8 @@
 
                         <div class="row my-3">
                             <div class="col text-center">
-                                <button type="button" class="btn btn-secondary w-50" id="btnRetirarCliente">
+                                <button type="button" class="btn btn-secondary w-50" id="btnRetirarCliente"
+                                    th:if="${ventaHabitacion.id_venta}">
                                     RETIRAR CLIENTE
                                 </button>
                             </div>
@@ -701,7 +706,7 @@
                                             <div class="col text-center">
                                                 <button type="button" class="btn btn-primary w-50"
                                                     id="reservabtnGuardar">GUARDAR
-                                                    VENTA</button>
+                                                    RESERVA</button>
                                             </div>
                                         </div>
                                     </div>
@@ -709,9 +714,10 @@
                             </div>
                         </form>
 
-                        <div class="row alert alert-dark">                            
+                        <div class="row alert alert-dark">
                             <div class="col text-start w-25">
-                                <button type="button" class="btn btn-danger" id="reservabtnRetirarReserva">
+                                <button th:if="${ventaParaReserva.id_venta != null}" type="button"
+                                    class="btn btn-danger" id="reservabtnRetirarReserva">
                                     CANCELAR Y ELIMINAR RESERVA
                                 </button>
                             </div>
@@ -720,7 +726,8 @@
                                     data-bs-target="#cancelModal">VOLVER AL INICIO</button>
                             </div>
                             <div class="col text-center w-50">
-                                <button type="button" class="btn btn-success" id="reservabtnHabilitarReserva">
+                                <button th:if="${ventaParaReserva.id_venta != null}" type="button"
+                                    class="btn btn-success" id="reservabtnHabilitarReserva">
                                     OCUPAR HABITACION Y FINALIZAR RESERVA
                                 </button>
                             </div>
@@ -953,7 +960,7 @@
                         </table>
                         <div class="text-center">
                             <button type="button" class="btn btn-danger w-25 mt-5 mb-2" data-bs-toggle="modal"
-                                        data-bs-target="#cancelModal">VOLVER</button>
+                                data-bs-target="#cancelModal">VOLVER</button>
                         </div>
                     </div>
                 </div>
@@ -966,8 +973,8 @@
     <div class="container-fluid py-3">
         <div class="row">
             <!-- Primera tabla: lado izquierdo -->
-            <div class="col-12 col-lg-6 justify-content-center" th:if="${!hab_antiguas.isEmpty()}">
-                <table class="table table-hover">
+            <div class="col-12 col-lg-6 justify-content-center">
+                <table class="table table-hover" th:if="${!hab_antiguas.isEmpty()}">
                     <thead class="table-secondary border-light">
                         <tr>
                             <th class="text-center">N°</th>
@@ -980,7 +987,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="hab : ${hab_antiguas}">
+                        <tr th:each="hab : ${hab_antiguas}"
+                            th:classappend="${hab.estado.estado == 'RESERVADA' ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ''}">
                             <td class="text-center fw-bold border-light bg-body-secondary align-middle"
                                 th:text="${hab.numero}"
                                 th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' +hab.tipo.nombre_tipo}">N°</td>
@@ -989,7 +997,22 @@
                                 INGRESO
                             </td>
                             <td>
-                                <span
+                                <span class="bg-primary-subtle fw-bold text-primary"
+                                    th:if="${hab.estado.estado == 'RESERVADA'}">HABITACIÓN RESERVADA <br>
+                                </span>
+                                <span class="bg-success-subtle fw-bold text-success"
+                                    th:if="${hab.estado.estado == 'LIMPIEZA'}">HABITACIÓN EN LIMPIEZA <br> </span>
+                                <span class="bg-danger-subtle fw-bold text-danger"
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR'}">HABITACIÓN
+                                    NO PAGADA <br> </span>
+                                <span class="bg-warning-subtle fw-bold text-warning"
+                                    th:if="${hab.estado.estado == 'MANTENIMIENTO'}">HABITACIÓN EN MANTENIMIENTO <br>
+                                </span>
+                                <span class="bg-dark-subtle fw-semibold text-dark"
+                                    th:if="${hab.estado.estado == 'NO DISPONIBLE'}">HABITACIÓN NO DISPONIBLE PARA VENTAS
+                                    <br> </span>
+
+                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
                                     <span
                                         th:text="${cliente.usuario_alojado.nombres + ' ' + cliente.usuario_alojado.apellidos}">NOMBRES
@@ -997,25 +1020,28 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <span
+                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
                                     <span th:text="${cliente.usuario_alojado.edad}">EDAD</span><br />
                                 </span>
                             </td>
                             <td class="text-center">
-                                <span
+                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
                                     <span th:text="${cliente.usuario_alojado.dni}">D.N.I.</span><br />
                                 </span>
                             </td>
-                            <td class="text-center align-middle"
-                                th:text="${ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null ? #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : ''}">
+                            <td class="text-center"
+                                th:text="${(ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null) && ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA' ? #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : ''}">
                                 TOTAL</td>
                             <td class="text-center align-middle">
-                                <a class="btn btn-sm btn-primary" role="button" title="EDITAR"
-                                    th:href="@{/editar/{id}(id=${hab.id_habitacion})}">
-                                    Editar
-                                </a>
+                                <form th:action="@{/editar/{id}(id=${hab.id_habitacion})}">
+                                    <input type="hidden" name="idVenta"
+                                        th:value="${ultimaVentaPorHabitacion[hab.id_habitacion]?.id_venta}">
+                                    <button type="submit" class="btn btn-sm btn-primary" title="EDITAR">
+                                        Editar
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     </tbody>
@@ -1023,8 +1049,8 @@
             </div>
 
             <!-- Segunda tabla: lado derecho -->
-            <div class="col-12 col-lg-6 justify-content-center" th:if="${!hab_modernas.isEmpty()}">
-                <table class="table table-hover">
+            <div class="col-12 col-lg-6 justify-content-center">
+                <table class="table table-hover" th:if="${!hab_modernas.isEmpty()}">
                     <thead class="table-info border-light">
                         <tr>
                             <th class="text-center">N°</th>
@@ -1037,7 +1063,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="hab : ${hab_modernas}">
+                        <tr th:each="hab : ${hab_modernas}"
+                            th:classappend="${hab.estado.estado == 'RESERVADA' ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ''}">
                             <td class="text-center fw-bold border-light bg-info-subtle align-middle"
                                 th:text="${hab.numero}"
                                 th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' + hab.tipo.nombre_tipo}">N°</td>
@@ -1046,7 +1073,26 @@
                                 INGRESO
                             </td>
                             <td>
-                                <span
+                                <span class="bg-primary-subtle fw-bold text-primary"
+                                    th:if="${hab.estado.estado == 'RESERVADA'}">HABITACIÓN RESERVADA <br>
+                                </span>
+                                <span class="bg-success-subtle fw-bold text-success"
+                                    th:if="${hab.estado.estado == 'LIMPIEZA'}">HABITACIÓN EN LIMPIEZA <br> </span>
+                                <span class="bg-danger-subtle fw-bold text-danger"
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR'}">HABITACIÓN
+                                    NO PAGADA <br> </span>
+                                <span class="bg-warning-subtle fw-bold text-warning"
+                                    th:if="${hab.estado.estado == 'MANTENIMIENTO'}">HABITACIÓN EN MANTENIMIENTO <br>
+                                </span>
+                                <span class="bg-dark-subtle fw-semibold text-dark"
+                                    th:if="${hab.estado.estado == 'NO DISPONIBLE'}">HABITACIÓN NO DISPONIBLE PARA VENTAS
+                                    <br> </span>
+                                <span class="bg-danger-subtle fw-bold text-danger"
+                                    th:if="${ultimaVentaReservadaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR'}">HABITACIÓN
+                                    NO PAGADA
+                                    <br> </span>
+
+                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
                                     <span
                                         th:text="${cliente.usuario_alojado.nombres + '  ' + cliente.usuario_alojado.apellidos}">NOMBRES
@@ -1054,25 +1100,28 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                <span
+                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
                                     <span th:text="${cliente.usuario_alojado.edad}">EDAD</span><br />
                                 </span>
                             </td>
                             <td class="text-center">
-                                <span
+                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
                                     <span th:text="${cliente.usuario_alojado.dni}">D.N.I.</span><br />
                                 </span>
                             </td>
                             <td class="text-center"
-                                th:text="${ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null && !ultimaVentaPorHabitacion[hab.id_habitacion] ?.estado_estadia.equals('RETIRADO') ? #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : ''}">
+                                th:text="${ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null && ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA' ? #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : ''}">
                                 TOTAL</td>
                             <td class="text-center align-middle">
-                                <a class="btn btn-sm btn-primary align-middle" role="button" title="EDITAR"
-                                    th:href="@{/editar/{id}(id=${hab.id_habitacion})}">
-                                    Editar
-                                </a>
+                                <form th:action="@{/editar/{id}(id=${hab.id_habitacion})}">
+                                    <input type="hidden" name="idVenta"
+                                        th:value="${ultimaVentaPorHabitacion[hab.id_habitacion]?.id_venta}">
+                                    <button type="submit" class="btn btn-sm btn-primary" title="EDITAR">
+                                        Editar
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     </tbody>
@@ -1153,7 +1202,6 @@
             // Función para eliminar un cliente temporalmente
             window.eliminarCliente = function (button, dni) {
                 dni = String(dni);  // Convertir siempre a string
-                console.log("Tipo DNI recibido:", typeof dni, dni);
 
                 clientesTemporales.forEach(cliente => {
                     if (cliente.dni === dni) {
@@ -1173,18 +1221,17 @@
                     return;
                 }
 
-                fetch(`/buscar-cliente?dni=${dni}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.encontrado) {
-                            inputNombres.value = data.nombres;
-                            inputApellidos.value = data.apellidos;
-                        } else {
-                            console.log("Cliente no encontrado en la base de datos. Consultando API externa...");
-                            buscarClienteEnAPI(dni);
-                        }
-                    })
-                    .catch(error => console.error("Error buscando cliente:", error));
+                fetch(`/buscar-cliente?dni=${dni}`, {
+                    method: "GET"
+                }).then(response => response.json()).then(data => {
+                    if (data.encontrado) {
+                        inputNombres.value = data.nombres;
+                        inputApellidos.value = data.apellidos;
+                    } else {
+                        console.log("Cliente no encontrado en la base de datos. Consultando API externa...");
+                        buscarClienteEnAPI(dni);
+                    }
+                }).catch(error => console.error("Error buscando cliente:", error));
             }
 
             function buscarClienteEnAPI(dni) {
@@ -1195,26 +1242,23 @@
 
                 const apiUrl = `http://localhost:3000/api/dni?numero=${dni}`; // Cambia el puerto según la configuración de Spring Boot
 
-                fetch(apiUrl)
-                    .then(response => {
-                        console.log("Estado de la respuesta:", response.status);
-                        if (!response.ok) {
-                            throw new Error("Error al consultar el backend.");
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.numeroDocumento) {
-                            document.getElementById("inputNombres").value = data.nombres || "";
-                            document.getElementById("inputApellidos").value = `${data.apellidoPaterno || ""
-                                } ${data.apellidoMaterno || ""}`.trim();
-                        } else {
-                            alert("No se encontró información para este DNI. Agregar manualmente");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error al realizar la consulta:", error);
-                    });
+                fetch(apiUrl).then(response => {
+                    console.log("Estado de la respuesta:", response.status);
+                    if (!response.ok) {
+                        throw new Error("Error al consultar el backend.");
+                    }
+                    return response.json();
+                }).then(data => {
+                    if (data.numeroDocumento) {
+                        document.getElementById("inputNombres").value = data.nombres || "";
+                        document.getElementById("inputApellidos").value = `${data.apellidoPaterno || ""
+                            } ${data.apellidoMaterno || ""}`.trim();
+                    } else {
+                        alert("No se encontró información para este DNI. Agregar manualmente");
+                    }
+                }).catch(error => {
+                    console.error("Error al realizar la consulta:", error);
+                });
             }
 
             function actualizarEstadoBoton() {
@@ -1266,22 +1310,19 @@
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({ estado_estadia: estadoEstadia })
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Error al actualizar el estado de la venta");
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log("Estado actualizado correctamente");
-                        //location.reload(); // Recargar la página para ver el cambio reflejado
-                        window.location.href = "/";
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        alert("Hubo un problema al actualizar el estado.");
-                    });
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error("Error al actualizar el estado de la venta");
+                    }
+                    return response.json();
+                }).then(data => {
+                    console.log("Estado actualizado correctamente");
+                    //location.reload(); // Recargar la página para ver el cambio reflejado
+                    window.location.href = "/";
+                }).catch(error => {
+                    console.error("Error:", error);
+                    alert("Hubo un problema al actualizar el estado.");
+                });
             };
 
 
@@ -1512,7 +1553,7 @@
                 if (event.target.id === "btnVerDetallesOcupado") {
                     cambiarTabEstado("OCUPADO");
                 }
-                
+
                 if (event.target.id === "reservabtnRetirarReserva") {
                     reservaEliminarReserva();
                 }
@@ -1631,18 +1672,17 @@
                     return;
                 }
 
-                fetch(`/buscar-cliente?dni=${dni}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.encontrado) {
-                            reservainputNombres.value = data.nombres;
-                            reservainputApellidos.value = data.apellidos;
-                        } else {
-                            console.log("Cliente no encontrado en la base de datos. Consultando API externa...");
-                            reservabuscarClienteEnAPI(dni);
-                        }
-                    })
-                    .catch(error => console.error("Error buscando cliente:", error));
+                fetch(`/buscar-cliente?dni=${dni}`, {
+                    method: "GET"
+                }).then(response => response.json()).then(data => {
+                    if (data.encontrado) {
+                        reservainputNombres.value = data.nombres;
+                        reservainputApellidos.value = data.apellidos;
+                    } else {
+                        console.log("Cliente no encontrado en la base de datos. Consultando API externa...");
+                        reservabuscarClienteEnAPI(dni);
+                    }
+                }).catch(error => console.error("Error buscando cliente:", error));
             }
 
             function reservabuscarClienteEnAPI(dni) {
@@ -1653,26 +1693,24 @@
 
                 const apiUrl = `http://localhost:3000/api/dni?numero=${dni}`; // Cambia el puerto según la configuración de Spring Boot
 
-                fetch(apiUrl)
-                    .then(response => {
-                        console.log("Estado de la respuesta:", response.status);
-                        if (!response.ok) {
-                            throw new Error("Error al consultar el backend.");
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.numeroDocumento) {
-                            document.getElementById("reservainputNombres").value = data.nombres || "";
-                            document.getElementById("reservainputApellidos").value = `${data.apellidoPaterno || ""
-                                } ${data.apellidoMaterno || ""}`.trim();
-                        } else {
-                            alert("No se encontró información para este DNI. Agregar manualmente");
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error al realizar la consulta:", error);
-                    });
+                fetch(apiUrl).then(response => {
+                    console.log("Estado de la respuesta:", response.status);
+                    if (!response.ok) {
+                        throw new Error("Error al consultar el backend.");
+                    }
+                    return response.json();
+                }).then(data => {
+                    if (data.numeroDocumento) {
+                        document.getElementById("reservainputNombres").value = data.nombres || "";
+                        document.getElementById("reservainputApellidos").value = `${data.apellidoPaterno || ""
+                            } ${data.apellidoMaterno || ""}`.trim();
+                    } else {
+                        alert("No se encontró información para este DNI. Agregar manualmente");
+                    }
+                }).catch(error => {
+                    console.error("Error al realizar la consulta:", error);
+                    alert("No se encontró información para este DNI. Agregar manualmente");
+                });
             }
 
             function reservaactualizarEstadoBoton() {
@@ -1708,7 +1746,7 @@
                 }).catch(error => console.error("Error:", error));
             };
 
-            function reservaEliminarReserva () {
+            function reservaEliminarReserva() {
                 const idVentaReservada = reservaidVentaInput.value;
                 console.log(idVentaReservada);
                 if (!idVentaReservada) {
@@ -1717,31 +1755,24 @@
                 }
 
                 fetch(`/cancelar-reserva/${idVentaReservada}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify()
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Error al cancelar la reserva");
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log("Reserva cancelada correctamente");
-                        location.reload(); // Recargar la página para ver el cambio reflejado
-                        //window.location.href = "/";
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        alert("Hubo un problema al cancelar la reserva.");
-                    });
+                    method: "POST"
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error("Error al cancelar la reserva");
+                    }
+                    return response.text();
+                }).then(data => {
+                    alert("Reserva cancelada correctamente");
+                    location.reload(); // Recargar la página para ver el cambio reflejado
+                    //window.location.href = "/";
+                }).catch(error => {
+                    console.error("Error:", error);
+                    console.error("Hubo un problema al cancelar la reserva.");
+                });
             }
 
             function reservaCambiarEstadoReserva() {
-                const idVenta = reservaidVentaInput.value;  // Obtiene el ID de la venta
+                const idVenta = reservaidVentaInput.value; // Obtiene el ID de la venta
 
                 if (!idVenta) {
                     console.log("No se puede finalizar reserva no registrada.");
@@ -1749,27 +1780,19 @@
                 }
 
                 fetch(`/habilitar-reserva/${idVenta}`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify()
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Error al actualizar el estado de la venta");
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log("Reserva cancelada correctamente");
-                        //location.reload(); // Recargar la página para ver el cambio reflejado
-                        window.location.href = "/";
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                        alert("Hubo un problema al cancelar la reserva.");
-                    });
+                    method: "POST"
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error("Error al actualizar el estado de la venta");
+                    }
+                    return response.text(); // El controlador devuelve una redirección, no JSON
+                }).then(() => {
+                    console.log("Reserva habilitada correctamente");
+                    window.location.href = "/"; // Redirigir a la página de inicio
+                }).catch(error => {
+                    console.error("Error:", error);
+                    alert("Hubo un problema al habilitar la reserva.");
+                });
             };
 
 
@@ -1783,26 +1806,15 @@
             const reservadescuentoResumen = document.getElementById("reservadescuentoResumen");
             const reservamontoAdelantoResumen = document.getElementById("reservamontoAdelantoResumen");
             const reservamontoTotalResumen = document.getElementById("reservamontoTotalResumen");
-
-            const reservaprecioInput = document.getElementById("habitacionPrecio");
             const reservatablaFechasBody = document.getElementById("reservatableBodyFechasAlojamiento");
+            const reservaprecioInput = document.getElementById("habitacionPrecio");
+
 
             let reservafechaActual = new Date();
 
-            function reservaconvertirFechaParaInput(dateString) {
-                let [fecha, hora, meridiano] = dateString.split(" ");
-                let [year, month, day] = fecha.split("-").map(num => num.padStart(2, "0"));
-                let [hour, minute] = hora.split(":").map(num => num.padStart(2, "0"));
 
-                // Convertir a 24 horas si es necesario
-                if (meridiano === "PM" && hour !== "12") {
-                    hour = String(parseInt(hour) + 12);
-                } else if (meridiano === "AM" && hour === "12") {
-                    hour = "00"; // Medianoche
-                }
 
-                return `${year}-${month}-${day}T${hour}:${minute}`;
-            }
+
 
             function convertirFechaAStringReserva(fechaInput) {
                 let fecha = new Date(fechaInput);
@@ -1839,6 +1851,21 @@
 
                 // Inicializar
                 reservaactualizarFilas();
+            }
+
+            function reservaconvertirFechaParaInput(dateString) {
+                let [fecha, hora, meridiano] = dateString.split(" ");
+                let [year, month, day] = fecha.split("-").map(num => num.padStart(2, "0"));
+                let [hour, minute] = hora.split(":").map(num => num.padStart(2, "0"));
+
+                // Convertir a 24 horas si es necesario
+                if (meridiano === "PM" && hour !== "12") {
+                    hour = String(parseInt(hour) + 12);
+                } else if (meridiano === "AM" && hour === "12") {
+                    hour = "00"; // Medianoche
+                }
+
+                return `${year}-${month}-${day}T${hour}:${minute}`;
             }
 
             // Formatear fecha a 'YYYY-MM-DD hh:mm A'

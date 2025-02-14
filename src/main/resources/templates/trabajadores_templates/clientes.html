@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de usuarios</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div class="mx-auto w-75">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h1 class="text-center">LISTA DE CLIENTES</h1>
+            </div>
+            <div class="my-auto">
+                <a class="btn btn-primary" th:href="@{/clientes/nuevo}" role="button">AGREGAR CLIENTE</a>
+            </div>
+        </div>
+
+        <table class="table border table-hover shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center">DNI</th>
+                    <th>NOMBRES</th>
+                    <th>APELLIDOS</th>
+                    <th>CELULAR</th>
+                    <th>EDAD</th>
+                    <th class="text-center">ESTADO DE VETO</th>
+                    <th>RAZÓN DE VETO</th>
+                    <th class="text-center w-auto">ACCIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="usuario: ${usuarios}"
+                    th:classappend="${usuario.estado_vetado ? 'table-danger' : 'table-success'}">
+
+                    <td th:text="${usuario.dni}" class="text-center fw-bold">DNI</td>
+                    <td th:text="${usuario.nombres}">NOMBRES</td>
+                    <td th:text="${usuario.apellidos}">APELLIDOS</td>
+                    <td th:text="${usuario.celular}">CELULAR</td>
+                    <td th:text="${usuario.edad}">EDAD</td>
+                    <td th:text="${usuario.estado_vetado? 'VETADO' : 'NO VETADO'}"
+                        th:class="${usuario.estado_vetado? 'bg-danger text-light text-center' : 'bg-success text-light text-center'}">
+                        ESTADO DE VETO</td>
+                    <td th:text="${usuario.razon_vetado}"
+                        th:class="${usuario.razon_vetado == ''? 'bg-secondary-subtle' : ''}">
+                        RAZÓN DE VETO</td>
+                    <td class="text-center border border-secondary-subtle">
+                        <a class="btn btn-sm btn-primary" role="button"
+                            th:href="@{/clientes/editar/{id}(id=${usuario.id_usuario})}">
+                            EDITAR
+                        </a>
+                        <button th:disabled="${usuario.estado_vetado}" class="btn btn-sm btn-danger btn-vetar" th:data-id="${usuario.id_usuario}"
+                            th:data-nombre="${usuario.nombres}" th:data-vetado="${usuario.estado_vetado}">
+                            VETAR CLIENTE
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Modal para ingresar la razón del veto -->
+        <div class="modal fade bg-danger bg-opacity-50 align-content-center" id="modalVeto" tabindex="-1" aria-labelledby="modalVetoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalVetoLabel">Vetar Cliente</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="nombreCliente"></p>
+                        <input type="hidden" id="idClienteVeto">
+                        <label for="razonVeto">Razón del veto:</label>
+                        <textarea id="razonVeto" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" id="btnConfirmarVeto">Confirmar Veto</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let modalVeto = new bootstrap.Modal(document.getElementById("modalVeto"));
+            let idClienteInput = document.getElementById("idClienteVeto");
+            let nombreClienteText = document.getElementById("nombreCliente");
+            let razonVetoInput = document.getElementById("razonVeto");
+            let btnConfirmarVeto = document.getElementById("btnConfirmarVeto"); 
+
+            // Agregar evento a todos los botones de "Vetar Cliente"
+            document.querySelectorAll(".btn-vetar").forEach(boton => {
+                boton.addEventListener("click", function () {
+                    let idCliente = this.getAttribute("data-id");
+                    let nombreCliente = this.getAttribute("data-nombre");
+                    let vetado = this.getAttribute("data-vetado");
+
+                    idClienteInput.value = idCliente;
+                    nombreClienteText.innerText = `Vetar al cliente: ${nombreCliente}`;
+                    razonVetoInput.value = vetado === "true" ? "Razón ya registrada" : "";
+
+                    modalVeto.show();
+                });
+            });
+
+            // Enviar la razón del veto al backend
+            btnConfirmarVeto.addEventListener("click", function () {
+                let idCliente = idClienteInput.value;
+                let razon = razonVetoInput.value.trim();
+
+                if (razon === "") {
+                    alert("Por favor, ingresa una razón para el veto.");
+                    return;
+                }
+
+                fetch(`/clientes/vetar/${idCliente}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ estado_vetado: true, razon_vetado: razon })
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Error al vetar el cliente");
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        alert("Cliente vetado correctamente");
+                        location.reload(); // Recargar la página para ver los cambios
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("Hubo un problema al vetar al cliente.");
+                    });
+
+                modalVeto.hide();
+            });
+        });
+    </script>
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

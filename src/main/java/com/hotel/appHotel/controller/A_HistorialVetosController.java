@@ -3,7 +3,9 @@ package com.hotel.appHotel.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,7 +35,11 @@ public class A_HistorialVetosController {
 
     @GetMapping
     public String listarHistorialVetos(Model modelo) {
-        modelo.addAttribute("historialVetos", historialVetosServicio.getHistorialVetos());
+        List<HistorialVetos> historialVetosDesc = historialVetosServicio.getHistorialVetos().stream()
+                .sorted(Comparator.comparing(HistorialVetos::getId_historial_veto).reversed())
+                .collect(Collectors.toList());
+
+        modelo.addAttribute("historialVetos", historialVetosDesc);
 
         return "templates_historialVetos/historialVetos";
     }
@@ -59,9 +65,13 @@ public class A_HistorialVetosController {
 
             return "redirect:/admin/historialVetos";
         } else {
+            List<HistorialVetos> historialVetosDesc = historialVetosServicio.getHistorialVetos().stream()
+                .sorted(Comparator.comparing(HistorialVetos::getId_historial_veto).reversed())
+                .collect(Collectors.toList());
+
             modelo.addAttribute("usuarios_responsables", usuarios_responsables);
             modelo.addAttribute("usuarios_clientes", usuarios_clientes);
-            modelo.addAttribute("historialVetos", historialVetosServicio.getHistorialVetos());
+            modelo.addAttribute("historialVetos", historialVetosDesc);
             modelo.addAttribute("historialVeto", historialVeto);
 
             return "templates_historialVetos/form_nuevo_historialVeto";
@@ -102,9 +112,13 @@ public class A_HistorialVetosController {
                     "No hay usuarios con roles adecuados para crear un historial de vetos.");
             return "redirect:/admin/historialVetos";
         } else {
+            List<HistorialVetos> historialVetosDesc = historialVetosServicio.getHistorialVetos().stream()
+                .sorted(Comparator.comparing(HistorialVetos::getId_historial_veto).reversed())
+                .collect(Collectors.toList());
+
             modelo.addAttribute("usuarios_clientes", usuarios_clientes);
             modelo.addAttribute("usuarios_responsables", usuarios_responsables);
-            modelo.addAttribute("historialVetos", historialVetosServicio.getHistorialVetos());
+            modelo.addAttribute("historialVetos", historialVetosDesc);
             modelo.addAttribute("historialVeto", historialVetosServicio.getHistorialVetoById(id));
 
             return "templates_historialVetos/form_editar_historialVeto";
@@ -116,7 +130,7 @@ public class A_HistorialVetosController {
             @ModelAttribute("historialVeto") HistorialVetos historialVeto, Model modelo) {
         HistorialVetos historialVetoExistente = historialVetosServicio.getHistorialVetoById(id);
         Usuarios usuarioExistente = usuariosServicio.getUsuarioById(historialVeto.getUsuario_vetado().getId_usuario());
-        
+
         historialVetoExistente.setUsuario_vetado(historialVeto.getUsuario_vetado());
         historialVetoExistente.setUsuario_responsable(historialVeto.getUsuario_responsable());
         historialVetoExistente.setRazon(historialVeto.getRazon());

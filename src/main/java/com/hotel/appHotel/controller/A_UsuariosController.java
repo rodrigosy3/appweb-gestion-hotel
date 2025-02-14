@@ -2,7 +2,9 @@ package com.hotel.appHotel.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -36,7 +38,10 @@ public class A_UsuariosController {
 
     @GetMapping
     public String listarUsuarios(Model modelo) {
-        modelo.addAttribute("usuarios", usuariosServicio.getUsuarios());
+        List<Usuarios> usuariosDesc = usuariosServicio.getUsuarios();
+        usuariosDesc = usuariosDesc.stream().sorted(Comparator.comparing(Usuarios::getId_usuario).reversed()).collect(Collectors.toList());
+
+        modelo.addAttribute("usuarios", usuariosDesc);
 
         return "templates_usuarios/usuarios";
     }
