@@ -16,8 +16,11 @@
 
     <div class="mx-auto w-75">
         <div class="d-flex justify-content-between">
-            <div>
+            <div class="d-flex">
                 <h1 class="text-center">LISTA DE CLIENTES</h1>
+                <a class="btn btn-primary ms-5 my-auto" th:href="@{/clientes/exportar-pdf}" target="_blank">
+                    <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                </a> 
             </div>
             <div class="my-auto">
                 <a class="btn btn-primary" th:href="@{/clientes/nuevo}" role="button">AGREGAR CLIENTE</a>

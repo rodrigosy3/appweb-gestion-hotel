@@ -15,9 +15,14 @@
     <div th:insert="~{fragments/navbar :: navbar}"></div>
 
     <div class="container">
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-between">
             <div>
                 <h1 class="text-center">LISTA DE HISTORIAL DE VETOS</h1>
+            </div>
+            <div class="my-auto">
+                <a class="btn btn-primary" th:href="@{/historialVetos/exportar-pdf}" target="_blank">
+                    <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                </a>                
             </div>
         </div>
 

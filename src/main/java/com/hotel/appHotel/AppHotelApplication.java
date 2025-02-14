@@ -7,6 +7,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.hotel.appHotel.model.HabitacionesEstado;
 import com.hotel.appHotel.model.HabitacionesTipos;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @SpringBootApplication
+@EnableScheduling
 public class AppHotelApplication {
 	@Autowired
 	RolesRepository repoRoles;
@@ -141,8 +143,6 @@ public class AppHotelApplication {
 
 				repoUsuarios.save(usuario);
 			}
-
-
 		};
 	}
 }

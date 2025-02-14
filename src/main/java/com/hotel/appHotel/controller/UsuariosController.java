@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +17,7 @@ import com.hotel.appHotel.model.HistorialVetos;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.repository.RolesRepository;
 import com.hotel.appHotel.service.HistorialVetosService;
+import com.hotel.appHotel.service.PdfServiceClientes;
 import com.hotel.appHotel.service.UsuariosService;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,6 +45,9 @@ public class UsuariosController {
 
     @Autowired
     private HistorialVetosService historialVetosService;
+
+    @Autowired
+    private PdfServiceClientes pdfServiceClientes;
 
     @GetMapping
     public String listarUsuarios(Model modelo) {
@@ -166,5 +172,22 @@ public class UsuariosController {
 
         return ResponseEntity.ok("Cliente vetado correctamente.");
     }
+    
+    @GetMapping("/exportar-pdf")
+    public ResponseEntity<byte[]> exportarVentasPdf() {
+        List<Usuarios> usuarios = usuariosServicio.getUsuarios().stream()
+                .sorted(Comparator.comparing(Usuarios::getId_usuario).reversed())
+                .collect(Collectors.toList());
+        // Obtener las ventas desde el servicio
+        byte[] pdf = pdfServiceClientes.generarPdfClientes(usuarios);
 
+        if (pdf == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=clientes.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
 }
