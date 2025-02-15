@@ -12,11 +12,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.hotel.appHotel.model.Habitaciones;
 import com.hotel.appHotel.model.HabitacionesEstado;
 import com.hotel.appHotel.model.HabitacionesTipos;
 import com.hotel.appHotel.model.Roles;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.repository.HabitacionesEstadoRepository;
+import com.hotel.appHotel.repository.HabitacionesRepository;
 import com.hotel.appHotel.repository.HabitacionesTiposRepository;
 import com.hotel.appHotel.repository.RolesRepository;
 import com.hotel.appHotel.repository.UsuariosRepository;
@@ -38,6 +40,9 @@ public class AppHotelApplication {
 
 	@Autowired
 	UsuariosRepository repoUsuarios;
+
+	@Autowired
+	HabitacionesRepository repoHabitaciones;
 
 	public static void main(String[] args) {		
 		int puerto = 3000; // Ajusta esto según el puerto que uses
@@ -102,6 +107,7 @@ public class AppHotelApplication {
 			List<HabitacionesEstado> habitacionesEstado = repoHabitacionesEstado.findAll();
 			List<HabitacionesTipos> habitacionesTipos = repoHabitacionesTipos.findAll();
 			List<Usuarios> usuarios = repoUsuarios.findAll();
+			List<Habitaciones> habitaciones = repoHabitaciones.findAll();
 
 			if (roles.isEmpty()) {
 				Roles rol_1 = new Roles();
@@ -182,14 +188,34 @@ public class AppHotelApplication {
 				hTipo_6.setNombre_tipo("matrimonial".toUpperCase());
 				hTipo_6.setAbreviacion_tipo("m".toUpperCase());
 				repoHabitacionesTipos.save(hTipo_6);
+
+				if (habitaciones.isEmpty()) {
+					Habitaciones habitacion_1 = new Habitaciones();
+					habitacion_1.setNumero(110);
+					habitacion_1.setTipo(hTipo_4);
+					habitacion_1.setPrecio(50D);
+					habitacion_1.setEstado(repoHabitacionesEstado.findByEstado("DISPONIBLE"));
+					habitacion_1.setCategoria("ANTIGUO");
+					habitacion_1.setCapacidad(5);
+					repoHabitaciones.save(habitacion_1);
+
+					Habitaciones habitacion_2 = new Habitaciones();
+					habitacion_2.setNumero(210);
+					habitacion_2.setTipo(hTipo_1);
+					habitacion_2.setPrecio(50D);
+					habitacion_2.setEstado(repoHabitacionesEstado.findByEstado("DISPONIBLE"));
+					habitacion_2.setCategoria("MODERNO");
+					habitacion_2.setCapacidad(5);
+					repoHabitaciones.save(habitacion_2);
+				}
 			}
 
 			if (usuarios.isEmpty()) {
 				Usuarios usuario = new Usuarios();
 
 				usuario.setDni("74663928");
-				usuario.setNombres("Rodrigo");
-				usuario.setApellidos("Sihues Yanqui");
+				usuario.setNombres("Rodrigo".toUpperCase());
+				usuario.setApellidos("Sihues Yanqui".toUpperCase());
 				usuario.setRol(repoRoles.findByNombre("ADMINISTRADOR"));
 
 				repoUsuarios.save(usuario);
