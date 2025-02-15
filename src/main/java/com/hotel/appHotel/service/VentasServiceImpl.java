@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hotel.appHotel.model.Ventas;
 import com.hotel.appHotel.repository.VentasRepository;
 
 @Service
+@Transactional
 public class VentasServiceImpl implements VentasService {
 
     @Autowired

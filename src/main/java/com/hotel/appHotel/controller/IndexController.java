@@ -9,13 +9,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -50,7 +50,7 @@ public class IndexController {
     private static final String VIEW_INICIO = "index";
     private static final String VIEW_EDITAR = "indexEditar";
     private static final String REDIRECT_INICIO = "redirect:/";
-    boolean existeVentaReservada = false;
+    // boolean existeVentaReservada = false;
 
     @Autowired
     HabitacionesService servicioHabitaciones;
@@ -196,15 +196,15 @@ public class IndexController {
         //
         //
         // Filtrar las ventas por la habitación y que sean del día actual
-        Optional<Ventas> ultimaVentaReservadaOpt = ventas.stream()
-                .filter(venta -> venta.getHabitacion().getId_habitacion().equals(id) &&
-                        parseLocalDateTime(venta.getFecha_entrada()).toLocalDate().equals(fecha)
-                        && venta.getTipo_venta().equals("RESERVA"))
-                .min((v1, v2) -> parseLocalDateTime(v1.getFecha_entrada())
-                        .compareTo(parseLocalDateTime(v2.getFecha_entrada())));
+        // Optional<Ventas> ultimaVentaReservadaOpt = ventas.stream()
+        //         .filter(venta -> venta.getHabitacion().getId_habitacion().equals(id) &&
+        //                 parseLocalDateTime(venta.getFecha_entrada()).toLocalDate().equals(fecha)
+        //                 && venta.getTipo_venta().equals("RESERVA"))
+        //         .min((v1, v2) -> parseLocalDateTime(v1.getFecha_entrada())
+        //                 .compareTo(parseLocalDateTime(v2.getFecha_entrada())));
 
         // Si hay una venta activa hoy, usarla; si no, crear una nueva
-        existeVentaReservada = ultimaVentaReservadaOpt.isEmpty() ? false : true;
+        // existeVentaReservada = ultimaVentaReservadaOpt.isEmpty() ? false : true;
         // Ventas ventaParaReserva = ultimaVentaReservadaOpt.orElse(new Ventas());
         modelo.addAttribute("ultimaVentaReservadaPorHabitacion", ultimaVentaReservadaPorHabitacion);
         modelo.addAttribute("ventaParaReserva", ventaParaReserva);
@@ -218,33 +218,32 @@ public class IndexController {
     public String actualizarVenta(@PathVariable Long id, @ModelAttribute("ventaHabitacion") Ventas ventaHabitacion,
             @RequestParam("clientesTemporales") String clientesJson,
             RedirectAttributes redirectAttributes) {
-        Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
-        Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
-                : servicioUsuarios.getUsuarioById(1L);
         Ventas ventaGuardada = new Ventas();
-
-        ventaHabitacion.setHabitacion(habitacion);
-        ventaHabitacion.setUsuario_responsable(usuario_admin);
-
-        ventaHabitacion
-                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         // Guardar la venta
         if (ventaHabitacion.getId_venta() == null) {
+            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
+                    : servicioUsuarios.getUsuarioById(1L);
+            Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
+
+            habitacion.setEstado(servicioHabitacionesEstado.getByEstado("OCUPADO"));
+            habitacion.setRazon_estado("");
+            servicioHabitaciones.updateHabitacion(habitacion);
+
+            ventaHabitacion.setHabitacion(habitacion);
+            ventaHabitacion.setUsuario_responsable(usuario_admin);
+
             ventaGuardada = servicioVentas.createVenta(ventaHabitacion);
         } else {
             Ventas ventaExistente = servicioVentas.getVentaById(ventaHabitacion.getId_venta());
 
             // Copiar los datos de la venta a la venta existente
-            BeanUtils.copyProperties(ventaHabitacion, ventaExistente);
+            BeanUtils.copyProperties(ventaHabitacion, ventaExistente, "habitacion", "usuario_responsable",
+                    "fecha_creacion");
             servicioVentas.updateVenta(ventaExistente);
 
             ventaGuardada = servicioVentas.getVentaById(ventaExistente.getId_venta());
         }
-
-        habitacion.setEstado(servicioHabitacionesEstado.getByEstado("OCUPADO"));
-        habitacion.setRazon_estado("");
-        servicioHabitaciones.updateHabitacion(habitacion);
 
         // FUNCIONES PARA CLIENTES POR HABITACIÓN
         // Convertir el JSON recibido en una lista de objetos Cliente
@@ -294,6 +293,7 @@ public class IndexController {
         return REDIRECT_INICIO;
     }
 
+    @Transactional
     @PostMapping("/reservar-habitacion/{id}")
     public String actualizarVentaReservada(@PathVariable Long id,
             @ModelAttribute("ventaParaReserva") Ventas ventaParaReserva,
@@ -301,31 +301,27 @@ public class IndexController {
             RedirectAttributes redirectAttributes) {
         Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
         HabitacionesEstado estadoReservada = servicioHabitacionesEstado.getByEstado("RESERVADA");
-        HabitacionesEstado estadoDisponible = servicioHabitacionesEstado.getByEstado("DISPONIBLE");
-        Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
-                : servicioUsuarios.getUsuarioById(1L);
 
         Ventas ventaReservada = new Ventas();
-        ventaParaReserva.setHabitacion(habitacion);
-        ventaParaReserva.setTipo_venta("RESERVA");
-
-        ventaParaReserva
-                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         // Guardar la venta
-        if (!existeVentaReservada) {
+        if (ventaParaReserva.getId_venta() == null) {
+            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
+                    : servicioUsuarios.getUsuarioById(1L);
+
+            ventaParaReserva.setHabitacion(habitacion);
+            ventaParaReserva.setTipo_venta("RESERVA");
             ventaParaReserva.setFecha_entrada(convertirFormatoFecha(ventaParaReserva.getFecha_entrada()));
             ventaParaReserva.setUsuario_responsable(usuario_admin);
-            ventaParaReserva.setTipo_venta("RESERVA");
 
             ventaReservada = servicioVentas.createVenta(ventaParaReserva);
         } else {
             Ventas ventaReservadaExistente = servicioVentas.getVentaById(ventaParaReserva.getId_venta());
 
             // Copiar los datos de la venta a la venta existente
-            BeanUtils.copyProperties(ventaParaReserva, ventaReservadaExistente, "usuario_responsable");
+            BeanUtils.copyProperties(ventaParaReserva, ventaReservadaExistente, "usuario_responsable", "habitacion",
+                    "fecha_creacion", "tipo_venta", "fecha_entrada");
             ventaReservadaExistente.setFecha_entrada(convertirFormatoFecha(ventaParaReserva.getFecha_entrada()));
-            ventaReservadaExistente.setUsuario_responsable(usuario_admin);
             ventaReservadaExistente.setTipo_venta("RESERVA");
             servicioVentas.updateVenta(ventaReservadaExistente);
 
@@ -336,11 +332,6 @@ public class IndexController {
 
         if (fecha_entrada_reserva.isEqual(LocalDate.now())) {
             habitacion.setEstado(estadoReservada);
-            habitacion.setRazon_estado("");
-
-            servicioHabitaciones.updateHabitacion(habitacion);
-        } else {
-            habitacion.setEstado(estadoDisponible);
             habitacion.setRazon_estado("");
 
             servicioHabitaciones.updateHabitacion(habitacion);
@@ -417,6 +408,8 @@ public class IndexController {
             respuesta.put("encontrado", true);
             respuesta.put("nombres", cliente.getNombres());
             respuesta.put("apellidos", cliente.getApellidos());
+            respuesta.put("estado_vetado", cliente.getEstado_vetado());
+            respuesta.put("razon_vetado", cliente.getRazon_vetado());
         } else {
             respuesta.put("encontrado", false);
         }
@@ -424,13 +417,14 @@ public class IndexController {
         return respuesta;
     }
 
+    @Transactional
     @PostMapping("/actualizar-estado/{id}")
     @ResponseBody
     public ResponseEntity<?> actualizarEstadoVenta(@PathVariable Long id) {
         Ventas venta = servicioVentas.getVentaById(id);
         Habitaciones habitacion = servicioHabitaciones.getHabitacionById(venta.getHabitacion().getId_habitacion());
         HabitacionesEstado estadoLimpieza = servicioHabitacionesEstado.getByEstado("LIMPIEZA");
-
+        System.out.println("Añaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa " + id);
         venta.setEstado_estadia("RETIRADO");
         servicioVentas.updateVenta(venta);
 
@@ -440,6 +434,7 @@ public class IndexController {
         return ResponseEntity.ok().body(Collections.singletonMap("mensaje", "Estado actualizado correctamente"));
     }
 
+    @Transactional
     @PostMapping("/cancelar-reserva/{id}")
     @ResponseBody
     public ResponseEntity<String> cancelarReserva(@PathVariable Long id) {

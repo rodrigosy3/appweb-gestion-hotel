@@ -14,6 +14,28 @@
 <body>
     <div th:insert="~{fragments/navbar :: navbar}"></div>
 
+    <!-- Modal de Advertencia -->
+    <div class="modal fade bg-danger bg-opacity-50" id="modalVetado" tabindex="-1"
+        aria-labelledby="modalVetadoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border border-danger shadow-lg">
+                <div class="modal-header bg-danger text-white justify-content-center">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> USUARIO BLOQUEADO - VETADO
+                    </h5>
+                </div>
+                <div class="modal-body bg-light border border-light px-2 m-2 text-center">
+                    <span class="fw-bold text-danger fs-5 mb-2">El usuario ha sido bloqueado por la razón:</span>
+                    <!-- Aquí se mostrará la razón del veto -->
+                    <p id="razonVeto" class="fw-semibold text-dark m-2"></p>
+                </div>
+                <div class="modal-footer bg-danger justify-content-center">
+                    <button type="button" class="btn btn-light fw-bold px-4" data-bs-dismiss="modal">CERRAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center me-5" role="alert">
         <span th:text="${error}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -1212,6 +1234,20 @@
                 button.closest("tr").remove();
             };
 
+            function bloquearBtnAgregarCliente(idBtn) {
+                const btnAgregar = document.getElementById(idBtn);
+                btnAgregar.classList.remove("btn-success"); // Quita el estilo verde
+                btnAgregar.classList.add("btn-danger"); // Aplica el estilo rojo
+                btnAgregar.setAttribute("disabled", "true"); // Deshabilita el botón
+            }
+
+            function desbloquearBtnAgregarCliente(idBtn) {
+                const btnAgregar = document.getElementById(idBtn);
+                btnAgregar.classList.remove("btn-danger"); // Quita el estilo rojo
+                btnAgregar.classList.add("btn-success"); // Aplica el estilo verde
+                btnAgregar.removeAttribute("disabled"); // Habilita el botón
+            }
+
             // Función para buscar cliente en la BD antes de la API externa
             function buscarClienteEnBD() {
                 const dni = inputDNI.value.trim();
@@ -1227,6 +1263,20 @@
                     if (data.encontrado) {
                         inputNombres.value = data.nombres;
                         inputApellidos.value = data.apellidos;
+
+                        if (data.estado_vetado) {
+                            // Mostrar modal con la razón del veto
+                            document.getElementById('razonVeto').innerText = data.razon_vetado;
+                            let modalVetado = new bootstrap.Modal(document.getElementById('modalVetado'));
+                            modalVetado.show();
+
+                            // Bloquear el registro del cliente
+                            bloquearBtnAgregarCliente("btnAgregarCliente");
+
+                        } else {
+                            // Manejar el caso en que el cliente no exista
+                            desbloquearBtnAgregarCliente("btnAgregarCliente");
+                        }
                     } else {
                         console.log("Cliente no encontrado en la base de datos. Consultando API externa...");
                         buscarClienteEnAPI(dni);
@@ -1297,7 +1347,6 @@
 
             function retirarCliente() {
                 const idVenta = idVentaInput.value;  // Obtiene el ID de la venta
-                const estadoEstadia = "RETIRADO";
 
                 if (!idVenta) {
                     alert("No se puede actualizar el estado sin una venta registrada.");
@@ -1308,8 +1357,7 @@
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ estado_estadia: estadoEstadia })
+                    }
                 }).then(response => {
                     if (!response.ok) {
                         throw new Error("Error al actualizar el estado de la venta");
@@ -1597,7 +1645,7 @@
 
             // Cargar los clientes ya registrados en la lista temporal
             if (reservaidVentaInput && reservaidVentaInput.value.trim() !== "") {
-                document.querySelectorAll("#tablaClientesBody tr").forEach(row => {
+                document.querySelectorAll("#reservatablaClientesBody tr").forEach(row => {
                     let dni = row.cells[0].innerText;
                     let nombres = row.cells[1].innerText;
                     let apellidos = row.cells[2].innerText;
@@ -1678,6 +1726,20 @@
                     if (data.encontrado) {
                         reservainputNombres.value = data.nombres;
                         reservainputApellidos.value = data.apellidos;
+
+                        if (data.estado_vetado) {
+                            // Mostrar modal con la razón del veto
+                            document.getElementById('razonVeto').innerText = data.razon_vetado;
+                            let modalVetado = new bootstrap.Modal(document.getElementById('modalVetado'));
+                            modalVetado.show();
+
+                            // Bloquear el registro del cliente
+                            bloquearBtnAgregarCliente("reservabtnAgregarCliente");
+
+                        } else {
+                            // Manejar el caso en que el cliente no exista
+                            desbloquearBtnAgregarCliente("reservabtnAgregarCliente");
+                        }
                     } else {
                         console.log("Cliente no encontrado en la base de datos. Consultando API externa...");
                         reservabuscarClienteEnAPI(dni);
@@ -1763,8 +1825,8 @@
                     return response.text();
                 }).then(data => {
                     alert("Reserva cancelada correctamente");
-                    location.reload(); // Recargar la página para ver el cambio reflejado
-                    //window.location.href = "/";
+                    //location.reload(); // Recargar la página para ver el cambio reflejado
+                    window.location.href = "/";
                 }).catch(error => {
                     console.error("Error:", error);
                     console.error("Hubo un problema al cancelar la reserva.");

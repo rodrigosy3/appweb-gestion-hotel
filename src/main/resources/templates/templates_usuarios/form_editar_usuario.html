@@ -155,7 +155,64 @@
 
     <div th:insert="~{fragments/modal :: modal('/admin/usuarios')}"></div>
 
-    <script th:src="@{/js/consultasDNI.js}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const inputDNI = document.getElementById("inputDNI");
+            const inputNombres = document.getElementById("inputNombres");
+            const inputApellidos = document.getElementById("inputApellidos");
+            const btnBuscarDNI = document.getElementById("btnBuscarDNI");
+
+            // Función para buscar cliente en la BD antes de la API externa
+            function buscarClienteEnBD() {
+                const dni = inputDNI.value.trim();
+
+                if (dni.length !== 8 || isNaN(dni)) {
+                    alert("El DNI debe contener exactamente 8 números.");
+                    return;
+                }
+
+                fetch(`/buscar-cliente?dni=${dni}`, { method: "GET" })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.encontrado) {
+                            inputNombres.value = data.nombres;
+                            inputApellidos.value = data.apellidos;
+                        } else {
+                            console.log("Cliente no encontrado en la BD. Consultando API externa...");
+                            buscarClienteEnAPI(dni);
+                        }
+                    })
+                    .catch(error => console.error("Error buscando cliente en BD:", error));
+            }
+
+            // Función para buscar cliente en API externa
+            function buscarClienteEnAPI(dni) {
+                const apiUrl = `http://localhost:3000/api/dni?numero=${dni}`;
+
+                fetch(apiUrl)
+                    .then(response => {
+                        console.log("Estado de la respuesta API:", response.status);
+                        if (!response.ok) {
+                            throw new Error("Error al consultar la API externa.");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.numeroDocumento) {
+                            inputNombres.value = data.nombres || "";
+                            inputApellidos.value = `${data.apellidoPaterno || ""} ${data.apellidoMaterno || ""}`.trim();
+                        } else {
+                            alert("No se encontró información para este DNI. Agregar manualmente.");
+                        }
+                    })
+                    .catch(error => console.error("Error al consultar la API externa:", error));
+            }
+
+            // Evento para el botón "Buscar DNI"
+            btnBuscarDNI.addEventListener("click", buscarClienteEnBD);
+        });
+    </script>
+    
     <script th:src="@{/js/index.js}"></script>
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>

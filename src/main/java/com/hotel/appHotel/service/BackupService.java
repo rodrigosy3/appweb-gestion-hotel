@@ -40,10 +40,15 @@ public class BackupService {
 
     private void limpiarBackupsAntiguos(Path backupDir) {
         try {
-            List<Path> archivos = Files.list(backupDir)
+            List<Path> archivos = new ArrayList<>(Files.list(backupDir)
                     .filter(Files::isRegularFile)
-                    .sorted(Comparator.comparingLong(p -> p.toFile().lastModified())) // Ordenar por fecha
-                    .toList();
+                    .sorted(Comparator.comparingLong(p -> p.toFile().lastModified()))
+                    .toList());
+
+            // List<Path> archivos = Files.list(backupDir)
+            //         .filter(Files::isRegularFile)
+            //         .sorted(Comparator.comparingLong(p -> p.toFile().lastModified())) // Ordenar por fecha
+            //         .toList();
 
             while (archivos.size() > MAX_BACKUPS) {
                 Files.delete(archivos.get(0)); // Eliminar el más antiguo

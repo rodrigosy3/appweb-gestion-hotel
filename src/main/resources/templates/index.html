@@ -85,6 +85,8 @@
                                 <span class="bg-dark-subtle fw-semibold text-dark"
                                     th:if="${hab.estado.estado == 'NO DISPONIBLE'}">HABITACIÓN NO DISPONIBLE PARA VENTAS
                                     <br> </span>
+                                <span class="bg-primary-subtle fw-bold text-primary"
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}">MEDIO DÍA - SALIDA 6:00 PM <br> </span>
 
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
