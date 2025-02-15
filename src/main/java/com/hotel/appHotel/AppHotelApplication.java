@@ -1,5 +1,8 @@
 package com.hotel.appHotel;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +39,60 @@ public class AppHotelApplication {
 	@Autowired
 	UsuariosRepository repoUsuarios;
 
-	public static void main(String[] args) {
-		SpringApplication.run(AppHotelApplication.class, args);
+	public static void main(String[] args) {		
+		int puerto = 3000; // Ajusta esto según el puerto que uses
+		crearCarpetaBD();
 
-		// Llamar al método para obtener el tamaño de la BD
-		// long size = getDatabaseSize("jdbc:sqlite:db_hotel.db");
-		// System.out.println("Tamaño de la base de datos: " + size / 1024 + " KB");
+		if (isServerRunning(puerto)) {
+			System.out.println("El servidor ya está en ejecución. Abriendo el navegador...");
+			abrirNavegador("http://localhost:" + puerto);
+			return; // No ejecuta Spring Boot nuevamente
+		}
+
+		// Si el servidor no está corriendo, lo inicia y abre el navegador
+		SpringApplication.run(AppHotelApplication.class, args);
+		abrirNavegador("http://localhost:" + puerto);
+	}
+
+	// Verifica si el servidor ya está corriendo
+	private static boolean isServerRunning(int port) {
+		try (ServerSocket socket = new ServerSocket(port)) {
+			return false; // Si el puerto está libre, significa que el servidor NO está corriendo
+		} catch (IOException e) {
+			return true; // Si el puerto está en uso, el servidor YA está corriendo
+		}
+	}
+
+	private static void crearCarpetaBD() {
+        String ruta = System.getProperty("user.home") + "/Documents/AppHotelDatos";
+        File carpeta = new File(ruta);
+
+        if (!carpeta.exists()) {
+            boolean creada = carpeta.mkdirs();
+            if (creada) {
+                System.out.println("📂 Carpeta creada en: " + ruta);
+            } else {
+                System.err.println("❌ No se pudo crear la carpeta");
+            }
+        }
+    }
+
+	// Abre el navegador en la URL de la aplicación
+	private static void abrirNavegador(String url) {
+		String os = System.getProperty("os.name").toLowerCase();
+		try {
+			if (os.contains("win")) {
+				Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+			} else if (os.contains("mac")) {
+				Runtime.getRuntime().exec("open " + url);
+			} else if (os.contains("nix") || os.contains("nux")) {
+				Runtime.getRuntime().exec("xdg-open " + url);
+			} else {
+				System.out.println("No se pudo detectar el sistema operativo para abrir el navegador.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Bean
@@ -51,7 +102,7 @@ public class AppHotelApplication {
 			List<HabitacionesEstado> habitacionesEstado = repoHabitacionesEstado.findAll();
 			List<HabitacionesTipos> habitacionesTipos = repoHabitacionesTipos.findAll();
 			List<Usuarios> usuarios = repoUsuarios.findAll();
-			
+
 			if (roles.isEmpty()) {
 				Roles rol_1 = new Roles();
 				rol_1.setNombre("cliente".toUpperCase());
@@ -76,17 +127,17 @@ public class AppHotelApplication {
 				Roles rol_5 = new Roles();
 				rol_5.setNombre("limpieza".toUpperCase());
 				rol_5.setNivel(4);
-				repoRoles.save(rol_5);				
+				repoRoles.save(rol_5);
 			}
-			
+
 			if (habitacionesEstado.isEmpty()) {
 				HabitacionesEstado hEstado_1 = new HabitacionesEstado();
 				hEstado_1.setEstado("Disponible".toUpperCase());
 				repoHabitacionesEstado.save(hEstado_1);
-				
+
 				HabitacionesEstado hEstado_2 = new HabitacionesEstado();
 				hEstado_2.setEstado("Ocupado".toUpperCase());
-				repoHabitacionesEstado.save(hEstado_2);				
+				repoHabitacionesEstado.save(hEstado_2);
 
 				HabitacionesEstado hEstado_3 = new HabitacionesEstado();
 				hEstado_3.setEstado("limpieza".toUpperCase());
@@ -103,24 +154,24 @@ public class AppHotelApplication {
 
 			if (habitacionesTipos.isEmpty()) {
 				HabitacionesTipos hTipo_1 = new HabitacionesTipos();
-                hTipo_1.setNombre_tipo("simple con baño privado".toUpperCase());
+				hTipo_1.setNombre_tipo("simple con baño privado".toUpperCase());
 				hTipo_1.setAbreviacion_tipo("scb".toUpperCase());
-                repoHabitacionesTipos.save(hTipo_1);
+				repoHabitacionesTipos.save(hTipo_1);
 
-                HabitacionesTipos hTipo_2 = new HabitacionesTipos();
-                hTipo_2.setNombre_tipo("simple".toUpperCase());
+				HabitacionesTipos hTipo_2 = new HabitacionesTipos();
+				hTipo_2.setNombre_tipo("simple".toUpperCase());
 				hTipo_2.setAbreviacion_tipo("s".toUpperCase());
-                repoHabitacionesTipos.save(hTipo_2);
+				repoHabitacionesTipos.save(hTipo_2);
 
-                HabitacionesTipos hTipo_3 = new HabitacionesTipos();
-                hTipo_3.setNombre_tipo("doble con baño privado".toUpperCase());
+				HabitacionesTipos hTipo_3 = new HabitacionesTipos();
+				hTipo_3.setNombre_tipo("doble con baño privado".toUpperCase());
 				hTipo_3.setAbreviacion_tipo("dcb".toUpperCase());
-                repoHabitacionesTipos.save(hTipo_3);
+				repoHabitacionesTipos.save(hTipo_3);
 
-                HabitacionesTipos hTipo_4 = new HabitacionesTipos();
-                hTipo_4.setNombre_tipo("doble".toUpperCase());
+				HabitacionesTipos hTipo_4 = new HabitacionesTipos();
+				hTipo_4.setNombre_tipo("doble".toUpperCase());
 				hTipo_4.setAbreviacion_tipo("d".toUpperCase());
-                repoHabitacionesTipos.save(hTipo_4);
+				repoHabitacionesTipos.save(hTipo_4);
 
 				HabitacionesTipos hTipo_5 = new HabitacionesTipos();
 				hTipo_5.setNombre_tipo("matrimonial con baño privado".toUpperCase());

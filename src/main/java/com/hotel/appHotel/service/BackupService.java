@@ -10,8 +10,8 @@ import java.util.*;
 @Service
 public class BackupService {
 
-    private static final String DB_FILE = "db_hotel.db"; // Nombre de la base de datos
-    private static final String BACKUP_FOLDER = "Documents/MiHotelBackups"; // Carpeta en Documentos
+    private static final String DB_FILE = "Documents/AppHotelDatos/db_hotel.db"; // Nombre de la base de datos
+    private static final String BACKUP_FOLDER = "Documents/AppHotelDatos/MiHotelBackups"; // Carpeta en Documentos
     private static final int MAX_BACKUPS = 12; // Cantidad máxima de backups a conservar
 
     @Scheduled(fixedRate = 21600000) // Ejecuta cada 24 horas
@@ -26,7 +26,7 @@ public class BackupService {
             Path destino = backupDir.resolve("backup_" + fecha + ".db");
 
             // Copiar el archivo SQLite a la carpeta de backups
-            Path origen = Paths.get(DB_FILE);
+            Path origen = Paths.get(System.getProperty("user.home"), DB_FILE);
             Files.copy(origen, destino, StandardCopyOption.REPLACE_EXISTING);
             System.out.println("✅ Backup creado exitosamente: " + destino);
 
