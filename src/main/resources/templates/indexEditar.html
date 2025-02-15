@@ -15,8 +15,8 @@
     <div th:insert="~{fragments/navbar :: navbar}"></div>
 
     <!-- Modal de Advertencia -->
-    <div class="modal fade bg-danger bg-opacity-50" id="modalVetado" tabindex="-1"
-        aria-labelledby="modalVetadoLabel" aria-hidden="true">
+    <div class="modal fade bg-danger bg-opacity-50" id="modalVetado" tabindex="-1" aria-labelledby="modalVetadoLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border border-danger shadow-lg">
                 <div class="modal-header bg-danger text-white justify-content-center">
@@ -35,7 +35,7 @@
             </div>
         </div>
     </div>
-    
+
     <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center me-5" role="alert">
         <span th:text="${error}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -1033,6 +1033,19 @@
                                 <span class="bg-dark-subtle fw-semibold text-dark"
                                     th:if="${hab.estado.estado == 'NO DISPONIBLE'}">HABITACIÓN NO DISPONIBLE PARA VENTAS
                                     <br> </span>
+                                <span class="bg-secondary-subtle fw-bold text-secondary"
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'COMPLETO'}">
+                                    <span
+                                        th:text="${'Salida: ' + ultimaVentaPorHabitacion[hab.id_habitacion]?.fecha_salida}"></span>
+                                    <br> </span>
+                                <span class="bg-secondary-subtle fw-bold text-secondary"
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'COMPLETO'}">
+                                    <span
+                                        th:text="${'Salida: ' + ultimaVentaPorHabitacion[hab.id_habitacion]?.fecha_salida}"></span>
+                                    <br> </span>
+                                <span class="bg-primary-subtle fw-bold text-primary"
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}">MEDIO
+                                    DÍA - SALIDA 6:00 PM <br> </span>
 
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
@@ -1057,13 +1070,9 @@
                                 th:text="${(ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null) && ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA' ? #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : ''}">
                                 TOTAL</td>
                             <td class="text-center align-middle">
-                                <form th:action="@{/editar/{id}(id=${hab.id_habitacion})}">
-                                    <input type="hidden" name="idVenta"
-                                        th:value="${ultimaVentaPorHabitacion[hab.id_habitacion]?.id_venta}">
-                                    <button type="submit" class="btn btn-sm btn-primary" title="EDITAR">
-                                        Editar
-                                    </button>
-                                </form>
+                                <button type="submit" class="btn btn-sm btn-primary" title="EDITAR" disabled>
+                                    Editar
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -1109,10 +1118,14 @@
                                 <span class="bg-dark-subtle fw-semibold text-dark"
                                     th:if="${hab.estado.estado == 'NO DISPONIBLE'}">HABITACIÓN NO DISPONIBLE PARA VENTAS
                                     <br> </span>
-                                <span class="bg-danger-subtle fw-bold text-danger"
-                                    th:if="${ultimaVentaReservadaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR'}">HABITACIÓN
-                                    NO PAGADA
+                                <span class="bg-secondary-subtle fw-bold text-secondary"
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'COMPLETO'}">
+                                    <span
+                                        th:text="${'Salida: ' + ultimaVentaPorHabitacion[hab.id_habitacion]?.fecha_salida}"></span>
                                     <br> </span>
+                                <span class="bg-primary-subtle fw-bold text-primary"
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}">MEDIO
+                                    DÍA - SALIDA 6:00 PM <br> </span>
 
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
@@ -1137,13 +1150,9 @@
                                 th:text="${ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null && ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA' ? #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : ''}">
                                 TOTAL</td>
                             <td class="text-center align-middle">
-                                <form th:action="@{/editar/{id}(id=${hab.id_habitacion})}">
-                                    <input type="hidden" name="idVenta"
-                                        th:value="${ultimaVentaPorHabitacion[hab.id_habitacion]?.id_venta}">
-                                    <button type="submit" class="btn btn-sm btn-primary" title="EDITAR">
-                                        Editar
-                                    </button>
-                                </form>
+                                <button type="submit" class="btn btn-sm btn-primary" title="EDITAR" disabled>
+                                    Editar
+                                </button>
                             </td>
                         </tr>
                     </tbody>
