@@ -33,21 +33,14 @@ public class VentasController {
 
     @GetMapping
     public String listarVentas(Model modelo) {
-        List<Ventas> ventasDesc = servicio.getVentas();
-        ventasDesc = ventasDesc.stream().sorted(Comparator.comparing(Ventas::getId_venta).reversed())
-                .collect(Collectors.toList());
-
-        modelo.addAttribute("ventas", ventasDesc);
+        modelo.addAttribute("ventas", obtenerVentas());
 
         return VIEW_LISTAR;
     }
 
     @GetMapping("/exportar-pdf")
     public ResponseEntity<byte[]> exportarVentasPdf() {
-        List<Ventas> ventas = servicio.getVentas().stream().sorted(Comparator.comparing(Ventas::getId_venta).reversed())
-        .collect(Collectors.toList());
-         // Obtener las ventas desde el servicio
-        byte[] pdf = pdfService.generarPdfVentas(ventas);
+        byte[] pdf = pdfService.generarPdfVentas(obtenerVentas());
 
         if (pdf == null) {
             return ResponseEntity.badRequest().build();
@@ -57,5 +50,13 @@ public class VentasController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ventas.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
+    }
+
+    private List<Ventas> obtenerVentas() {
+        return servicio.getVentas()
+                .stream()
+                .filter(venta -> !venta.isEliminado())
+                .sorted(Comparator.comparing(Ventas::getId_venta).reversed())
+                .collect(Collectors.toList());
     }
 }

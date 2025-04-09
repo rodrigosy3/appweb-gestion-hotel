@@ -21,17 +21,21 @@ public class HabitacionesTipos {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_habitacion_tipo;
 
-    @Column(name = "nombre_tipo", nullable = false, unique = true)
+    @Column(name = "nombre_tipo")
     private String nombre_tipo;
 
     @Column(name = "abreviacion_tipo")
     private String abreviacion_tipo;
 
-    @Column(name = "fecha_creacion", nullable = false)
+    @Column(name = "fecha_creacion")
     private String fecha_creacion; // ISO 8601
 
+    @Column(name = "eliminado")
+    private boolean eliminado = false;
+
+    // Genera la fecha en el momento del guardado y no cuando se empezó a crear la entidad
     @PrePersist
-    public void prePersist() {
-        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    private void prePersist() {
+        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
     }
 }

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar precio de la habitación</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container">
+        <div class="col">
+            <div class="mb-5 ">
+                <div class="card mx-auto shadow" style="width: 50%;">
+                    <div class="card-header text-center text-bg-secondary" style="font-size: x-large;">FORMULARIO PARA
+                        EDITAR EL PRECIO BASE DE LA HABITACIÓN</div>
+
+                    <div class="card-body">
+                        <form
+                            th:action="@{/admin/habitacionesContenido/{id}(id=${habitacionContenido.id_habitacion_contenido})}"
+                            th:object="${habitacionContenido}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">ID:</label>
+                                <input type="text" class="form-control" th:field="*{id_habitacion_contenido}" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">HABITACIÓN</label>
+                                <select class="form-select" th:field="*{habitacion}" id="habitacionSelect" required>
+                                    <option th:each="habitacion : ${habitaciones}"
+                                        th:value="${habitacion.id_habitacion}"
+                                        th:data-tipo="${'(' + habitacion.tipo.abreviacion_tipo + ')' + ' ' + habitacion.tipo.nombre_tipo}"
+                                        th:text="${habitacion.numero}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">TIPO DE HABITACIÓN</label>
+                                <input type="text" class="form-control" id="tipoHabitacion" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">CARACTERÍSTICA</label>
+                                <select class="form-select" th:field="*{caracteristica}"
+                                    id="habitacionCaracteristicaSelect" required>
+                                    <option th:each="habitacionCaracteristica : ${habitacionesCaracteristica}"
+                                        th:value="${habitacionCaracteristica.id_habitacion_caracteristica}"
+                                        th:data-precio="${habitacionCaracteristica.precio}"
+                                        th:text="${habitacionCaracteristica.nombre}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">PRECIO DE LA CARACTERÍSTICA</label>
+                                <input type="number" class="form-control" id="precioHabitacionCaracteristica"
+                                    step="0.01" readonly>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">ESTADO DE LA CARACTERÍSTICA</label>
+                                <select class="form-select" th:field="*{estado_caracteristica}" required>
+                                    <option value="DISPONIBLE"
+                                        th:selected="${estado_caracteristica == 'DISPONIBLE'}">
+                                        DISPONIBLE</option>
+                                    <option value="EN MANTENIMIENTO"
+                                        th:selected="${estado_caracteristica == 'EN MANTENIMIENTO'}">
+                                        EN MANTENIMIENTO</option>
+                                    <option value="MALOGRADO"
+                                        th:selected="${estado_caracteristica == 'MALOGRADO'}">
+                                        MALOGRADO</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">RAZÓN DE SU ESTADO</label>
+                                <textarea class="form-control"
+                                    th:field="*{razon_estado}">Escribe la razón del estado de la caracterítica, deja en blanco si su estado es DISPONIBLE</textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">FECHA DE CREACIÓN (Se cambiará por la fecha actual)</label>
+                                <input type="text" class="form-control" th:field="*{fecha_creacion}"
+                                    name="fecha_creacion" disabled>
+                            </div>
+
+                            <div class="row mx-5">
+                                <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal">CANCELAR</button>
+                                <button type="submit" class="btn btn-primary col mx-3">EDITAR REGISTRO</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mx-5">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h1 class="text-center">LISTA DEL CONTENIDO DE LAS HABITACIONES</h1>
+                    </div>
+                    <div class="my-auto">
+                        <a class="btn btn-primary disabled-button" role="button">AGREGAR
+                            REGISTRO</a>
+                    </div>
+                </div>
+
+                <table class="table border table-hover shadow">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center w-auto" colspan="2">ACCIONES</th>
+                            <th class="text-center">ID</th>
+                            <th class="text-center">HABITACIÓN</th>
+                            <th class="text-center">TIPO DE HABITACIÓN</th>
+                            <th class="text-center">CARACTERÍSTICA</th>
+                            <th class="text-center">PRECIO DE LA CARACTERÍSTICA</th>
+                            <th class="text-center">ESTADO DE LA CARACTERÍSTICA</th>
+                            <th class="text-center">RAZÓN DE SU ESTADO</th>
+
+                            <th class="text-center">FECHA DE CREACIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="habitacionContenido: ${habitacionesContenido}">
+                            <td class="text-center" style="width: 12px;">
+                                <a class="btn btn-sm btn-primary" role="button" title="EDITAR"
+                                    th:href="@{/admin/habitacionesContenido/editar/{id}(id=${habitacionContenido.id_habitacion_contenido})}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </td>
+                            <td class="text-center border" style="width: 12px;">
+                                <a class="btn btn-sm btn-danger disabled-button" role="button" title="ELIMINAR">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </td>
+                            <td th:text="${habitacionContenido.id_habitacion_contenido}" class="text-center">ID</td>
+                            <td class="text-center" th:text="${habitacionContenido.habitacion.numero}">HABITACIÓN</td>
+                            <td class="text-center"
+                                th:text="${'(' + habitacionContenido.habitacion.tipo.abreviacion_tipo + ')' + ' ' + habitacionContenido.habitacion.tipo.nombre_tipo}">
+                                TIPO DE HABITACIÓN</td>
+                            <td class="text-center" th:text="${habitacionContenido.caracteristica.nombre}">
+                                CARACTERÍSTICA</td>
+                            <td class="text-center" th:text="${habitacionContenido.caracteristica.precio}">PRECIO DE LA
+                                CARACTERÍSTICA</td>
+                            <td class="text-center" th:text="${habitacionContenido.estado_caracteristica}">ESTADO DE LA
+                                CARACTERÍSTICA</td>
+                            <td class="text-center" th:text="${habitacionContenido.razon_estado}">RAZÓN DE SU ESTADO
+                            </td>
+
+                            <td th:text="${habitacionContenido.fecha_creacion}" class="text-center">FECHA DE CREACIÓN
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:insert="~{fragments/modal :: modal('/admin/habitacionesContenido')}"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const habitacionSelect = document.getElementById("habitacionSelect");
+            const tipoHabitacionInput = document.getElementById("tipoHabitacion");
+            const habitacionCaracteristicaSelect = document.getElementById("habitacionCaracteristicaSelect");
+            const precioHabitacionCaracteristicaInput = document.getElementById("precioHabitacionCaracteristica");
+
+            if (!habitacionSelect || !tipoHabitacionInput || !habitacionCaracteristicaSelect || !precioHabitacionCaracteristicaInput) {
+                console.error("Los elementos no fueron encontrados en el DOM.");
+                return;
+            }
+
+            function actualizarTipoHabitacion() {
+                const selectedOption = habitacionSelect.options[habitacionSelect.selectedIndex];
+                if (selectedOption) {
+                    tipoHabitacionInput.value = selectedOption.getAttribute("data-tipo") || "";
+                    // console.log("Tipo de habitación seleccionado:", tipoHabitacionInput.value);
+                }
+            }
+
+            // Llamar a la función cuando se cambia la selección
+            habitacionSelect.addEventListener("change", actualizarTipoHabitacion);
+
+            // Verifica si hay una opción seleccionada al cargar la página
+            actualizarTipoHabitacion();
+
+            function actualizarPrecioHabitacionCaracteristica() {
+                const selectedOption = habitacionCaracteristicaSelect.options[habitacionCaracteristicaSelect.selectedIndex];
+                if (selectedOption) {
+                    precioHabitacionCaracteristicaInput.value = selectedOption.getAttribute("data-precio") || "";
+                    // console.log("Tipo de habitación seleccionado:", PrecioHabitacionInputCaracteristica.value);
+                }
+            }
+
+            // Llamar a la función cuando se cambia la selección
+            habitacionCaracteristicaSelect.addEventListener("change", actualizarPrecioHabitacionCaracteristica);
+
+            // Verifica si hay una opción seleccionada al cargar la página
+            actualizarPrecioHabitacionCaracteristica();
+        });
+    </script>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

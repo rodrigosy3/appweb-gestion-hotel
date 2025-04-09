@@ -2,13 +2,15 @@ package com.hotel.appHotel.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import com.hotel.appHotel.model.Credenciales;
-import com.hotel.appHotel.model.Roles;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.service.CredencialesService;
 import com.hotel.appHotel.service.RolesService;
@@ -27,56 +29,70 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping(value = "/admin/credenciales")
 public class A_CredencialesController {
 
+    private static final String CARPETA_BASE = "templates_credenciales/";
+    private static final String VIEW_LISTAR = CARPETA_BASE + "credenciales";
+    // private static final String VIEW_NUEVO = CARPETA_BASE + "form_nuevo_credencial";
+    private static final String VIEW_EDITAR = CARPETA_BASE + "form_editar_credencial";
+    private static final String REDIRECT_LISTAR = "redirect:/admin/credenciales";
+
     @Autowired
-    private CredencialesService credencialesServicio;
+    private CredencialesService servicio;
 
     @Autowired
     private UsuariosService usuariosServicio;
 
     @Autowired
-    private RolesService rolesService;
+    private RolesService rolesServicio;
 
     @GetMapping
     public String listarCredenciales(Model modelo) {
-        modelo.addAttribute("credenciales", credencialesServicio.getCredenciales());
+        modelo.addAttribute("credenciales", obtenerCredrenciales());
 
-        return "templates_credenciales/credenciales";
+        return VIEW_LISTAR;
     }
 
     @GetMapping("/editar/{id}")
     public String editarCredencialForm(@PathVariable Long id, Model modelo) {        
-        modelo.addAttribute("credenciales", credencialesServicio.getCredenciales());
-        modelo.addAttribute("credencial", credencialesServicio.getCredencialById(id));
-        System.out.println(credencialesServicio.getCredencialById(id));
+        modelo.addAttribute("credenciales", obtenerCredrenciales());
+        modelo.addAttribute("credencial", servicio.getCredencialById(id));
 
-        return "templates_credenciales/form_editar_credencial";
+        return VIEW_EDITAR;
     }
 
     @PostMapping("/{id}")
     public String actualizarCredencial(@PathVariable Long id, @ModelAttribute("credencial") Credenciales credencial,
             Model modelo) {
-        Credenciales credencialExistente = credencialesServicio.getCredencialById(id);
+        Credenciales credencialExistente = servicio.getCredencialById(id);
         
         credencialExistente.setContrasena(credencial.getContrasena());
         credencialExistente
                 .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
-        credencialesServicio.updateCredencial(credencialExistente);
+        servicio.updateCredencial(credencialExistente);
 
-        return "redirect:/admin/credenciales";
+        return REDIRECT_LISTAR;
     }
 
-    @GetMapping("/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarCredencial(@PathVariable Long id) {
-        Credenciales credencialExistente = credencialesServicio.getCredencialById(id);
+        Credenciales credencialExistente = servicio.getCredencialById(id);
         Usuarios usuarioNuevoRol = credencialExistente.getUsuario();
-        Roles rolCliente = rolesService.getByName("CLIENTE");
 
-        usuarioNuevoRol.setRol(rolCliente);
+        usuarioNuevoRol.setRol(rolesServicio.getByName("CLIENTE"));
 
         usuariosServicio.updateUsuario(usuarioNuevoRol);
-        credencialesServicio.deleteCredencial(id);
+        
+        credencialExistente.setEliminado(true);
+        servicio.updateCredencial(credencialExistente);
 
-        return "redirect:/admin/credenciales";
+        return REDIRECT_LISTAR;
+    }
+
+    private List<Credenciales> obtenerCredrenciales() {
+        return servicio.getCredenciales()
+        .stream()
+        .filter(credencial -> !credencial.isEliminado())
+        .sorted(Comparator.comparing(Credenciales::getId_credencial).reversed())
+        .collect(Collectors.toList());
     }
 }

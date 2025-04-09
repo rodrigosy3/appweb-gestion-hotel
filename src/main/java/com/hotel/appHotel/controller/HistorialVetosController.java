@@ -33,22 +33,14 @@ public class HistorialVetosController {
 
     @GetMapping
     public String listarHistorialVetos(Model modelo) {
-        List<HistorialVetos> historialVetosDesc = servicio.getHistorialVetos().stream()
-                .sorted(Comparator.comparing(HistorialVetos::getId_historial_veto).reversed())
-                .collect(Collectors.toList());
-
-        modelo.addAttribute("historialVetos", historialVetosDesc);
+        modelo.addAttribute("historialVetos", obtenerHistorialVetos());
 
         return VIEW_LISTAR;
     }
 
     @GetMapping("/exportar-pdf")
     public ResponseEntity<byte[]> exportarVentasPdf() {
-        List<HistorialVetos> historialVetos = servicio.getHistorialVetos().stream()
-                .sorted(Comparator.comparing(HistorialVetos::getId_historial_veto).reversed())
-                .collect(Collectors.toList());
-        // Obtener las ventas desde el servicio
-        byte[] pdf = pdfServiceHistorialVetos.generarPdfHistorialVetos(historialVetos);
+        byte[] pdf = pdfServiceHistorialVetos.generarPdfHistorialVetos(obtenerHistorialVetos());
 
         if (pdf == null) {
             return ResponseEntity.badRequest().build();
@@ -58,5 +50,12 @@ public class HistorialVetosController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=historial-vetos.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
+    }
+
+    private List<HistorialVetos> obtenerHistorialVetos() {
+        return servicio.getHistorialVetos().stream()
+        .filter(historialVeto -> !historialVeto.isEliminado())
+        .sorted(Comparator.comparing(HistorialVetos::getId_historial_veto).reversed())
+        .collect(Collectors.toList());
     }
 }

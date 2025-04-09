@@ -32,7 +32,7 @@ public class Ventas {
     private Habitaciones habitacion;
 
     @Column(name = "fecha_entrada")
-    private String fecha_entrada; // Opcional para cotizaciones
+    private String fecha_entrada;
 
     @Column(name = "fecha_salida")
     private String fecha_salida;
@@ -63,12 +63,16 @@ public class Ventas {
 
     @Column(name = "fecha_creacion")
     private String fecha_creacion; // ISO 8601
+    
+    @Column(name = "eliminado")
+    private boolean eliminado = false;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "venta")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "venta")
     private Set<VentasClientesHabitacion> ventasClientesHabitacion = new HashSet<>();
 
+    // Genera la fecha en el momento del guardado y no cuando se empezó a crear la entidad
     @PrePersist
     private void prePersist() {
-        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
     }
 }

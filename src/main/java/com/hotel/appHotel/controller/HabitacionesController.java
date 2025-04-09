@@ -33,22 +33,14 @@ public class HabitacionesController {
 
     @GetMapping
     public String listarHabitaciones(Model modelo) {
-        List<Habitaciones> habitacionesDesc = servicio.getHabitaciones();
-        habitacionesDesc = habitacionesDesc.stream().sorted(Comparator.comparing(Habitaciones::getNumero))
-                .collect(Collectors.toList());
-
-        modelo.addAttribute("habitaciones", habitacionesDesc);
+        modelo.addAttribute("habitaciones", obtenerHabitaciones());
 
         return VIEW_LISTAR;
     }
 
     @GetMapping("/exportar-pdf")
     public ResponseEntity<byte[]> exportarVentasPdf() {
-        List<Habitaciones> habitacionesDesc = servicio.getHabitaciones().stream()
-                .sorted(Comparator.comparing(Habitaciones::getNumero))
-                .collect(Collectors.toList());
-        // Obtener las ventas desde el servicio
-        byte[] pdf = pdfServiceHabitaciones.generarPdfHabitaciones(habitacionesDesc);
+        byte[] pdf = pdfServiceHabitaciones.generarPdfHabitaciones(obtenerHabitaciones());
 
         if (pdf == null) {
             return ResponseEntity.badRequest().build();
@@ -58,5 +50,13 @@ public class HabitacionesController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=habitaciones.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
+    }
+
+    private List<Habitaciones> obtenerHabitaciones() {
+        return servicio.getHabitaciones()
+                .stream()
+                .filter(habitaciones -> !habitaciones.isEliminado())
+                .sorted(Comparator.comparing(Habitaciones::getNumero))
+                .collect(Collectors.toList());
     }
 }

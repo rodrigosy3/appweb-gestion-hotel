@@ -1,0 +1,18 @@
+<div class="modal modal-sm fade px-auto" id="cancelModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true"
+    th:fragment="modal(urlRedireccion)">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-danger text-bg-danger">
+            <div class="modal-body text-center">
+                Los datos ingresados se perderán. <br> ¿Quieres continuar?
+            </div>
+            <div class="modal-footer justify-content-center border-danger">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, regresar</button>
+                <button type="button" class="btn btn-light border-light" 
+                        th:data-url-redireccion="${urlRedireccion}" 
+                        onclick="redireccionar(this)">
+                    Sí, cancelar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

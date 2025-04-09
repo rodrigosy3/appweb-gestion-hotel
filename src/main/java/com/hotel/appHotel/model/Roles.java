@@ -27,17 +27,21 @@ public class Roles {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_rol;
 
-    @Column(name = "nombre", nullable = false)
+    @Column(name = "nombre")
     private String nombre;
     
-    @Column(name = "nivel", nullable = false, unique = false)
+    @Column(name = "nivel")
     private Integer nivel;
     
     @Column(name = "fecha_creacion")
     private String fecha_creacion;
 
+    @Column(name = "eliminado")
+    private boolean eliminado = false;
+
+    // Genera la fecha en el momento del guardado y no cuando se empezó a crear la entidad
     @PrePersist
     private void prePersist() {
-        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
     }
 }

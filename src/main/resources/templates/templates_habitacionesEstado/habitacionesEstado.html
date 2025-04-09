@@ -43,11 +43,12 @@
                         </a>
                     </td>
                     <td class="text-center border" style="width: 12px;">
-                        <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR ESTADO PARA HABITACIÓN"
-                            th:href="@{/admin/habitacionesEstado/{id}(id=${habitacionEstado.id_habitacion_estado})}"
-                            onclick="return confirm('¿Estás seguro de que deseas eliminar este estado para la habitación?')">
-                            <i class="bi bi-trash-fill"></i>
-                        </a>
+                        <form th:action="@{/admin/habitacionesEstado/eliminar/{id}(id=${habitacionEstado.id_habitacion_estado})}" method="post"
+                            onsubmit="return confirm('¿Estás seguro de que deseas eliminar este registro?')">
+                            <button type="submit" class="btn btn-sm btn-danger" title="ELIMINAR">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </form>
                     </td>
                     <td th:text="${habitacionEstado.id_habitacion_estado}" class="text-center">ID</td>
                     <td th:text="${habitacionEstado.estado}">NOMBRE DEL ESTADO</td>

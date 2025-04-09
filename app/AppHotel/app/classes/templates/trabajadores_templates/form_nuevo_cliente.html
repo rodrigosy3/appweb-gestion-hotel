@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear usuario</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+
+    <div class="col">
+        <div class="mb-5 container">
+            <div class="card mx-auto shadow" style="width: 50%;">
+                <div class="card-header text-center text-bg-secondary" style="font-size: xx-large;">FORMULARIO PARA
+                    CREAR USUARIO</div>
+
+                <div class="card-body">
+                    <form th:action="@{/clientes}" th:object="${usuario}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">D.N.I.</label>
+                            <div class="row mx-auto">
+                                <input type="text" maxlength="8" minlength="8" class="form-control text-uppercase col"
+                                    id="inputDNI" name="dni" placeholder="Escribe el dni del usuario" autofocus
+                                    required>
+                                <button type="button" class="btn btn-secondary ms-2 col-auto" title="CONSULTAR DATOS"
+                                    id="btnBuscarDNI">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">NOMBRES</label>
+                            <input type="text" class="form-control text-uppercase" id="inputNombres" name="nombres"
+                                placeholder="Escribe los nombres del nuevo usuario" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">APELLIDOS</label>
+                            <input type="text" class="form-control text-uppercase" id="inputApellidos" name="apellidos"
+                                placeholder="Escribe los apellidos del nuevo usuario" required>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">CELULAR</label>
+                                <input type="text" maxlength="9" minlength="9" class="form-control"
+                                    name="celular" placeholder="(9 dígitos). Ejm: 987654321">
+                            </div>
+                            <div class="col">
+                                <label class="form-label">EDAD</label>
+                                <input type="number" class="form-control" id="inputId" name="edad" min="0" value="18">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">ESTADO DE VETO</label>
+                            <select class="form-select" th:field="*{estado_vetado}" id="estadoVeto" required>
+                                <option th:value="${false}">NO VETADO</option>
+                                <option th:value="${true}">VETADO</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">RAZÓN DE VETADO</label>
+                            <textarea class="form-control" name="razon_vetado" id="razonVeto"
+                                placeholder="Escribe la razón del estado de veto del usuario"></textarea>
+                        </div>
+
+                        <div class="row mx-5">
+                            <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
+                                data-bs-target="#cancelModal">CANCELAR</button>
+                            <button type="submit" class="btn btn-primary col mx-3">CREAR REGISTRO</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="mx-auto w-75">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h1 class="text-center">LISTA DE CLIENTES</h1>
+                </div>
+                <div class="my-auto">
+                    <a class="btn btn-primary" th:href="@{/clientes/nuevo}" role="button">AGREGAR CLIENTE</a>
+                </div>
+            </div>
+
+            <table class="table border table-hover shadow">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="text-center">DNI</th>
+                        <th>NOMBRES</th>
+                        <th>APELLIDOS</th>
+                        <th>CELULAR</th>
+                        <th>EDAD</th>
+                        <th class="text-center">ESTADO DE VETO</th>
+                        <th>RAZÓN DE VETO</th>
+                        <th class="text-center w-auto">ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="usuario: ${usuarios}"
+                        th:classappend="${usuario.estado_vetado ? 'table-danger' : 'table-success'}">
+                        <td th:text="${usuario.dni}" class="text-center fw-bold">DNI</td>
+                        <td th:text="${usuario.nombres}">NOMBRES</td>
+                        <td th:text="${usuario.apellidos}">APELLIDOS</td>
+                        <td th:text="${usuario.celular}">CELULAR</td>
+                        <td th:text="${usuario.edad}">EDAD</td>
+                        <td th:text="${usuario.estado_vetado? 'VETADO' : 'NO VETADO'}"
+                            th:class="${usuario.estado_vetado? 'bg-danger text-light text-center' : 'bg-success text-light text-center'}">
+                            ESTADO DE VETO</td>
+                        <td th:text="${usuario.razon_vetado}"
+                            th:class="${usuario.razon_vetado == ''? 'bg-secondary-subtle' : ''}">
+                            RAZÓN DE VETO</td>
+                        <td class="text-center border border-secondary-subtle">
+                            <a class="btn btn-sm btn-primary" role="button"
+                                th:href="@{/clientes/editar/{id}(id=${usuario.id_usuario})}">
+                                EDITAR
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <div th:insert="~{fragments/modal :: modal('/clientes')}"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let estadoVeto = document.getElementById("estadoVeto");
+            let razonVeto = document.getElementById("razonVeto");
+
+            // Función para actualizar el campo "razón de veto"
+            function actualizarEstadoVeto() {
+                if (estadoVeto.value === "true") {
+                    razonVeto.setAttribute("required", "true"); // Se vuelve obligatorio
+                    razonVeto.removeAttribute("disabled"); // Se habilita
+                } else {
+                    razonVeto.removeAttribute("required"); // Deja de ser obligatorio
+                    razonVeto.setAttribute("disabled", "true"); // Se deshabilita
+                    razonVeto.value = ""; // Limpia el contenido si se cambia a "NO VETADO"
+                }
+            }
+
+            // Ejecutar la función al cargar la página para reflejar el estado actual
+            actualizarEstadoVeto();
+
+            // Agregar evento para detectar cambios en el select
+            estadoVeto.addEventListener("change", actualizarEstadoVeto);
+
+            const inputDNI = document.getElementById("inputDNI");
+            const inputNombres = document.getElementById("inputNombres");
+            const inputApellidos = document.getElementById("inputApellidos");
+            const btnBuscarDNI = document.getElementById("btnBuscarDNI");
+    
+            // Función para buscar cliente en la BD antes de la API externa
+            function buscarClienteEnBD() {
+                const dni = inputDNI.value.trim();
+    
+                if (dni.length !== 8 || isNaN(dni)) {
+                    alert("El DNI debe contener exactamente 8 números.");
+                    return;
+                }
+    
+                fetch(`/buscar-cliente?dni=${dni}`, { method: "GET" })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.encontrado) {
+                            inputNombres.value = data.nombres;
+                            inputApellidos.value = data.apellidos;
+                        } else {
+                            console.log("Cliente no encontrado en la BD. Consultando API externa...");
+                            buscarClienteEnAPI(dni);
+                        }
+                    })
+                    .catch(error => console.error("Error buscando cliente en BD:", error));
+            }
+    
+            // Función para buscar cliente en API externa
+            function buscarClienteEnAPI(dni) {
+                const apiUrl = `http://localhost:3000/api/dni?numero=${dni}`;
+    
+                fetch(apiUrl)
+                    .then(response => {
+                        console.log("Estado de la respuesta API:", response.status);
+                        if (!response.ok) {
+                            throw new Error("Error al consultar la API externa.");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.numeroDocumento) {
+                            inputNombres.value = data.nombres || "";
+                            inputApellidos.value = `${data.apellidoPaterno || ""} ${data.apellidoMaterno || ""}`.trim();
+                        } else {
+                            alert("No se encontró información para este DNI. Agregar manualmente.");
+                        }
+                    })
+                    .catch(error => console.error("Error al consultar la API externa:", error));
+            }
+    
+            // Evento para el botón "Buscar DNI"
+            btnBuscarDNI.addEventListener("click", buscarClienteEnBD);
+        });
+    </script>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

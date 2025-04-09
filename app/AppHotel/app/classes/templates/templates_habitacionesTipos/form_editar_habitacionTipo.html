@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar tipo de habitación</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container">
+        <div class="col">
+            <div class="mb-5 ">
+                <div class="card mx-auto shadow" style="width: 50%;">
+                    <div class="card-header text-center text-bg-secondary" style="font-size: x-large;">
+                        FORMULARIO PARA EDITAR EL TIPO DE HABITACIÓN
+                    </div>
+
+                    <div class="card-body">
+                        <form th:action="@{/admin/habitacionesTipos/{id}(id=${habitacionTipo.id_habitacion_tipo})}" th:object="${habitacionTipo}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">ID:</label>
+                                <input type="text" class="form-control" th:field="*{id_habitacion_tipo}" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">TIPO DE HABITACIÓN</label>
+                                <input type="text" class="form-control text-uppercase" th:field="*{nombre_tipo}"
+                                    placeholder="Escribe el nombre del nuevo tipo de habitación" autofocus required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">ABREVIATURA</label>
+                                <input type="text" class="form-control text-uppercase" th:field="*{abreviacion_tipo}"
+                                    placeholder="Escribe una abreviacion para su facil reconocimiento. Ejm: SCB (Simple con baño privado), S (Simple)"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">FECHA DE CREACIÓN (Se cambiará por la fecha actual)</label>
+                                <input type="text" class="form-control" th:field="*{fecha_creacion}"
+                                    name="fecha_creacion" disabled>
+                            </div>
+
+                            <div class="row mx-5">
+                                <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal">CANCELAR</button>
+                                <button type="submit" class="btn btn-primary col mx-3">EDITAR REGISTRO</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h1 class="text-center">LISTA DE LOS TIPOS DE HABITACIONES</h1>
+                    </div>
+                    <div class="my-auto">
+                        <a class="btn btn-primary disabled-button" role="button">AGREGAR
+                            TIPO DE HABITACIÓN</a>
+                    </div>
+                </div>
+
+                <table class="table border table-hover shadow">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center w-auto" colspan="2">ACCIONES</th>
+                            <th class="text-center">ID</th>
+                            <th>TIPO DE HABITACIÓN</th>
+                            <th class="text-center">ABREVIATURA</th>
+                            <th class="text-center">FECHA DE CREACIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="habitacionTipo: ${habitacionesTipos}">
+                            <td class="text-center" style="width: 12px;">
+                                <a class="btn btn-sm btn-primary" role="button" title="EDITAR"
+                                    th:href="@{/admin/habitacionesTipos/editar/{id}(id=${habitacionTipo.id_habitacion_tipo})}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </td>
+                            <td class="text-center border disabled-button" style="width: 12px;">
+                                <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </td>
+                            <td th:text="${habitacionTipo.id_habitacion_tipo}" class="text-center">ID</td>
+                            <td th:text="${habitacionTipo.nombre_tipo}">TIPO DE HABITACIÓN</td>
+                            <td th:text="${habitacionTipo.abreviacion_tipo}" class="text-center">ABREVIATURA</td>
+                            <td th:text="${habitacionTipo.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:insert="~{fragments/modal :: modal('/admin/habitacionesTipos')}"></div>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

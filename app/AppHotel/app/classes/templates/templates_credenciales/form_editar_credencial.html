@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar credencial</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container">
+        <div class="col">
+            <div class="mb-5 ">
+                <div class="card mx-auto shadow" style="width: 50%;">
+                    <div class="card-header text-center text-bg-secondary" style="font-size: xx-large;">
+                        FORMULARIO PARA EDITAR CREDENCIAL
+                    </div>
+
+                    <div class="card-body">
+                        <form th:action="@{/admin/credenciales/{id}(id=${credencial.id_credencial})}"
+                            th:object="${credencial}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">ID:</label>
+                                <input type="text" class="form-control" th:field="*{id_credencial}" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">NOMBRE COMPLETO</label>
+                                <input type="text" class="form-control"
+                                    th:value="*{usuario.nombres + ' ' + usuario.apellidos}"
+                                    disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">USUARIO PARA ACCESO</label>
+                                <input type="text" class="form-control" th:value="*{usuario.dni}" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">CONTRASEÑA</label>
+                                <input type="text" class="form-control" th:field="*{contrasena}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">FECHA DE CREACIÓN (Se cambiará por la fecha actual)</label>
+                                <input type="text" class="form-control" th:field="*{fecha_creacion}"
+                                    name="fecha_creacion" disabled>
+                            </div>
+
+                            <div class="row mx-5">
+                                <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal">CANCELAR</button>
+                                <button type="submit" class="btn btn-primary col mx-3">EDITAR REGISTRO</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="d-flex justify-content-between">
+                    <div class="mx-auto text-center">
+                        <h1 class="text-center">LISTA DE CREDENCIALES</h1>
+                    </div>
+                </div>
+
+                <table class="table border table-hover shadow">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center w-auto" colspan="2" style="width: min-content;">ACCIONES</th>
+                            <th class="text-center">ID</th>
+                            <th>NOMBRES</th>
+                            <th>APELLIDOS</th>
+                            <th>ROL</th>
+                            <th class="text-center">USUARIO PARA ACCESO</th>
+                            <th class="text-center">CONTRASEÑA</th>
+                            <th class="text-center">FECHA DE CREACIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="credencial: ${credenciales}">
+                            <td class="text-center" style="width: 12px;">
+                                <a class="btn btn-sm btn-primary" role="button" title="EDITAR CREDENCIAL"
+                                    th:href="@{/admin/credenciales/editar/{id}(id=${credencial.id_credencial})}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </td>
+                            <td class="text-center border" style="width: 12px;">
+                                <a class="btn btn-sm btn-danger disabled-button" role="button"
+                                    title="ELIMINAR CREDENCIAL">
+                                    <i class="bi bi-trash-fill"></i>
+                                </a>
+                            </td>
+                            <td th:text="${credencial.id_credencial}" class="text-center">ID</td>
+                            <td th:text="${credencial.usuario.nombres}">NOMBRES</td>
+                            <td th:text="${credencial.usuario.apellidos}">APELLIDOS</td>
+                            <td th:text="${credencial.usuario.rol.nombre}">ROL</td>
+                            <td th:text="${credencial.usuario.dni}" class="text-center">USUARIO PARA ACCESO</td>
+                            <td th:text="${credencial.contrasena}" class="text-center">CONTRASEÑA</td>
+                            <td th:text="${credencial.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:insert="~{fragments/modal :: modal('/admin/credenciales')}"></div>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de roles</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h1 class="text-center">LISTA DE ROLES</h1>
+            </div>
+            <div class="my-auto">
+                <a class="btn btn-primary" th:href="@{/admin/roles/nuevo}" role="button">AGREGAR ROL</a>
+            </div>
+        </div>
+
+        <table class="table border table-hover shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center w-auto" colspan="2">ACCIONES</th>
+                    <th class="text-center">ID</th>
+                    <th>NOMBRE</th>
+                    <th class="text-center">NIVEL</th>
+                    <th class="text-center">FECHA DE CREACIÓN</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="rol: ${roles}">
+                    <td class="text-center" style="width: 12px;">
+                        <a class="btn btn-sm btn-primary" role="button" title="EDITAR ROL"
+                            th:href="@{/admin/roles/editar/{id}(id=${rol.id_rol})}">
+                            <i class="bi bi-pencil-square"></i>
+                        </a>
+                    </td>
+                    <td class="text-center border" style="width: 12px;">
+                        <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR ROL"
+                            th:href="@{/admin/roles/{id}(id=${rol.id_rol})}"
+                            onclick="return confirm('¿Estás seguro de que deseas eliminar este rol?')">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </td>
+                    <td th:text="${rol.id_rol}" class="text-center">ID</td>
+                    <td th:text="${rol.nombre}">NOMBRE</td>
+                    <td th:text="${rol.nivel}" class="text-center">NIVEL</td>
+                    <td th:text="${rol.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

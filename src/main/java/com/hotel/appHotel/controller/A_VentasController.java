@@ -2,7 +2,6 @@ package com.hotel.appHotel.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,10 +50,7 @@ public class A_VentasController {
 
     @GetMapping
     public String listarVentas(Model modelo) {
-        List<Ventas> ventasDesc = servicio.getVentas();
-        ventasDesc = ventasDesc.stream().sorted(Comparator.comparing(Ventas::getId_venta).reversed()).collect(Collectors.toList());
-
-        modelo.addAttribute("ventas", ventasDesc);
+        modelo.addAttribute("ventas", obtenerVentas());
 
         return VIEW_LISTAR;
     }
@@ -62,15 +58,15 @@ public class A_VentasController {
     @GetMapping("/nuevo")
     public String nuevaVentaForm(Model modelo, RedirectAttributes redirectAttributes) {
         Ventas venta = new Ventas();
-        List<Habitaciones> habitaciones = habitacionServicio.getHabitaciones();
-        List<Usuarios> usuarios = usuariosServicio.getUsuarios();
-        List<Usuarios> usuarios_responsables = new ArrayList<>();
-
-        for (Usuarios usuario : usuarios) {
-            if (usuario.getRol().getNivel() != 0) {
-                usuarios_responsables.add(usuario);
-            }
-        }
+        List<Habitaciones> habitaciones = habitacionServicio.getHabitaciones()
+                .stream()
+                .filter(habitacion -> !habitacion.isEliminado())
+                .sorted(Comparator.comparing(Habitaciones::getNumero))
+                .collect(Collectors.toList());
+        List<Usuarios> usuarios_responsables = usuariosServicio.getUsuarios()
+                .stream()
+                .filter(usuario -> usuario.getRol().getNivel() != 0 && !usuario.isEliminado())
+                .collect(Collectors.toList());
 
         if (habitaciones.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
@@ -88,7 +84,7 @@ public class A_VentasController {
 
         modelo.addAttribute("habitaciones", habitaciones);
         modelo.addAttribute("usuarios", usuarios_responsables);
-        modelo.addAttribute("ventas", servicio.getVentas());
+        modelo.addAttribute("ventas", obtenerVentas());
         modelo.addAttribute("venta", venta);
 
         return VIEW_NUEVO;
@@ -111,15 +107,15 @@ public class A_VentasController {
 
     @GetMapping("/editar/{id}")
     public String editarVentaForm(@PathVariable Long id, Model modelo, RedirectAttributes redirectAttributes) {
-        List<Habitaciones> habitaciones = habitacionServicio.getHabitaciones();
-        List<Usuarios> usuarios = usuariosServicio.getUsuarios();
-        List<Usuarios> usuarios_responsables = new ArrayList<>();
-
-        for (Usuarios usuario : usuarios) {
-            if (usuario.getRol().getNivel() != 0) {
-                usuarios_responsables.add(usuario);
-            }
-        }
+        List<Habitaciones> habitaciones = habitacionServicio.getHabitaciones()
+                .stream()
+                .filter(habitacion -> !habitacion.isEliminado())
+                .sorted(Comparator.comparing(Habitaciones::getNumero))
+                .collect(Collectors.toList());
+        List<Usuarios> usuarios_responsables = usuariosServicio.getUsuarios()
+                .stream()
+                .filter(usuario -> usuario.getRol().getNivel() != 0 && !usuario.isEliminado())
+                .collect(Collectors.toList());
 
         if (habitaciones.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
@@ -128,7 +124,7 @@ public class A_VentasController {
             return REDIRECT_LISTAR;
         }
 
-        if (usuarios.isEmpty()) {
+        if (usuarios_responsables.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
                     "No hay USUARIOS con el rol necesario para crear un nuevo registro aquí.");
 
@@ -141,7 +137,7 @@ public class A_VentasController {
 
         modelo.addAttribute("habitaciones", habitaciones);
         modelo.addAttribute("usuarios", usuarios_responsables);
-        modelo.addAttribute("ventas", servicio.getVentas());
+        modelo.addAttribute("ventas", obtenerVentas());
         modelo.addAttribute("venta", servicio.getVentaById(id));
 
         return VIEW_EDITAR;
@@ -179,15 +175,19 @@ public class A_VentasController {
         } else {
             habitacion.setEstado(habitacionesEstadoRepository.findByEstado("DISPONIBLE"));
         }
-        
+
         habitacionServicio.updateHabitacion(habitacion);
 
         return REDIRECT_LISTAR;
     }
 
-    @GetMapping("/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarVenta(@PathVariable Long id) {
-        servicio.deleteVenta(id);
+        Ventas ventaExistente = servicio.getVentaById(id);
+        
+        ventaExistente.setEliminado(true);
+
+        servicio.updateVenta(ventaExistente);
 
         return REDIRECT_LISTAR;
     }
@@ -206,5 +206,13 @@ public class A_VentasController {
 
         LocalDateTime dateTime = LocalDateTime.parse(fecha, inputFormatter);
         return dateTime.format(outputFormatter); // Convertir a formato compatible con datetime-local
+    }
+
+    private List<Ventas> obtenerVentas() {
+        return servicio.getVentas()
+                .stream()
+                .filter(venta -> !venta.isEliminado()) // Filtrar las que no estén eliminadas
+                .sorted(Comparator.comparing(Ventas::getId_venta).reversed()) // Ordenar en orden descendente
+                .collect(Collectors.toList());
     }
 }

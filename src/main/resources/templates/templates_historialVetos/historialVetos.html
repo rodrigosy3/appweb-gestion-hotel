@@ -51,11 +51,12 @@
                         </a>
                     </td>
                     <td class="text-center border" style="width: 12px;">
-                        <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR HISTORIAL DE VETO"
-                            th:href="@{/admin/historialVetos/{id}(id=${historialVeto.id_historial_veto})}"
-                            onclick="return confirm('¿Estás seguro de que deseas eliminar este historial de veto?')">
-                            <i class="bi bi-trash-fill"></i>
-                        </a>
+                        <form th:action="@{/admin/historialVetos/eliminar/{id}(id=${historialVeto.id_historial_veto})}" method="post"
+                            onsubmit="return confirm('¿Estás seguro de que deseas eliminar este registro?')">
+                            <button type="submit" class="btn btn-sm btn-danger" title="ELIMINAR">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </form>
                     </td>
                     <td th:text="${historialVeto.id_historial_veto}" class="text-center">ID</td>
                     <td

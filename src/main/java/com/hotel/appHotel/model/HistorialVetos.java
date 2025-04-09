@@ -21,7 +21,7 @@ public class HistorialVetos {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_historial_veto;
 
-    @Column(name = "razon", nullable = false)
+    @Column(name = "razon")
     private String razon;
 
     @ManyToOne
@@ -32,11 +32,16 @@ public class HistorialVetos {
     @JoinColumn(name = "usuario_responsable", referencedColumnName = "id_usuario")
     private Usuarios usuario_responsable;
 
-    @Column(name = "fecha_creacion", nullable = false)
+    @Column(name = "fecha_creacion")
     private String fecha_creacion;
 
+    @Column(name = "eliminado")
+    private boolean eliminado = false;
+
+    // Genera la fecha en el momento del guardado y no cuando se empezó a crear la
+    // entidad
     @PrePersist
     private void prePersist() {
-        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
     }
 }

@@ -29,10 +29,10 @@ public class Usuarios {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_usuario;
 
-    @Column(name = "nombres", nullable = false)
+    @Column(name = "nombres")
     private String nombres;
 
-    @Column(name = "apellidos", nullable = false)
+    @Column(name = "apellidos")
     private String apellidos;
 
     @Column(name = "edad")
@@ -44,7 +44,7 @@ public class Usuarios {
     @Column(name = "celular")
     private String celular;
 
-    @Column(name = "estado_vetado", nullable = false)
+    @Column(name = "estado_vetado")
     private Boolean estado_vetado = false;
 
     @Column(name = "razon_vetado")
@@ -57,8 +57,12 @@ public class Usuarios {
     @Column(name = "fecha_creacion")
     private String fecha_creacion;
 
+    @Column(name = "eliminado")
+    private boolean eliminado = false;
+
+    // Genera la fecha en el momento del guardado y no cuando se empezó a crear la entidad
     @PrePersist
     private void prePersist() {
-        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
     }
 }

@@ -21,7 +21,7 @@ public class PdfServiceClientes {
 
             // Agregar título
             Font fontTitulo = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
-            Paragraph titulo = new Paragraph("Reporte del Historial de Vetos", fontTitulo);
+            Paragraph titulo = new Paragraph("Lista de clientes", fontTitulo);
             titulo.setAlignment(Element.ALIGN_CENTER);
             document.add(titulo);
 

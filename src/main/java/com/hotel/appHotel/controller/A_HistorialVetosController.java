@@ -2,7 +2,6 @@ package com.hotel.appHotel.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,54 +26,49 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping(value = "/admin/historialVetos")
 public class A_HistorialVetosController {
 
+    private static final String CARPETA_BASE = "templates_historialVetos/";
+    private static final String VIEW_LISTAR = CARPETA_BASE + "historialVetos";
+    private static final String VIEW_NUEVO = CARPETA_BASE + "form_nuevo_historialVeto";
+    private static final String VIEW_EDITAR = CARPETA_BASE + "form_editar_historialVeto";
+    private static final String REDIRECT_LISTAR = "redirect:/admin/historialVetos";
+
     @Autowired
-    private HistorialVetosService historialVetosServicio;
+    private HistorialVetosService servicio;
 
     @Autowired
     private UsuariosService usuariosServicio;
 
     @GetMapping
     public String listarHistorialVetos(Model modelo) {
-        List<HistorialVetos> historialVetosDesc = historialVetosServicio.getHistorialVetos().stream()
-                .sorted(Comparator.comparing(HistorialVetos::getId_historial_veto).reversed())
-                .collect(Collectors.toList());
+        modelo.addAttribute("historialVetos", obtenerHistorialVetos());
 
-        modelo.addAttribute("historialVetos", historialVetosDesc);
-
-        return "templates_historialVetos/historialVetos";
+        return VIEW_LISTAR;
     }
 
     @GetMapping("/nuevo")
     public String nuevoHistorialVetoForm(Model modelo, RedirectAttributes redirectAttributes) {
         HistorialVetos historialVeto = new HistorialVetos();
-        List<Usuarios> usuarios = usuariosServicio.getUsuarios();
-        List<Usuarios> usuarios_responsables = new ArrayList<>();
-        List<Usuarios> usuarios_clientes = new ArrayList<>();
-
-        for (Usuarios usuario : usuarios) {
-            if (usuario.getRol().getNivel() == 0) {
-                usuarios_clientes.add(usuario);
-            } else {
-                usuarios_responsables.add(usuario);
-            }
-        }
+        List<Usuarios> usuarios_responsables = obtenerUsuarios()
+                .stream()
+                .filter(usuario -> usuario.getRol().getNivel() != 0)
+                .collect(Collectors.toList());
+        List<Usuarios> usuarios_clientes = obtenerUsuarios()
+                .stream()
+                .filter(usuario -> usuario.getRol().getNivel() == 0)
+                .collect(Collectors.toList());
 
         if (usuarios_responsables.isEmpty() || usuarios_clientes.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
                     "No hay usuarios con roles adecuados para crear un historial de vetos.");
 
-            return "redirect:/admin/historialVetos";
+            return REDIRECT_LISTAR;
         } else {
-            List<HistorialVetos> historialVetosDesc = historialVetosServicio.getHistorialVetos().stream()
-                .sorted(Comparator.comparing(HistorialVetos::getId_historial_veto).reversed())
-                .collect(Collectors.toList());
-
             modelo.addAttribute("usuarios_responsables", usuarios_responsables);
             modelo.addAttribute("usuarios_clientes", usuarios_clientes);
-            modelo.addAttribute("historialVetos", historialVetosDesc);
+            modelo.addAttribute("historialVetos", obtenerHistorialVetos());
             modelo.addAttribute("historialVeto", historialVeto);
 
-            return "templates_historialVetos/form_nuevo_historialVeto";
+            return VIEW_NUEVO;
         }
     }
 
@@ -89,46 +83,39 @@ public class A_HistorialVetosController {
         usuarioExistente.setRazon_vetado(historialVeto.getRazon());
 
         usuariosServicio.updateUsuario(usuarioExistente);
-        historialVetosServicio.createHistorialVeto(historialVeto);
-        return "redirect:/admin/historialVetos";
+        servicio.createHistorialVeto(historialVeto);
+        return REDIRECT_LISTAR;
     }
 
     @GetMapping("/editar/{id}")
     public String editarHistorialVetosForm(@PathVariable Long id, Model modelo, RedirectAttributes redirectAttributes) {
-        List<Usuarios> usuarios = usuariosServicio.getUsuarios();
-        List<Usuarios> usuarios_clientes = new ArrayList<>();
-        List<Usuarios> usuarios_responsables = new ArrayList<>();
-
-        for (Usuarios usuario : usuarios) {
-            if (usuario.getRol().getNivel() == 0) {
-                usuarios_clientes.add(usuario);
-            } else {
-                usuarios_responsables.add(usuario);
-            }
-        }
+        List<Usuarios> usuarios_responsables = obtenerUsuarios()
+                .stream()
+                .filter(usuario -> usuario.getRol().getNivel() != 0)
+                .collect(Collectors.toList());
+        List<Usuarios> usuarios_clientes = obtenerUsuarios()
+                .stream()
+                .filter(usuario -> usuario.getRol().getNivel() == 0)
+                .collect(Collectors.toList());
 
         if (usuarios_responsables.isEmpty() || usuarios_clientes.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
                     "No hay usuarios con roles adecuados para crear un historial de vetos.");
-            return "redirect:/admin/historialVetos";
+            return REDIRECT_LISTAR;
         } else {
-            List<HistorialVetos> historialVetosDesc = historialVetosServicio.getHistorialVetos().stream()
-                .sorted(Comparator.comparing(HistorialVetos::getId_historial_veto).reversed())
-                .collect(Collectors.toList());
-
             modelo.addAttribute("usuarios_clientes", usuarios_clientes);
             modelo.addAttribute("usuarios_responsables", usuarios_responsables);
-            modelo.addAttribute("historialVetos", historialVetosDesc);
-            modelo.addAttribute("historialVeto", historialVetosServicio.getHistorialVetoById(id));
+            modelo.addAttribute("historialVetos", obtenerHistorialVetos());
+            modelo.addAttribute("historialVeto", servicio.getHistorialVetoById(id));
 
-            return "templates_historialVetos/form_editar_historialVeto";
+            return VIEW_EDITAR;
         }
     }
 
     @PostMapping("/{id}")
     public String actualizarHistorialVeto(@PathVariable Long id,
             @ModelAttribute("historialVeto") HistorialVetos historialVeto, Model modelo) {
-        HistorialVetos historialVetoExistente = historialVetosServicio.getHistorialVetoById(id);
+        HistorialVetos historialVetoExistente = servicio.getHistorialVetoById(id);
         Usuarios usuarioExistente = usuariosServicio.getUsuarioById(historialVeto.getUsuario_vetado().getId_usuario());
 
         historialVetoExistente.setUsuario_vetado(historialVeto.getUsuario_vetado());
@@ -144,15 +131,39 @@ public class A_HistorialVetosController {
         usuarioExistente.setRazon_vetado(historialVeto.getRazon());
 
         usuariosServicio.updateUsuario(usuarioExistente);
-        historialVetosServicio.updateHistorialVeto(historialVetoExistente);
+        servicio.updateHistorialVeto(historialVetoExistente);
 
-        return "redirect:/admin/historialVetos";
+        return REDIRECT_LISTAR;
     }
 
-    @GetMapping("/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarhistorialVeto(@PathVariable Long id) {
-        historialVetosServicio.deleteHistorialVeto(id);
+        HistorialVetos historialVetoExistente = servicio.getHistorialVetoById(id);
+        Usuarios usuarioExistente = usuariosServicio.getUsuarioById(historialVetoExistente.getUsuario_vetado().getId_usuario());
 
-        return "redirect:/admin/historialVetos";
+        usuarioExistente.setEstado_vetado(false);
+        usuarioExistente.setRazon_vetado("");
+
+        historialVetoExistente.setEliminado(true);
+
+        usuariosServicio.updateUsuario(usuarioExistente);
+        servicio.updateHistorialVeto(historialVetoExistente);
+
+        return REDIRECT_LISTAR;
+    }
+
+    private List<HistorialVetos> obtenerHistorialVetos() {
+        return servicio.getHistorialVetos()
+                .stream()
+                .filter(historialVeto -> !historialVeto.isEliminado())
+                .sorted(Comparator.comparing(HistorialVetos::getId_historial_veto).reversed())
+                .collect(Collectors.toList());
+    }
+
+    private List<Usuarios> obtenerUsuarios() {
+        return usuariosServicio.getUsuarios()
+                .stream()
+                .filter(usuario -> !usuario.isEliminado())
+                .collect(Collectors.toList());
     }
 }

@@ -2,6 +2,9 @@ package com.hotel.appHotel.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,59 +35,75 @@ public class A_HabitacionesCaracteristicasController {
 
     @GetMapping
     public String listarHabitacionesCaracteristicas(Model modelo) {
-        modelo.addAttribute("habitacionesCaracteristicas", servicio.getHabitacionesCaracteristica());
-        
+        modelo.addAttribute("habitacionesCaracteristicas", obtenerHabitacionesCaracteristicas());
+
         return VIEW_LISTAR;
     }
-    
+
     @GetMapping("/nuevo")
     public String nuevaHabitacionCaracteristicaForm(Model modelo) {
         HabitacionesCaracteristicas habitacionCaracteristica = new HabitacionesCaracteristicas();
-        
-        modelo.addAttribute("habitacionesCaracteristicas", servicio.getHabitacionesCaracteristica());
+
+        modelo.addAttribute("habitacionesCaracteristicas", obtenerHabitacionesCaracteristicas());
         modelo.addAttribute("habitacionCaracteristica", habitacionCaracteristica);
-        
+
         return VIEW_NUEVO;
     }
 
     @PostMapping
-    public String crearHabitacionCaracteristica(@ModelAttribute("habitacionCaracteristica") HabitacionesCaracteristicas habitacionCaracteristica) {
+    public String crearHabitacionCaracteristica(
+            @ModelAttribute("habitacionCaracteristica") HabitacionesCaracteristicas habitacionCaracteristica) {
         habitacionCaracteristica.setNombre(habitacionCaracteristica.getNombre().toUpperCase());
         habitacionCaracteristica.setMarca(habitacionCaracteristica.getMarca().toUpperCase());
 
         servicio.createHabitacionCaracteristica(habitacionCaracteristica);
-        
+
         return REDIRECT_LISTAR;
     }
-    
+
     @GetMapping("/editar/{id}")
     public String editarHabitacionCaracteristicaForm(@PathVariable Long id, Model modelo) {
-        modelo.addAttribute("habitacionesCaracteristicas", servicio.getHabitacionesCaracteristica());
+        modelo.addAttribute("habitacionesCaracteristicas", obtenerHabitacionesCaracteristicas());
         modelo.addAttribute("habitacionCaracteristica", servicio.getHabitacionCaracteristicaById(id));
 
         return VIEW_EDITAR;
     }
 
     @PostMapping("/{id}")
-    public String actualizarHabitacionCaracteristica(@PathVariable Long id, @ModelAttribute("habitacionCaracteristica") HabitacionesCaracteristicas habitacionCaracteristica , Model modelo) {
+    public String actualizarHabitacionCaracteristica(@PathVariable Long id,
+            @ModelAttribute("habitacionCaracteristica") HabitacionesCaracteristicas habitacionCaracteristica,
+            Model modelo) {
         HabitacionesCaracteristicas habitacionCaracteristicaExistente = servicio.getHabitacionCaracteristicaById(id);
-        
+
         habitacionCaracteristicaExistente.setNombre(habitacionCaracteristica.getNombre().toUpperCase());
         habitacionCaracteristicaExistente.setMarca(habitacionCaracteristica.getMarca().toUpperCase());
         habitacionCaracteristicaExistente.setDescripcion(habitacionCaracteristica.getDescripcion());
         habitacionCaracteristicaExistente.setPrecio(habitacionCaracteristica.getPrecio());
 
-        habitacionCaracteristicaExistente.setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        
+        habitacionCaracteristicaExistente
+                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
         servicio.updateHabitacionCaracteristica(habitacionCaracteristicaExistente);
 
         return REDIRECT_LISTAR;
     }
-    
-    @GetMapping("/{id}")
+
+    @PostMapping("/eliminar/{id}")
     public String eliminarHabitacionCaracteristica(@PathVariable Long id) {
-        servicio.deleteHabitacionCaracteristica(id);
+        HabitacionesCaracteristicas habitacionCaracteristicaExistente = servicio.getHabitacionCaracteristicaById(id);
+
+        habitacionCaracteristicaExistente.setEliminado(true);
+
+        servicio.updateHabitacionCaracteristica(habitacionCaracteristicaExistente);
 
         return REDIRECT_LISTAR;
+    }
+
+    private List<HabitacionesCaracteristicas> obtenerHabitacionesCaracteristicas() {
+        return servicio.getHabitacionesCaracteristica()
+                .stream()
+                .filter(habitacionCaracteristica ->!habitacionCaracteristica.isEliminado())
+                .sorted(Comparator.comparing(HabitacionesCaracteristicas::getId_habitacion_caracteristica).reversed())
+                .collect(Collectors.toList());
     }
 }

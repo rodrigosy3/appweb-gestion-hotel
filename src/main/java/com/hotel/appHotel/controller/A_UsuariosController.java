@@ -13,8 +13,8 @@ import org.springframework.ui.Model;
 import com.hotel.appHotel.model.Credenciales;
 import com.hotel.appHotel.model.Roles;
 import com.hotel.appHotel.model.Usuarios;
-import com.hotel.appHotel.repository.RolesRepository;
 import com.hotel.appHotel.service.CredencialesService;
+import com.hotel.appHotel.service.RolesService;
 import com.hotel.appHotel.service.UsuariosService;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,81 +27,63 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping(value = "/admin/usuarios")
 public class A_UsuariosController {
 
-    @Autowired
-    private UsuariosService usuariosServicio;
+    private static final String CARPETA_BASE = "templates_usuarios/";
+    private static final String VIEW_LISTAR = CARPETA_BASE + "usuarios";
+    private static final String VIEW_NUEVO = CARPETA_BASE + "form_nuevo_usuario";
+    private static final String VIEW_EDITAR = CARPETA_BASE + "form_editar_usuario";
+    private static final String REDIRECT_LISTAR = "redirect:/admin/usuarios";
 
     @Autowired
-    private RolesRepository rolesRepositorio;
+    private UsuariosService servicio;
+
+    @Autowired
+    private RolesService rolesService;
 
     @Autowired
     private CredencialesService credencialesServicio;
 
     @GetMapping
     public String listarUsuarios(Model modelo) {
-        List<Usuarios> usuariosDesc = usuariosServicio.getUsuarios();
-        usuariosDesc = usuariosDesc.stream().sorted(Comparator.comparing(Usuarios::getId_usuario).reversed()).collect(Collectors.toList());
+        modelo.addAttribute("usuarios", obtenerUsuarios());
 
-        modelo.addAttribute("usuarios", usuariosDesc);
-
-        return "templates_usuarios/usuarios";
+        return VIEW_LISTAR;
     }
 
     @GetMapping("/nuevo")
     public String nuevoUsuarioForm(Model modelo) {
         Usuarios usuario = new Usuarios();
-        List<Roles> roles = rolesRepositorio.findAll();
 
-        modelo.addAttribute("roles", roles);
-        modelo.addAttribute("usuarios", usuariosServicio.getUsuarios());
+        modelo.addAttribute("roles", obtenerRoles());
+        modelo.addAttribute("usuarios", obtenerUsuarios());
         modelo.addAttribute("usuario", usuario);
 
-        return "templates_usuarios/form_nuevo_usuario";
+        return VIEW_NUEVO;
     }
 
     @PostMapping
     public String crearUsuario(@ModelAttribute("usuarios") Usuarios usuario) {
         usuario.setNombres(usuario.getNombres().toUpperCase());
         usuario.setApellidos(usuario.getApellidos().toUpperCase());
-        usuariosServicio.createUsuario(usuario);
 
-        if (usuario.getRol().getNivel() != 0) {
-            List<Credenciales> credenciales = credencialesServicio.getCredenciales();
-            boolean credencialExistente = true;
+        servicio.createUsuario(usuario);
 
-            for (Credenciales credencial : credenciales) {
-                if (usuario.getDni().equals(credencial.getUsuario().getDni())) {
-                    credencialExistente = false;
-                }
-            }
+        if (usuario.getRol().getNivel() != 0) asignarCredenciales(usuario);
 
-            if (credencialExistente) {
-                Credenciales credencialNuevo = new Credenciales();
-
-                credencialNuevo.setUsuario(usuario);
-                credencialNuevo.setContrasena(usuario.getDni());
-
-                credencialesServicio.createCredencial(credencialNuevo);
-            }
-        }
-
-        return "redirect:/admin/usuarios";
+        return REDIRECT_LISTAR;
     }
 
     @GetMapping("/editar/{id}")
     public String editarUsuarioForm(@PathVariable Long id, Model modelo) {
-        List<Roles> roles = rolesRepositorio.findAll();
+        modelo.addAttribute("roles", obtenerRoles());
+        modelo.addAttribute("usuarios", obtenerUsuarios());
+        modelo.addAttribute("usuario", servicio.getUsuarioById(id));
 
-        modelo.addAttribute("roles", roles);
-        modelo.addAttribute("usuarios", usuariosServicio.getUsuarios());
-        modelo.addAttribute("usuario", usuariosServicio.getUsuarioById(id));
-
-        return "templates_usuarios/form_editar_usuario";
+        return VIEW_EDITAR;
     }
 
     @PostMapping("/{id}")
     public String actualizarUsuario(@PathVariable Long id, @ModelAttribute("usuario") Usuarios usuario, Model modelo) {
-        Usuarios usuarioExistente = usuariosServicio.getUsuarioById(id);
-        List<Credenciales> credenciales = credencialesServicio.getCredenciales();
+        Usuarios usuarioExistente = servicio.getUsuarioById(id);
 
         usuarioExistente.setNombres(usuario.getNombres().toUpperCase());
         usuarioExistente.setApellidos(usuario.getApellidos().toUpperCase());
@@ -115,42 +97,88 @@ public class A_UsuariosController {
                 .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
         if (usuarioExistente.getRol().getNivel() != 0) {
-            boolean credencialExistente = true;
-
-            for (Credenciales credencial : credenciales) {
-                if (usuarioExistente.getDni().equals(credencial.getUsuario().getDni())) {
-                    credencialExistente = false;
-                }
-            }
-
-            if (credencialExistente) {
-                Credenciales credencialNuevo = new Credenciales();
-
-                credencialNuevo.setUsuario(usuarioExistente);
-                credencialNuevo.setContrasena(usuarioExistente.getDni());
-
-                credencialesServicio.createCredencial(credencialNuevo);
-            }
+            asignarCredenciales(usuarioExistente);
         } else {
-            Credenciales credencialEliminar = new Credenciales();
+            List<Credenciales> credenciales = obtenerCredrenciales();
 
             for (Credenciales credencial : credenciales) {
                 if (usuarioExistente.getId_usuario().equals(credencial.getUsuario().getId_usuario())) {
-                    credencialEliminar = credencial;
-                    credencialesServicio.deleteCredencial(credencialEliminar.getId_credencial());
+                    Credenciales credencialEliminar = credencial;
+                    credencialEliminar.setEliminado(true);
+
+                    credencialesServicio.updateCredencial(credencialEliminar);
+                    break;
                 }
             }
         }
 
-        usuariosServicio.updateUsuario(usuarioExistente);
+        servicio.updateUsuario(usuarioExistente);
 
-        return "redirect:/admin/usuarios";
+        return REDIRECT_LISTAR;
     }
 
-    @GetMapping("/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarUsuario(@PathVariable Long id) {
-        usuariosServicio.deleteUsuario(id);
+        Usuarios usuarioExistente = servicio.getUsuarioById(id);
+        List<Credenciales> credenciales = obtenerCredrenciales();
 
-        return "redirect:/admin/usuarios";
+        for (Credenciales credencial : credenciales) {
+            if (usuarioExistente.getId_usuario().equals(credencial.getUsuario().getId_usuario())) {
+                Credenciales credencialEliminar = credencial;
+                credencialEliminar.setEliminado(true);
+
+                credencialesServicio.updateCredencial(credencialEliminar);
+                break;
+            }
+        }
+
+        usuarioExistente.setEliminado(true);
+
+        servicio.updateUsuario(usuarioExistente);
+
+        return REDIRECT_LISTAR;
+    }
+
+    private List<Usuarios> obtenerUsuarios() {
+        return servicio.getUsuarios()
+                .stream()
+                .filter(usuario -> !usuario.isEliminado())
+                .sorted(Comparator.comparing(Usuarios::getId_usuario).reversed())
+                .collect(Collectors.toList());
+    }
+
+    private List<Roles> obtenerRoles() {
+        return rolesService.getRoles()
+                .stream()
+                .filter(rol -> !rol.isEliminado())
+                .sorted(Comparator.comparing(Roles::getNivel))
+                .collect(Collectors.toList());
+    }
+
+    private List<Credenciales> obtenerCredrenciales() {
+        return credencialesServicio.getCredenciales()
+                .stream()
+                .filter(credencial -> !credencial.isEliminado())
+                .collect(Collectors.toList());
+    }
+
+    private void asignarCredenciales(Usuarios usuario) {
+        List<Credenciales> credenciales = obtenerCredrenciales();
+        boolean credencialExistente = true;
+
+        for (Credenciales credencial : credenciales) {
+            if (usuario.getDni().equals(credencial.getUsuario().getDni())) {
+                credencialExistente = false;
+            }
+        }
+
+        if (credencialExistente) {
+            Credenciales credencialNuevo = new Credenciales();
+
+            credencialNuevo.setUsuario(usuario);
+            credencialNuevo.setContrasena(usuario.getDni());
+
+            credencialesServicio.createCredencial(credencialNuevo);
+        }
     }
 }

@@ -27,7 +27,7 @@
                                 <select class="form-select" th:field="*{habitacion}" id="habitacionSelect" required>
                                     <option th:each="habitacion : ${habitaciones}"
                                         th:value="${habitacion.id_habitacion}"
-                                        th:data-tipo="${'(' + habitacion.tipo.abreviacion_tipo + ')' + ' ' + habitacion.tipo.nombre_tipo}"
+                                        th:data-tipo="${'(' + habitacion.tipo.abreviacion_tipo + ') ' + habitacion.tipo.nombre_tipo}"
                                         th:text="${habitacion.numero}">
                                     </option>
                                 </select>

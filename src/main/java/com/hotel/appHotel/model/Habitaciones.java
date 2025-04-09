@@ -23,7 +23,7 @@ public class Habitaciones {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_habitacion;
 
-    @Column(name = "numero", unique = true)
+    @Column(name = "numero")
     private Integer numero;
 
     @Column(name = "categoria")
@@ -49,14 +49,18 @@ public class Habitaciones {
     @Column(name = "fecha_creacion")
     private String fecha_creacion;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "habitacion")
+    @Column(name = "eliminado")
+    private boolean eliminado = false;
+    
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "habitacion")
     private Set<Ventas> habitacionesVentas = new HashSet<>();
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "habitacion")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "habitacion")
     private Set<HabitacionesContenido> habitacionesContenido = new HashSet<>();
 
+    // Genera la fecha en el momento del guardado y no cuando se empezó a crear la entidad
     @PrePersist
     private void prePersist() {
-        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
     }
 }

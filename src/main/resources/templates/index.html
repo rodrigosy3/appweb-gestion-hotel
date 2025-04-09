@@ -34,14 +34,17 @@
         <button type="button" class="btn btn-primary" id="btn-hoy">Hoy</button>
     </div>
 
+
+
     <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center me-5" role="alert">
         <span th:text="${error}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div th:if="${error}" class="alert alert-succes alert-dismissible fade show text-center me-5" role="alert">
+    <div th:if="${error}" class="alert alert-success alert-dismissible fade show text-center me-5" role="alert">
         <span th:text="${mensaje}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+
 
 
     <div class="container-fluid py-3">
@@ -52,7 +55,7 @@
                     <thead class="table-secondary border-light">
                         <tr>
                             <th class="text-center">N°</th>
-                            <th class="text-center">INGRESO</th>
+                            <th class="text-center">HORARIO</th>
                             <th>NOMBRES Y APELLIDOS</th>
                             <th class="text-center px-0">EDAD</th>
                             <th class="text-center px-0">D.N.I.</th>
@@ -62,65 +65,144 @@
                     </thead>
                     <tbody>
                         <tr th:each="hab : ${hab_antiguas}"
-                            th:classappend="${hab.estado.estado == 'RESERVADA' ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ''}">
+                            th:classappend="${hab.estado.estado == 'RESERVADA' ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ventasVencidas[hab.id_habitacion] != null ? 'table-danger' : ''}">
+
                             <td class="text-center fw-bold border-light bg-body-secondary align-middle"
                                 th:text="${hab.numero}"
-                                th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' +hab.tipo.nombre_tipo}">N°</td>
-                            <td class="text-center"
-                                th:text="${ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null ? #temporals.format(ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion], 'hh:mm a') : ''}">
-                                INGRESO
+                                th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' + hab.tipo.nombre_tipo}">
+                                N°
                             </td>
-                            <td>
-                                <span class="bg-primary-subtle fw-bold text-primary"
-                                    th:if="${hab.estado.estado == 'RESERVADA'}">HABITACIÓN RESERVADA <br>
-                                </span>
-                                <span class="bg-success-subtle fw-bold text-success"
-                                    th:if="${hab.estado.estado == 'LIMPIEZA'}">HABITACIÓN EN LIMPIEZA <br> </span>
-                                <span class="bg-danger-subtle fw-bold text-danger"
-                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR'}">HABITACIÓN
-                                    NO PAGADA <br> </span>
-                                <span class="bg-warning-subtle fw-bold text-warning"
-                                    th:if="${hab.estado.estado == 'MANTENIMIENTO'}">HABITACIÓN EN MANTENIMIENTO <br>
-                                </span>
-                                <span class="bg-dark-subtle fw-semibold text-dark"
-                                    th:if="${hab.estado.estado == 'NO DISPONIBLE'}">HABITACIÓN NO DISPONIBLE PARA VENTAS
-                                    <br> </span>
-                                <span class="bg-secondary-subtle fw-bold text-secondary"
-                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'COMPLETO'}">
-                                    <span
-                                        th:text="${'Salida: ' + ultimaVentaPorHabitacion[hab.id_habitacion]?.fecha_salida}"></span>
-                                    <br> </span>
-                                <span class="bg-primary-subtle fw-bold text-primary"
-                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}">MEDIO
-                                    DÍA - SALIDA 6:00 PM <br> </span>
 
-                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
+                            <!-- #################### EVALUANDO FECHA DE ENTRADA A USAR SEGUN CONDICIONES DE VENTA #################### -->
+                            <td class="text-start px-0 ps-2">
+                                <span th:if="${ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null}">
+                                    <span
+                                        th:text="${'E: ' + #temporals.format(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span><br>
+                                    <span
+                                        th:text="${'S: ' + #temporals.format(ultimaVentaPorHabitacionFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span>
+                                </span>
+
+                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}" class="text-danger fw-bold">
+                                    <span
+                                        th:text="${'E: ' + #temporals.format(ventasVencidasFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span><br>
+                                    <span
+                                        th:text="${'S: ' + #temporals.format(ventasVencidasFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span>
+                                </span>
+                            </td>
+                            <!-- ############################################################################################## -->
+
+                            <!-- #################### CONDICIONES SOBRE EL ESTADO DE LA VENTA Y HABITACION #################### -->
+                            <td>
+                                <!-- ######## CONDICIONES DE LAS HABITACIONES ######## -->
+                                <span th:if="${hab.estado.estado == 'RESERVADA'}"
+                                    class="bg-primary-subtle fw-bold text-primary">
+                                    HABITACIÓN RESERVADA <br>
+                                </span>
+
+                                <span th:if="${hab.estado.estado == 'LIMPIEZA'}"
+                                    class="bg-success-subtle fw-bold text-success">
+                                    HABITACIÓN EN LIMPIEZA <br>
+                                </span>
+
+                                <span th:if="${hab.estado.estado == 'MANTENIMIENTO'}"
+                                    class="bg-warning-subtle fw-bold text-warning">
+                                    HABITACIÓN EN MANTENIMIENTO <br>
+                                </span>
+
+                                <span th:if="${hab.estado.estado == 'NO DISPONIBLE'}"
+                                    class="bg-dark-subtle fw-semibold text-dark">
+                                    HABITACIÓN NO DISPONIBLE PARA VENTAS
+                                    <br>
+                                </span>
+                                <!-- ################################################# -->
+
+                                <!-- ################################ CONDICIONES DE LAS VENTAS ################################ -->
+                                <span
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' || ventasVencidas[hab.id_habitacion]?.estado == 'POR COBRAR'}"
+                                    class="bg-danger-subtle fw-bold text-danger">
+                                    HABITACIÓN NO PAGADA <br>
+                                </span>
+
+                                <span
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO' || ventasVencidas[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}"
+                                    class="bg-primary-subtle fw-bold text-primary">
+                                    MEDIO DÍA - SALIDA 6:00 PM <br>
+                                </span>
+                                <!-- ########################################################################################### -->
+
+                                <!-- ####################### MOSTRAMOS NOMBRES Y APELLIDOS DE LOS CLIENTES ##################### -->
+                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
                                     <span
-                                        th:text="${cliente.usuario_alojado.nombres + ' ' + cliente.usuario_alojado.apellidos}">NOMBRES
-                                        Y APELLIDOS</span><br />
+                                        th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
+                                        NOMBRES Y APELLIDOS
+                                    </span>
+                                    <br />
                                 </span>
+
+                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
+                                    th:each="cliente : ${ventasVencidas[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                    <span class="text-danger fw-bold"
+                                        th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
+                                        NOMBRES Y APELLIDOS
+                                    </span>
+                                    <br />
+                                </span>
+                                <!-- ########################################################################################### -->
                             </td>
+                            <!-- ###################################################################################################### -->
+
+                            <!-- ################################## MOSTRAMOS LA EDAD DE LOS CLIENTES #################################### -->
                             <td class="text-center">
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                    <span th:text="${cliente.usuario_alojado.edad}">EDAD</span><br />
+                                    <span th:text="${cliente.usuario_alojado.edad}"></span><br />
+                                </span>
+
+                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
+                                    th:each="cliente : ${ventasVencidas[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                    <span class="text-danger fw-bold" th:text="${cliente.usuario_alojado.edad}">
+                                    </span> <br />
                                 </span>
                             </td>
+                            <!-- ######################################################################################################### -->
+
+                            <!-- ################################## MOSTRAMOS EL D.N.I. DE LOS CLIENTES ################################## -->
                             <td class="text-center">
-                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
+                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                    <span th:text="${cliente.usuario_alojado.dni}">D.N.I.</span><br />
+                                    <span th:text="${cliente.usuario_alojado.dni}"></span><br />
+                                </span>
+
+                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
+                                    th:each="cliente : ${ventasVencidas[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                    <span class="text-danger fw-bold" th:text="${cliente.usuario_alojado.dni}">
+                                    </span> <br />
                                 </span>
                             </td>
-                            <td class="text-center"
-                                th:text="${(ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null) && ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA' ? #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : ''}">
-                                TOTAL</td>
+                            <!-- ######################################################################################################### -->
+
+                            <!-- ####################################### PRECIO TOTAL DE LA VENTA ######################################## -->
+                            <td class="text-center">
+                                <span
+                                    th:text="${(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : (ventasVencidas[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ventasVencidas[hab.id_habitacion]?.monto_total, 1, 2) : ''}"
+                                    th:classappend="${ventasVencidas[hab.id_habitacion] != null ? 'text-danger fw-bold' : ''}">
+                                </span>
+                            </td>
+                            <!-- ######################################################################################################### -->
+
                             <td class="text-center align-middle">
                                 <form th:action="@{/editar/{id}(id=${hab.id_habitacion})}">
-                                    <input type="hidden" name="idVenta"
+                                    <input th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}" type="hidden"
+                                        name="idVenta"
                                         th:value="${ultimaVentaPorHabitacion[hab.id_habitacion]?.id_venta}">
-                                    <button type="submit" class="btn btn-sm btn-primary" title="EDITAR">
+
+                                    <input th:if="${ventasVencidas[hab.id_habitacion] != null}" type="hidden"
+                                        name="idVenta" th:value="${ventasVencidas[hab.id_habitacion]?.id_venta}">
+
+                                    <button type="submit" class="btn btn-sm btn-primary"
+                                        th:with="ventaID=${ultimaVentaPorHabitacion[hab.id_habitacion] != null ? ultimaVentaPorHabitacion[hab.id_habitacion].id_venta : 
+                                        ventasVencidas[hab.id_habitacion] != null ? ventasVencidas[hab.id_habitacion].id_venta : ''}" th:title="'Venta: ' + ${ventaID}">
                                         Editar
                                     </button>
                                 </form>
@@ -133,10 +215,10 @@
             <!-- Segunda tabla: lado derecho -->
             <div class="col-12 col-lg-6 justify-content-center">
                 <table class="table table-hover" th:if="${!hab_modernas.isEmpty()}">
-                    <thead class="table-info border-light">
+                    <thead class="table-secondary border-light">
                         <tr>
                             <th class="text-center">N°</th>
-                            <th class="text-center">INGRESO</th>
+                            <th class="text-center">HORARIO</th>
                             <th>NOMBRES Y APELLIDOS</th>
                             <th class="text-center px-0">EDAD</th>
                             <th class="text-center px-0">D.N.I.</th>
@@ -146,65 +228,144 @@
                     </thead>
                     <tbody>
                         <tr th:each="hab : ${hab_modernas}"
-                            th:classappend="${hab.estado.estado == 'RESERVADA' ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ''}">
-                            <td class="text-center fw-bold border-light bg-info-subtle align-middle"
-                                th:text="${hab.numero}"
-                                th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' + hab.tipo.nombre_tipo}">N°</td>
-                            <td class="text-center"
-                                th:text="${ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null ? #temporals.format(ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion], 'hh:mm a') : ''}">
-                                INGRESO
-                            </td>
-                            <td>
-                                <span class="bg-primary-subtle fw-bold text-primary"
-                                    th:if="${hab.estado.estado == 'RESERVADA'}">HABITACIÓN RESERVADA <br>
-                                </span>
-                                <span class="bg-success-subtle fw-bold text-success"
-                                    th:if="${hab.estado.estado == 'LIMPIEZA'}">HABITACIÓN EN LIMPIEZA <br> </span>
-                                <span class="bg-danger-subtle fw-bold text-danger"
-                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR'}">HABITACIÓN
-                                    NO PAGADA <br> </span>
-                                <span class="bg-warning-subtle fw-bold text-warning"
-                                    th:if="${hab.estado.estado == 'MANTENIMIENTO'}">HABITACIÓN EN MANTENIMIENTO <br>
-                                </span>
-                                <span class="bg-dark-subtle fw-semibold text-dark"
-                                    th:if="${hab.estado.estado == 'NO DISPONIBLE'}">HABITACIÓN NO DISPONIBLE PARA VENTAS
-                                    <br> </span>
-                                <span class="bg-secondary-subtle fw-bold text-secondary"
-                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'COMPLETO'}">
-                                    <span
-                                        th:text="${'Salida: ' + ultimaVentaPorHabitacion[hab.id_habitacion]?.fecha_salida}"></span>
-                                    <br> </span>
-                                <span class="bg-primary-subtle fw-bold text-primary"
-                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}">MEDIO
-                                    DÍA - SALIDA 6:00 PM <br> </span>
+                            th:classappend="${hab.estado.estado == 'RESERVADA' ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ventasVencidas[hab.id_habitacion] != null ? 'table-danger' : ''}">
 
-                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
+                            <td class="text-center fw-bold border-light bg-body-secondary align-middle"
+                                th:text="${hab.numero}"
+                                th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' + hab.tipo.nombre_tipo}">
+                                N°
+                            </td>
+
+                            <!-- #################### EVALUANDO FECHA DE ENTRADA A USAR SEGUN CONDICIONES DE VENTA #################### -->
+                            <td class="text-start px-0 ps-2">
+                                <span th:if="${ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null}">
+                                    <span
+                                        th:text="${'E: ' + #temporals.format(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span><br>
+                                    <span
+                                        th:text="${'S: ' + #temporals.format(ultimaVentaPorHabitacionFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span>
+                                </span>
+
+                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}" class="text-danger fw-bold">
+                                    <span
+                                        th:text="${'E: ' + #temporals.format(ventasVencidasFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span><br>
+                                    <span
+                                        th:text="${'S: ' + #temporals.format(ventasVencidasFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span>
+                                </span>
+                            </td>
+                            <!-- ############################################################################################## -->
+
+                            <!-- #################### CONDICIONES SOBRE EL ESTADO DE LA VENTA Y HABITACION #################### -->
+                            <td>
+                                <!-- ######## CONDICIONES DE LAS HABITACIONES ######## -->
+                                <span th:if="${hab.estado.estado == 'RESERVADA'}"
+                                    class="bg-primary-subtle fw-bold text-primary">
+                                    HABITACIÓN RESERVADA <br>
+                                </span>
+
+                                <span th:if="${hab.estado.estado == 'LIMPIEZA'}"
+                                    class="bg-success-subtle fw-bold text-success">
+                                    HABITACIÓN EN LIMPIEZA <br>
+                                </span>
+
+                                <span th:if="${hab.estado.estado == 'MANTENIMIENTO'}"
+                                    class="bg-warning-subtle fw-bold text-warning">
+                                    HABITACIÓN EN MANTENIMIENTO <br>
+                                </span>
+
+                                <span th:if="${hab.estado.estado == 'NO DISPONIBLE'}"
+                                    class="bg-dark-subtle fw-semibold text-dark">
+                                    HABITACIÓN NO DISPONIBLE PARA VENTAS
+                                    <br>
+                                </span>
+                                <!-- ################################################# -->
+
+                                <!-- ################################ CONDICIONES DE LAS VENTAS ################################ -->
+                                <span
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' || ventasVencidas[hab.id_habitacion]?.estado == 'POR COBRAR'}"
+                                    class="bg-danger-subtle fw-bold text-danger">
+                                    HABITACIÓN NO PAGADA <br>
+                                </span>
+
+                                <span
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO' || ventasVencidas[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}"
+                                    class="bg-primary-subtle fw-bold text-primary">
+                                    MEDIO DÍA - SALIDA 6:00 PM <br>
+                                </span>
+                                <!-- ########################################################################################### -->
+
+                                <!-- ####################### MOSTRAMOS NOMBRES Y APELLIDOS DE LOS CLIENTES ##################### -->
+                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
                                     <span
-                                        th:text="${cliente.usuario_alojado.nombres + '  ' + cliente.usuario_alojado.apellidos}">NOMBRES
-                                        Y APELLIDOS</span><br />
+                                        th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
+                                        NOMBRES Y APELLIDOS
+                                    </span>
+                                    <br />
                                 </span>
+
+                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
+                                    th:each="cliente : ${ventasVencidas[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                    <span class="text-danger fw-bold"
+                                        th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
+                                        NOMBRES Y APELLIDOS
+                                    </span>
+                                    <br />
+                                </span>
+                                <!-- ########################################################################################### -->
                             </td>
+                            <!-- ###################################################################################################### -->
+
+                            <!-- ################################## MOSTRAMOS LA EDAD DE LOS CLIENTES #################################### -->
                             <td class="text-center">
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                    <span th:text="${cliente.usuario_alojado.edad}">EDAD</span><br />
+                                    <span th:text="${cliente.usuario_alojado.edad}"></span><br />
+                                </span>
+
+                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
+                                    th:each="cliente : ${ventasVencidas[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                    <span class="text-danger fw-bold" th:text="${cliente.usuario_alojado.edad}">
+                                    </span> <br />
                                 </span>
                             </td>
+                            <!-- ######################################################################################################### -->
+
+                            <!-- ################################## MOSTRAMOS EL D.N.I. DE LOS CLIENTES ################################## -->
                             <td class="text-center">
-                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
+                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                    <span th:text="${cliente.usuario_alojado.dni}">D.N.I.</span><br />
+                                    <span th:text="${cliente.usuario_alojado.dni}"></span><br />
+                                </span>
+
+                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
+                                    th:each="cliente : ${ventasVencidas[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                    <span class="text-danger fw-bold" th:text="${cliente.usuario_alojado.dni}">
+                                    </span> <br />
                                 </span>
                             </td>
-                            <td class="text-center"
-                                th:text="${ultimaVentaPorHabitacionFechaFormateada[hab.id_habitacion] != null && ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA' ? #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : ''}">
-                                TOTAL</td>
+                            <!-- ######################################################################################################### -->
+
+                            <!-- ####################################### PRECIO TOTAL DE LA VENTA ######################################## -->
+                            <td class="text-center">
+                                <span
+                                    th:text="${(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : (ventasVencidas[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ventasVencidas[hab.id_habitacion]?.monto_total, 1, 2) : ''}"
+                                    th:classappend="${ventasVencidas[hab.id_habitacion] != null ? 'text-danger fw-bold' : ''}">
+                                </span>
+                            </td>
+                            <!-- ######################################################################################################### -->
+
                             <td class="text-center align-middle">
                                 <form th:action="@{/editar/{id}(id=${hab.id_habitacion})}">
-                                    <input type="hidden" name="idVenta"
+                                    <input th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}" type="hidden"
+                                        name="idVenta"
                                         th:value="${ultimaVentaPorHabitacion[hab.id_habitacion]?.id_venta}">
-                                    <button type="submit" class="btn btn-sm btn-primary" title="EDITAR">
+
+                                    <input th:if="${ventasVencidas[hab.id_habitacion] != null}" type="hidden"
+                                        name="idVenta" th:value="${ventasVencidas[hab.id_habitacion]?.id_venta}">
+
+                                    <button type="submit" class="btn btn-sm btn-primary"
+                                        th:with="ventaID=${ultimaVentaPorHabitacion[hab.id_habitacion] != null ? ultimaVentaPorHabitacion[hab.id_habitacion].id_venta : 
+                                        ventasVencidas[hab.id_habitacion] != null ? ventasVencidas[hab.id_habitacion].id_venta : ''}" th:title="'Venta: ' + ${ventaID}">
                                         Editar
                                     </button>
                                 </form>

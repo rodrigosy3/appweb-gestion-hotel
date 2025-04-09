@@ -21,7 +21,7 @@ public class HabitacionesCaracteristicas {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_habitacion_caracteristica;
 
-    @Column(name = "nombre", nullable = false)
+    @Column(name = "nombre")
     private String nombre;
 
     @Column(name = "marca")
@@ -33,11 +33,15 @@ public class HabitacionesCaracteristicas {
     @Column(name = "precio")
     private Double precio = 0.0;
 
-    @Column(name = "fecha_creacion", nullable = false)
+    @Column(name = "fecha_creacion")
     private String fecha_creacion; // ISO 8601
 
+    @Column(name = "eliminado")
+    private boolean eliminado = false;
+    
+    // Genera la fecha en el momento del guardado y no cuando se empezó a crear la entidad
     @PrePersist
     private void prePersist() {
-        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
     }
 }

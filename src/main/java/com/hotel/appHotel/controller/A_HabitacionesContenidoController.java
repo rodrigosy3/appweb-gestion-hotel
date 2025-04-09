@@ -2,7 +2,9 @@ package com.hotel.appHotel.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,7 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 @RequestMapping(value = "/admin/habitacionesContenido")
 public class A_HabitacionesContenidoController {
-    
+
     private static final String CARPETA_BASE = "templates_habitacionesContenido/";
     private static final String VIEW_LISTAR = CARPETA_BASE + "habitacionesContenido";
     private static final String VIEW_NUEVO = CARPETA_BASE + "form_nuevo_habitacionContenido";
@@ -44,7 +46,7 @@ public class A_HabitacionesContenidoController {
 
     @GetMapping
     public String listarHabitacionesContenido(Model modelo) {
-        modelo.addAttribute("habitacionesContenido", servicio.getHabitacionesContenido());
+        modelo.addAttribute("habitacionesContenido", obtenerHabitacionesContenido());
 
         return VIEW_LISTAR;
     }
@@ -52,8 +54,8 @@ public class A_HabitacionesContenidoController {
     @GetMapping("/nuevo")
     public String nuevaHabitacionContenidoForm(Model modelo, RedirectAttributes redirectAttributes) {
         HabitacionesContenido habitacionContenido = new HabitacionesContenido();
-        List<Habitaciones> habitaciones = habitacionesServicio.getHabitaciones();
-        List<HabitacionesCaracteristicas> habitacionesCaracteristica = habitacionesCaracteristicasServicio.getHabitacionesCaracteristica();
+        List<Habitaciones> habitaciones = obtenerHabitaciones();
+        List<HabitacionesCaracteristicas> habitacionesCaracteristica = obtenerHabitacionesCaracteristica();
 
         if (habitaciones.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
@@ -71,23 +73,25 @@ public class A_HabitacionesContenidoController {
 
         modelo.addAttribute("habitaciones", habitaciones);
         modelo.addAttribute("habitacionesCaracteristica", habitacionesCaracteristica);
-        modelo.addAttribute("habitacionesContenido", servicio.getHabitacionesContenido());
+        modelo.addAttribute("habitacionesContenido", obtenerHabitacionesContenido());
         modelo.addAttribute("habitacionContenido", habitacionContenido);
 
         return VIEW_NUEVO;
     }
 
     @PostMapping
-    public String crearHabitacionContenido(@ModelAttribute("habitacionContenido") HabitacionesContenido habitacionContenido) {
+    public String crearHabitacionContenido(
+            @ModelAttribute("habitacionContenido") HabitacionesContenido habitacionContenido) {
         servicio.createHabitacionContenido(habitacionContenido);
 
         return REDIRECT_LISTAR;
     }
 
     @GetMapping("/editar/{id}")
-    public String editarHabitacionContenidoForm(@PathVariable Long id, Model modelo, RedirectAttributes redirectAttributes) {
-        List<Habitaciones> habitaciones = habitacionesServicio.getHabitaciones();
-        List<HabitacionesCaracteristicas> habitacionesCaracteristica = habitacionesCaracteristicasServicio.getHabitacionesCaracteristica();
+    public String editarHabitacionContenidoForm(@PathVariable Long id, Model modelo,
+            RedirectAttributes redirectAttributes) {
+        List<Habitaciones> habitaciones = obtenerHabitaciones();
+        List<HabitacionesCaracteristicas> habitacionesCaracteristica = obtenerHabitacionesCaracteristica();
 
         if (habitaciones.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
@@ -105,7 +109,7 @@ public class A_HabitacionesContenidoController {
 
         modelo.addAttribute("habitaciones", habitaciones);
         modelo.addAttribute("habitacionesCaracteristica", habitacionesCaracteristica);
-        modelo.addAttribute("habitacionesContenido", servicio.getHabitacionesContenido());
+        modelo.addAttribute("habitacionesContenido", obtenerHabitacionesContenido());
         modelo.addAttribute("habitacionContenido", servicio.getHabitacionContenidoById(id));
 
         return VIEW_EDITAR;
@@ -129,10 +133,37 @@ public class A_HabitacionesContenidoController {
         return REDIRECT_LISTAR;
     }
 
-    @GetMapping("/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarHabitacionContenido(@PathVariable Long id) {
-        servicio.deleteHabitacionContenido(id);
+        HabitacionesContenido habitacionContenidoExistente = servicio.getHabitacionContenidoById(id);
+
+        habitacionContenidoExistente.setEliminado(true);
+
+        servicio.updateHabitacionContenido(habitacionContenidoExistente);
 
         return REDIRECT_LISTAR;
+    }
+
+    private List<HabitacionesContenido> obtenerHabitacionesContenido() {
+        return servicio.getHabitacionesContenido()
+                .stream()
+                .filter(habitacionContenido -> !habitacionContenido.isEliminado())
+                .sorted(Comparator.comparing(HabitacionesContenido::getId_habitacion_contenido).reversed())
+                .collect(Collectors.toList());
+    }
+
+    private List<Habitaciones> obtenerHabitaciones() {
+        return habitacionesServicio.getHabitaciones()
+                .stream()
+                .filter(habitacion -> !habitacion.isEliminado())
+                .sorted(Comparator.comparing(Habitaciones::getNumero))
+                .collect(Collectors.toList());
+    }
+
+    private List<HabitacionesCaracteristicas> obtenerHabitacionesCaracteristica() {
+        return habitacionesCaracteristicasServicio.getHabitacionesCaracteristica()
+                .stream()
+                .filter(habitacionCaracteristica -> !habitacionCaracteristica.isEliminado())
+                .collect(Collectors.toList());
     }
 }

@@ -2,8 +2,9 @@ package com.hotel.appHotel.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,7 +46,7 @@ public class A_VentasClientesHabitacionController {
 
     @GetMapping
     public String listarVentasClientesHabitacion(Model modelo) {
-        modelo.addAttribute("ventasClientesHabitacion", servicio.getVentasClientesHabitacion());
+        modelo.addAttribute("ventasClientesHabitacion", obtenerVentasClientesHabitacion());
 
         return VIEW_LISTAR;
     }
@@ -53,15 +54,11 @@ public class A_VentasClientesHabitacionController {
     @GetMapping("/nuevo")
     public String nuevaVentaClienteHabitacionForm(Model modelo, RedirectAttributes redirectAttributes) {
         VentasClientesHabitacion ventaClienteHabitacion = new VentasClientesHabitacion();
-        List<Ventas> ventas = ventasServicio.getVentas();
-        List<Usuarios> usuarios = usuariosServicio.getUsuarios();
-        List<Usuarios> usuarios_cliente = new ArrayList<>();
-
-        for (Usuarios usuario : usuarios) {
-            if (usuario.getRol().getNivel() == 0) {
-                usuarios_cliente.add(usuario);
-            }
-        }
+        List<Ventas> ventas = obtenerVentas();
+        List<Usuarios> usuarios_cliente = obtenerUsuarios()
+                .stream()
+                .filter(usuario_cliente -> usuario_cliente.getRol().getNivel() == 0)
+                .collect(Collectors.toList());
 
         if (ventas.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
@@ -79,30 +76,28 @@ public class A_VentasClientesHabitacionController {
 
         modelo.addAttribute("ventas", ventas);
         modelo.addAttribute("usuarios_cliente", usuarios_cliente);
-        modelo.addAttribute("ventasClientesHabitacion", servicio.getVentasClientesHabitacion());
+        modelo.addAttribute("ventasClientesHabitacion", obtenerVentasClientesHabitacion());
         modelo.addAttribute("ventaClienteHabitacion", ventaClienteHabitacion);
 
         return VIEW_NUEVO;
     }
 
     @PostMapping
-    public String crearVentaClienteHabitacion(@ModelAttribute("ventaClienteHabitacion") VentasClientesHabitacion ventaClienteHabitacion) {
+    public String crearVentaClienteHabitacion(
+            @ModelAttribute("ventaClienteHabitacion") VentasClientesHabitacion ventaClienteHabitacion) {
         servicio.createVentaClienteHabitacion(ventaClienteHabitacion);
 
         return REDIRECT_LISTAR;
     }
 
     @GetMapping("/editar/{id}")
-    public String editarVentaClienteHabitacionForm(@PathVariable Long id, Model modelo, RedirectAttributes redirectAttributes) {
-        List<Ventas> ventas = ventasServicio.getVentas();
-        List<Usuarios> usuarios = usuariosServicio.getUsuarios();
-        List<Usuarios> usuarios_cliente = new ArrayList<>();
-
-        for (Usuarios usuario : usuarios) {
-            if (usuario.getRol().getNivel() == 0) {
-                usuarios_cliente.add(usuario);
-            }
-        }
+    public String editarVentaClienteHabitacionForm(@PathVariable Long id, Model modelo,
+            RedirectAttributes redirectAttributes) {
+        List<Ventas> ventas = obtenerVentas();
+        List<Usuarios> usuarios_cliente = obtenerUsuarios()
+                .stream()
+                .filter(usuario_cliente -> usuario_cliente.getRol().getNivel() == 0)
+                .collect(Collectors.toList());
 
         if (usuarios_cliente.isEmpty()) {
             redirectAttributes.addFlashAttribute("error",
@@ -113,7 +108,7 @@ public class A_VentasClientesHabitacionController {
 
         modelo.addAttribute("ventas", ventas);
         modelo.addAttribute("usuarios_cliente", usuarios_cliente);
-        modelo.addAttribute("ventasClientesHabitacion", servicio.getVentasClientesHabitacion());
+        modelo.addAttribute("ventasClientesHabitacion", obtenerVentasClientesHabitacion());
         modelo.addAttribute("ventaClienteHabitacion", servicio.getVentaClienteHabitacionById(id));
 
         return VIEW_EDITAR;
@@ -135,10 +130,36 @@ public class A_VentasClientesHabitacionController {
         return REDIRECT_LISTAR;
     }
 
-    @GetMapping("/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarVentaClienteHabitacion(@PathVariable Long id) {
-        servicio.deleteVentaClienteHabitacionById(id);
+        VentasClientesHabitacion ventaClienteHabitacionExistente = servicio.getVentaClienteHabitacionById(id);
+
+        ventaClienteHabitacionExistente.setEliminado(true);
+
+        servicio.updateVentaClienteHabitacion(ventaClienteHabitacionExistente);
 
         return REDIRECT_LISTAR;
+    }
+
+    private List<VentasClientesHabitacion> obtenerVentasClientesHabitacion() {
+        return servicio.getVentasClientesHabitacion()
+                .stream()
+                .filter(ventaClienteHabitacion -> !ventaClienteHabitacion.isEliminado())
+                .sorted(Comparator.comparing(VentasClientesHabitacion::getId_venta_cliente_habitacion).reversed())
+                .collect(Collectors.toList());
+    }
+
+    private List<Ventas> obtenerVentas() {
+        return ventasServicio.getVentas()
+                .stream()
+                .filter(venta -> !venta.isEliminado())
+                .collect(Collectors.toList());
+    }
+
+    private List<Usuarios> obtenerUsuarios() {
+        return usuariosServicio.getUsuarios()
+                .stream()
+                .filter(usuario -> !usuario.isEliminado())
+                .collect(Collectors.toList());
     }
 }

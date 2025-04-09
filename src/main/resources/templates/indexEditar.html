@@ -403,8 +403,7 @@
                                         <div class="row mb-4">
                                             <div class="col text-center">
                                                 <button type="button" class="btn btn-primary w-50"
-                                                    id="btnGuardar">GUARDAR
-                                                    VENTA</button>
+                                                    id="btnGuardar">GUARDAR VENTA EDITADA</button>
                                             </div>
                                         </div>
                                     </div>
@@ -414,13 +413,13 @@
 
                         <div class="row my-3">
                             <div class="col text-center">
-                                <button type="button" class="btn btn-secondary w-50" id="btnRetirarCliente"
+                                <button type="button" class="btn btn-success w-75 fw-bold" id="btnRetirarCliente"
                                     th:if="${ventaHabitacion.id_venta}">
-                                    RETIRAR CLIENTE
+                                    FINALIZAR VENTA
                                 </button>
                             </div>
-                            <div class="col text-center">
-                                <button type="button" class="btn btn-danger w-50" data-bs-toggle="modal"
+                            <div class="col col-3 text-end">
+                                <button type="button" class="btn btn-danger fw-bold" data-bs-toggle="modal"
                                     data-bs-target="#cancelModal">CANCELAR Y VOLVER</button>
                             </div>
                         </div>

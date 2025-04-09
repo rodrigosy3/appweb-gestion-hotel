@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado del historial de vetos</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container">
+        <div class="d-flex justify-content-between">
+            <div>
+                <h1 class="text-center">LISTA DE HISTORIAL DE VETOS</h1>
+            </div>
+            <div class="my-auto">
+                <a class="btn btn-primary" th:href="@{/historialVetos/exportar-pdf}" target="_blank">
+                    <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                </a>                
+            </div>
+        </div>
+
+        <table class="table border table-hover shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th>USUARIO RESPONSABLE</th>
+                    <th>USUARIO REPORTADO</th>
+                    <th>RAZÓN DEL VETO</th>
+
+                    <th class="text-center">FECHA DE CREACIÓN</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="historialVeto: ${historialVetos}">
+                    <td
+                        th:text="${historialVeto.usuario_responsable.nombres + ' ' + historialVeto.usuario_responsable.apellidos}">
+                        USUARIO RESPONSABLE</td>
+                    <td
+                        th:text="${historialVeto.usuario_vetado.nombres + ' ' + historialVeto.usuario_vetado.apellidos}">
+                        USUARIO REPORTADO</td>
+                    <td th:text="${historialVeto.razon}">RAZÓN DEL VETO</td>
+
+                    <td th:text="${historialVeto.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

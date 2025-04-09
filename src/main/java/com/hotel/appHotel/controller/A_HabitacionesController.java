@@ -46,10 +46,7 @@ public class A_HabitacionesController {
 
     @GetMapping
     public String listarHabitaciones(Model modelo) {
-        List<Habitaciones> habitacionesDesc = servicio.getHabitaciones();
-        habitacionesDesc = habitacionesDesc.stream().sorted(Comparator.comparing(Habitaciones::getNumero)).collect(Collectors.toList());
-
-        modelo.addAttribute("habitaciones", habitacionesDesc);
+        modelo.addAttribute("habitaciones", obtenerHabitaciones());
 
         return VIEW_LISTAR;
     }
@@ -73,7 +70,7 @@ public class A_HabitacionesController {
         } else {
             modelo.addAttribute("habitacionesTipos", habitacionesTipos);
             modelo.addAttribute("habitacionesEstado", habitacionesEstado);
-            modelo.addAttribute("habitaciones", servicio.getHabitaciones());
+            modelo.addAttribute("habitaciones", obtenerHabitaciones());
             modelo.addAttribute("habitacion", habitacion);
 
             return VIEW_NUEVO;
@@ -107,7 +104,7 @@ public class A_HabitacionesController {
         } else {
             modelo.addAttribute("habitacionesTipos", habitacionesTipos);
             modelo.addAttribute("habitacionesEstado", habitacionesEstado);
-            modelo.addAttribute("habitaciones", servicio.getHabitaciones());
+            modelo.addAttribute("habitaciones", obtenerHabitaciones());
             modelo.addAttribute("habitacion", servicio.getHabitacionById(id));
 
             return VIEW_EDITAR;
@@ -134,10 +131,22 @@ public class A_HabitacionesController {
         return REDIRECT_LISTAR;
     }
 
-    @GetMapping("/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminarHabitacion(@PathVariable Long id) {
-        servicio.deleteHabitacion(id);
+        Habitaciones habitacionExistente = servicio.getHabitacionById(id);
+
+        habitacionExistente.setEliminado(true);
+
+        servicio.updateHabitacion(habitacionExistente);
 
         return REDIRECT_LISTAR;
+    }
+
+    private List<Habitaciones> obtenerHabitaciones() {
+        return servicio.getHabitaciones()
+                .stream()
+                .filter(habitacion -> !habitacion.isEliminado())
+                .sorted(Comparator.comparing(Habitaciones::getNumero).reversed())
+                .collect(Collectors.toList());
     }
 }

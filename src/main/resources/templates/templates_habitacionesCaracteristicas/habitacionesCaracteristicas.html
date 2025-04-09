@@ -45,11 +45,12 @@
                         </a>
                     </td>
                     <td class="text-center border" style="width: 12px;">
-                        <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR"
-                            th:href="@{/admin/habitacionesCaracteristicas/{id}(id=${habitacionCaracteristica.id_habitacion_caracteristica})}"
-                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta característica de la habitación?')">
-                            <i class="bi bi-trash-fill"></i>
-                        </a>
+                        <form th:action="@{/admin/habitacionesCaracteristicas/eliminar/{id}(id=${habitacionCaracteristica.id_habitacion_caracteristica})}" method="post"
+                            onsubmit="return confirm('¿Estás seguro de que deseas eliminar este registro?')">
+                            <button type="submit" class="btn btn-sm btn-danger" title="ELIMINAR">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </form>
                     </td>
                     <td th:text="${habitacionCaracteristica.id_habitacion_caracteristica}" class="text-center">ID</td>
                     <td th:text="${habitacionCaracteristica.nombre}">CARACTERÍSTICA</td>

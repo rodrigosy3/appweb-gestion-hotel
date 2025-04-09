@@ -43,11 +43,12 @@
                         </a>
                     </td>
                     <td class="text-center border" style="width: 12px;">
-                        <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR CREDENCIAL"
-                            th:href="@{/admin/credenciales/{id}(id=${credencial.id_credencial})}"
-                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta credencial?')">
-                            <i class="bi bi-trash-fill"></i>
-                        </a>
+                        <form th:action="@{/admin/credenciales/eliminar/{id}(id=${credencial.id_credencial})}" method="post"
+                            onsubmit="return confirm('¿Estás seguro de que deseas eliminar este usuario?')">
+                            <button type="submit" class="btn btn-sm btn-danger" title="ELIMINAR">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </form>
                     </td>
                     <td th:text="${credencial.id_credencial}" class="text-center">ID</td>
                     <td th:text="${credencial.usuario.nombres}">NOMBRES</td>

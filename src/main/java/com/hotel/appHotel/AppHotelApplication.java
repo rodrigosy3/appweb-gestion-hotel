@@ -13,10 +13,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.hotel.appHotel.model.Habitaciones;
+import com.hotel.appHotel.model.HabitacionesCaracteristicas;
 import com.hotel.appHotel.model.HabitacionesEstado;
 import com.hotel.appHotel.model.HabitacionesTipos;
 import com.hotel.appHotel.model.Roles;
 import com.hotel.appHotel.model.Usuarios;
+import com.hotel.appHotel.repository.HabitacionesCaracteristicasRepository;
 import com.hotel.appHotel.repository.HabitacionesEstadoRepository;
 import com.hotel.appHotel.repository.HabitacionesRepository;
 import com.hotel.appHotel.repository.HabitacionesTiposRepository;
@@ -44,28 +46,22 @@ public class AppHotelApplication {
 	@Autowired
 	HabitacionesRepository repoHabitaciones;
 
+	@Autowired
+	HabitacionesCaracteristicasRepository repoHabitacionesCaracteristicas;
+
 	public static void main(String[] args) {		
-		int puerto = 3000; // Ajusta esto según el puerto que uses
+		// int puerto = 3000;
 		crearCarpetaBD();
 
-		if (isServerRunning(puerto)) {
-			System.out.println("El servidor ya está en ejecución. Abriendo el navegador...");
-			abrirNavegador("http://localhost:" + puerto);
-			return; // No ejecuta Spring Boot nuevamente
-		}
+		// if (isServerRunning(puerto)) {
+		// 	System.out.println("El servidor ya está en ejecución. Abriendo el navegador...");
+		// 	abrirNavegador("http://localhost:" + puerto);
+		// 	return;
+		// }
 
-		// Si el servidor no está corriendo, lo inicia y abre el navegador
+		// Si el servidor no está en ejecución, lo inicia y abre el navegador
 		SpringApplication.run(AppHotelApplication.class, args);
-		abrirNavegador("http://localhost:" + puerto);
-	}
-
-	// Verifica si el servidor ya está corriendo
-	private static boolean isServerRunning(int port) {
-		try (ServerSocket socket = new ServerSocket(port)) {
-			return false; // Si el puerto está libre, significa que el servidor NO está corriendo
-		} catch (IOException e) {
-			return true; // Si el puerto está en uso, el servidor YA está corriendo
-		}
+		// abrirNavegador("http://localhost:" + puerto);
 	}
 
 	private static void crearCarpetaBD() {
@@ -81,6 +77,15 @@ public class AppHotelApplication {
             }
         }
     }
+
+	// Verifica si el servidor ya está en ejecución
+	private static boolean isServerRunning(int port) {
+		try (ServerSocket socket = new ServerSocket(port)) {
+			return false; // Puerto libre - El servidor NO está en ejecución
+		} catch (IOException e) {
+			return true; // Puerto en uso - El servidor YA está en ejecución
+		}
+	}
 
 	// Abre el navegador en la URL de la aplicación
 	private static void abrirNavegador(String url) {
@@ -108,6 +113,7 @@ public class AppHotelApplication {
 			List<HabitacionesTipos> habitacionesTipos = repoHabitacionesTipos.findAll();
 			List<Usuarios> usuarios = repoUsuarios.findAll();
 			List<Habitaciones> habitaciones = repoHabitaciones.findAll();
+			List<HabitacionesCaracteristicas> habitacionesCaracteristicas = repoHabitacionesCaracteristicas.findAll();
 
 			if (roles.isEmpty()) {
 				Roles rol_1 = new Roles();
@@ -219,6 +225,38 @@ public class AppHotelApplication {
 				usuario.setRol(repoRoles.findByNombre("ADMINISTRADOR"));
 
 				repoUsuarios.save(usuario);
+			}
+
+			if (habitacionesCaracteristicas.isEmpty()) {
+				HabitacionesCaracteristicas hCaracteristica_1 = new HabitacionesCaracteristicas();
+                hCaracteristica_1.setNombre(("Televisión 50" + '"').toUpperCase());
+				hCaracteristica_1.setMarca("Samsung".toUpperCase());
+				hCaracteristica_1.setPrecio(5D);
+                
+				repoHabitacionesCaracteristicas.save(hCaracteristica_1);
+
+				HabitacionesCaracteristicas hCaracteristica_2 = new HabitacionesCaracteristicas();
+				hCaracteristica_2.setNombre("Baño".toUpperCase());
+				hCaracteristica_2.setMarca("Trebol".toUpperCase());
+				hCaracteristica_2.setDescripcion("Contiene lavamanos, taza, espejo, ducha y cortinas.");
+				hCaracteristica_2.setPrecio(10D);
+                
+				repoHabitacionesCaracteristicas.save(hCaracteristica_2);
+
+				HabitacionesCaracteristicas hCaracteristica_3 = new HabitacionesCaracteristicas();
+				hCaracteristica_3.setNombre("Cama".toUpperCase());
+				hCaracteristica_3.setMarca("Cisne".toUpperCase());
+				hCaracteristica_3.setDescripcion("Contiene 2 almohadas, 1 juego de sábanas y 1 edredon");
+				hCaracteristica_3.setPrecio(0D);
+                
+				repoHabitacionesCaracteristicas.save(hCaracteristica_3);
+
+				HabitacionesCaracteristicas hCaracteristica_4 = new HabitacionesCaracteristicas();
+				hCaracteristica_4.setNombre("Velador".toUpperCase());
+				hCaracteristica_4.setMarca("".toUpperCase());
+				hCaracteristica_4.setPrecio(0D);
+				
+				repoHabitacionesCaracteristicas.save(hCaracteristica_4);
 			}
 		};
 	}

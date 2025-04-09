@@ -60,11 +60,12 @@
                         </a>
                     </td>
                     <td class="text-center border" style="width: 12px;">
-                        <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR"
-                            th:href="@{/admin/ventas/{id}(id=${venta.id_venta})}"
-                            onclick="return confirm('¿Estás seguro de que deseas eliminar esta venta?')">
-                            <i class="bi bi-trash-fill"></i>
-                        </a>
+                        <form th:action="@{/admin/ventas/eliminar/{id}(id=${venta.id_venta})}" method="post"
+                            onsubmit="return confirm('¿Estás seguro de que deseas eliminar este registro?')">
+                            <button type="submit" class="btn btn-sm btn-danger" title="ELIMINAR">
+                                <i class="bi bi-trash-fill"></i>
+                            </button>
+                        </form>
                     </td>
                     <td th:text="${venta.id_venta}" class="text-center border">ID</td>
                     <td

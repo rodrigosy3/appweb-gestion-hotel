@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar venta de cliente y habitación</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div>
+        <div class="col">
+            <div class="mb-5 ">
+                <div class="card mx-auto shadow" style="width: 45%;">
+                    <div class="card-header text-center text-bg-secondary" style="font-size: x-large;">FORMULARIO PARA
+                        EDITAR LA VENTA DE CLIENTE Y HABITACIÓN</div>
+
+                    <div class="card-body">
+                        <form
+                            th:action="@{/admin/ventasClientesHabitacion/{id}(id=${ventaClienteHabitacion.id_venta_cliente_habitacion})}"
+                            th:object="${ventaClienteHabitacion}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">ID:</label>
+                                <input type="text" class="form-control" th:field="*{id_venta_cliente_habitacion}"
+                                    disabled>
+                            </div>
+                            <div class="row justify-content-between">
+                                <div class="mb-3 col-auto w-25">
+                                    <label class="form-label">ID VENTA</label>
+                                    <select class="form-select" th:field="*{venta}" id="ventaSelect" required>
+                                        <option th:each="venta : ${ventas}" th:value="${venta.id_venta}"
+                                            th:data-nombres="${'[' + venta.usuario_responsable.rol.nombre + ']' + ' ' + venta.usuario_responsable.nombres +  ' ' + venta.usuario_responsable.apellidos}"
+                                            th:text="${venta.id_venta}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-auto w-75 text-center">
+                                    <label class="form-label">USUARIO RESPONSABLE</label>
+                                    <input type="text" class="form-control text-center" id="usuarioResponsableInput"
+                                        disabled>
+                                </div>
+                            </div>
+                            <div class="row justify-content-evenly">
+                                <div class="mb-3 col-auto w-75">
+                                    <label class="form-label">USUARIO ALOJADO</label>
+                                    <select class="form-select" id="usuarioAlojadoSelect" th:field="*{usuario_alojado}"
+                                        required>
+                                        <option th:each="usuario_alojado : ${usuarios_cliente}"
+                                            th:value="${usuario_alojado.id_usuario}"
+                                            th:data-dni="${usuario_alojado.dni}"
+                                            th:text="${usuario_alojado.nombres} + ' ' + ${usuario_alojado.apellidos}">
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="mb-3 col-auto text-center w-25">
+                                    <label class="form-label">D.N.I.</label>
+                                    <input type="text" class="form-control text-center" id="dniInput" disabled>
+                                </div>
+                            </div>
+
+                            <div class="row mx-5 mt-3">
+                                <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal">CANCELAR</button>
+                                <button type="submit" class="btn btn-primary col mx-3">EDITAR REGISTRO</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mx-5">
+                <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+                    <span th:text="${error}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h1 class="text-center">LISTA DE VENTAS POR CLIENTE Y HABITACIÓN</h1>
+                    </div>
+                    <div class="my-auto">
+                        <a class="btn btn-primary disabled-button" role="button">AGREGAR
+                            REGISTRO</a>
+                    </div>
+                </div>
+
+                <table class="table border table-hover shadow">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center w-auto" colspan="2">ACCIONES</th>
+                            <th class="text-center">ID</th>
+                            <th>USUARIO RESPONSABLE</th>
+                            <th>CLIENTE ALOJADO</th>
+                            <th>ID VENTA</th>
+                            <th>HABITACION</th>
+
+                            <th class="text-center">FECHA DE CREACIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="ventaClienteHabitacion: ${ventasClientesHabitacion}">
+                            <td class="text-center" style="width: 12px;">
+                                <a class="btn btn-sm btn-primary" role="button" title="EDITAR"
+                                    th:href="@{/admin/ventasClientesHabitacion/editar/{id}(id=${ventaClienteHabitacion.id_venta_cliente_habitacion})}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            </td>
+                            <td class="text-center border" style="width: 12px;">
+                                <a class="btn btn-sm btn-danger disabled-button" role="button" title="ELIMINAR"> <i
+                                        class="bi bi-trash-fill"></i>
+                                </a>
+                            </td>
+                            <td th:text="${ventaClienteHabitacion.id_venta_cliente_habitacion}"
+                                class="text-center border">ID</td>
+                            <td
+                                th:text="${ventaClienteHabitacion.venta.usuario_responsable.nombres + ' ' + ventaClienteHabitacion.venta.usuario_responsable.apellidos}">
+                                USUARIO RESPONSABLE</td>
+                            <td
+                                th:text="${ventaClienteHabitacion.usuario_alojado.nombres + ' ' + ventaClienteHabitacion.usuario_alojado.apellidos}">
+                                CLIENTE ALOJADO</td>
+                            <td class="text-center" th:text="${ventaClienteHabitacion.venta.id_venta}">ID VENTA</td>
+                            <td
+                                th:text="${'['+ ventaClienteHabitacion.venta.habitacion.numero+']'+' (' + ventaClienteHabitacion.venta.habitacion.tipo.abreviacion_tipo + ')' + ' ' + ventaClienteHabitacion.venta.habitacion.tipo.nombre_tipo}">
+                                HABITACIÓN</td>
+
+                            <td th:text="${ventaClienteHabitacion.fecha_creacion}" class="text-center">FECHA DE CREACIÓN
+                            </td>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:insert="~{fragments/modal :: modal('/admin/ventasClientesHabitacion')}"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ventaSelect = document.getElementById("ventaSelect");
+            const usuarioResponsableInput = document.getElementById("usuarioResponsableInput");
+            const usuarioAlojadoSelect = document.getElementById("usuarioAlojadoSelect");
+            const dniInput = document.getElementById("dniInput");
+
+            if (!ventaSelect || !usuarioAlojadoSelect || !usuarioResponsableInput || !dniInput) {
+                console.error("Los elementos no fueron encontrados en el DOM.");
+                return;
+            }
+
+            function actualizarVentaSelect() {
+                const selectedOptionVenta = ventaSelect.options[ventaSelect.selectedIndex];
+                if (selectedOptionVenta) {
+                    usuarioResponsableInput.value = selectedOptionVenta.getAttribute("data-nombres") || "";
+                }
+            }
+
+            function actualizarUsuarioAlojadoSelect() {
+                const selectedOptionUsuario = usuarioAlojadoSelect.options[usuarioAlojadoSelect.selectedIndex];
+                if (selectedOptionUsuario) {
+                    dniInput.value = selectedOptionUsuario.getAttribute("data-dni") || "";
+                }
+            }
+
+            // Asignar eventos de cambio
+            ventaSelect.addEventListener("change", actualizarVentaSelect);
+            usuarioAlojadoSelect.addEventListener("change", actualizarUsuarioAlojadoSelect);
+
+            // Llamar a las funciones al cargar la página para establecer valores iniciales
+            actualizarVentaSelect();
+            actualizarUsuarioAlojadoSelect();
+        });
+    </script>
+    
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

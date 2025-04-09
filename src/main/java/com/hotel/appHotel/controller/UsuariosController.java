@@ -38,7 +38,7 @@ public class UsuariosController {
     private static final String REDIRECT_LISTAR = "redirect:/clientes";
 
     @Autowired
-    private UsuariosService usuariosServicio;
+    private UsuariosService servicio;
 
     @Autowired
     private RolesRepository rolesRepositorio;
@@ -51,22 +51,14 @@ public class UsuariosController {
 
     @GetMapping
     public String listarUsuarios(Model modelo) {
-        List<Usuarios> usuariosDesc = usuariosServicio.getUsuarios().stream()
-                .filter(usuario -> usuario.getRol().getNombre().equals("CLIENTE"))
-                .sorted(Comparator.comparing(Usuarios::getId_usuario).reversed()).collect(Collectors.toList());
-
-        modelo.addAttribute("usuarios", usuariosDesc);
+        modelo.addAttribute("usuarios", obtenerUsuarios());
 
         return VIEW_LISTAR;
     }
 
     @GetMapping("/nuevo")
     public String nuevoUsuarioForm(Model modelo) {
-        List<Usuarios> usuariosDesc = usuariosServicio.getUsuarios().stream()
-                .filter(user -> user.getRol().getNombre().equals("CLIENTE"))
-                .sorted(Comparator.comparing(Usuarios::getId_usuario).reversed()).collect(Collectors.toList());
-
-        modelo.addAttribute("usuarios", usuariosDesc);
+        modelo.addAttribute("usuarios", obtenerUsuarios());
 
         Usuarios usuario = new Usuarios();
         modelo.addAttribute("usuario", usuario);
@@ -80,11 +72,9 @@ public class UsuariosController {
         usuario.setNombres(usuario.getNombres().toUpperCase());
         usuario.setApellidos(usuario.getApellidos().toUpperCase());
 
-        usuariosServicio.createUsuario(usuario);
-
         if (usuario.getEstado_vetado()) {
-            Usuarios usuario_admin = usuariosServicio.getUsuarioById(2L) != null ? usuariosServicio.getUsuarioById(2L)
-                    : usuariosServicio.getUsuarioById(1L);
+            Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
+                    : servicio.getUsuarioById(1L);
 
             HistorialVetos historialNuevo = new HistorialVetos();
 
@@ -95,32 +85,26 @@ public class UsuariosController {
             historialVetosService.createHistorialVeto(historialNuevo);
         }
 
+        servicio.createUsuario(usuario);
+
         return REDIRECT_LISTAR;
     }
 
     @GetMapping("/editar/{id}")
     public String editarUsuarioForm(@PathVariable Long id, Model modelo) {
-        List<Usuarios> usuariosDesc = usuariosServicio.getUsuarios().stream()
-                .filter(user -> user.getRol().getNombre().equals("CLIENTE"))
-                .sorted(Comparator.comparing(Usuarios::getId_usuario).reversed()).collect(Collectors.toList());
-
-        if (!usuariosServicio.getUsuarioById(id).getRol().getNombre().equals("CLIENTE")) {
-            return REDIRECT_LISTAR;
-        }
-
-        modelo.addAttribute("usuarios", usuariosDesc);
-        modelo.addAttribute("usuario", usuariosServicio.getUsuarioById(id));
+        modelo.addAttribute("usuarios", obtenerUsuarios());
+        modelo.addAttribute("usuario", servicio.getUsuarioById(id));
 
         return VIEW_EDITAR;
     }
 
     @PostMapping("/{id}")
     public String actualizarUsuario(@PathVariable Long id, @ModelAttribute("usuario") Usuarios usuario, Model modelo) {
-        Usuarios usuarioExistente = usuariosServicio.getUsuarioById(id);
+        Usuarios usuarioExistente = servicio.getUsuarioById(id);
 
         if (usuarioExistente.getRazon_vetado() != usuario.getRazon_vetado()) {
-            Usuarios usuario_admin = usuariosServicio.getUsuarioById(2L) != null ? usuariosServicio.getUsuarioById(2L)
-                    : usuariosServicio.getUsuarioById(1L);
+            Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
+                    : servicio.getUsuarioById(1L);
 
             HistorialVetos historialNuevo = new HistorialVetos();
 
@@ -142,25 +126,21 @@ public class UsuariosController {
         usuarioExistente
                 .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
 
-        usuariosServicio.updateUsuario(usuarioExistente);
+        servicio.updateUsuario(usuarioExistente);
 
         return REDIRECT_LISTAR;
     }
 
     @PostMapping("/vetar/{id}")
     public ResponseEntity<String> vetarCliente(@PathVariable Long id, @RequestBody Usuarios datos) {
-        Usuarios usuario = usuariosServicio.getUsuarioById(id);
-
-        if (usuario == null) {
-            return ResponseEntity.badRequest().body("Error: No se encontró el cliente.");
-        }
+        Usuarios usuario = servicio.getUsuarioById(id);
 
         usuario.setEstado_vetado(true);
         usuario.setRazon_vetado(datos.getRazon_vetado());
-        usuariosServicio.updateUsuario(usuario);
+        servicio.updateUsuario(usuario);
 
-        Usuarios usuario_admin = usuariosServicio.getUsuarioById(2L) != null ? usuariosServicio.getUsuarioById(2L)
-                : usuariosServicio.getUsuarioById(1L);
+        Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
+                : servicio.getUsuarioById(1L);
 
         HistorialVetos historialNuevo = new HistorialVetos();
 
@@ -170,16 +150,12 @@ public class UsuariosController {
 
         historialVetosService.createHistorialVeto(historialNuevo);
 
-        return ResponseEntity.ok("Cliente vetado correctamente.");
+        return ResponseEntity.ok("El cliente " + usuario.getNombres() + " ha sido vetado.");
     }
-    
+
     @GetMapping("/exportar-pdf")
     public ResponseEntity<byte[]> exportarVentasPdf() {
-        List<Usuarios> usuarios = usuariosServicio.getUsuarios().stream()
-                .sorted(Comparator.comparing(Usuarios::getId_usuario).reversed())
-                .collect(Collectors.toList());
-        // Obtener las ventas desde el servicio
-        byte[] pdf = pdfServiceClientes.generarPdfClientes(usuarios);
+        byte[] pdf = pdfServiceClientes.generarPdfClientes(obtenerUsuarios());
 
         if (pdf == null) {
             return ResponseEntity.badRequest().build();
@@ -189,5 +165,13 @@ public class UsuariosController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=clientes.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
+    }
+
+    private List<Usuarios> obtenerUsuarios() {
+        return servicio.getUsuarios()
+                .stream()
+                .filter(usuario -> !usuario.isEliminado() && usuario.getRol().getNivel() == 0)
+                .sorted(Comparator.comparing(Usuarios::getId_usuario).reversed())
+                .collect(Collectors.toList());
     }
 }

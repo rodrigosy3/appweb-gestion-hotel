@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TABLAS DE DATOS</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div class="container mx-auto text-center" style="margin-top: 4rem;">
+        <h1> TABLAS DE INFORMACIÓN </h1>
+        <table class="mx-auto mt-4" style="height: 70vh;">
+            <tbody>
+                <tr>
+                    <td class="celda-tabla text-uppercase shadow">
+                        <a class="btn btn-outline-light fw-bold text-secondary bg-secondary-subtle w-100 h-100 align-content-center"
+                            th:href="@{/admin/roles}"> roles </a>
+                    </td>
+                    <td class="celda-tabla" style="width: 24rem;">
+                        <div class="arrow-horizontal-derecha"></div>
+                    </td>
+                    <td class="celda-tabla text-uppercase shadow" rowspan="7"
+                        style="writing-mode: vertical-lr; text-orientation: upright; width: 7rem;">
+                        <a class="btn btn-outline-light fw-bold text-primary bg-primary-subtle w-100 h-100 align-content-center fs-4"
+                            th:href="@{/admin/usuarios}">
+                            usuarios </a>
+                    </td>
+                    <td class="celda-tabla" style="width: 24rem;" rowspan="4">
+                        <div class="arrow-horizontal-derecha"></div>
+                    </td>
+                    <td class="celda-tabla text-uppercase shadow" rowspan="4"
+                        style="writing-mode: vertical-lr; text-orientation: upright; width: 7rem;"> <a
+                            class="btn btn-outline-light fw-bold text-primary bg-primary-subtle w-100 h-100 align-content-center fs-4"
+                            th:href="@{/admin/ventas}">
+                            ventas </a> </td>
+                    <td class="celda-tabla" style="width: 24rem;" rowspan="4">
+                        <div class="arrow-horizontal-izquierda"></div>
+                    </td>
+                    <td class="celda-tabla text-uppercase shadow" rowspan="4" colspan="7"> <a
+                            class="btn btn-outline-light fw-bold text-primary bg-primary-subtle w-100 h-100 align-content-center fs-2"
+                            th:href="@{/admin/habitaciones}">
+                            habitaciones </a> </td>
+                </tr>
+
+                <tr>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla bg-transparent"></td>
+                </tr>
+                <tr>
+                    <td class="celda-tabla text-uppercase shadow" rowspan="3">
+                        <a class="btn btn-outline-light fw-bold text-secondary bg-secondary-subtle w-100 h-100 align-content-center"
+                            th:href="@{/admin/historialVetos}">
+                            historial <br> de <br> vetos
+                        </a>
+                    </td>
+                    <td class="celda-tabla" style="width: 24rem;" rowspan="3">
+                        <div class="arrow-horizontal-izquierda"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                </tr>
+
+                <tr>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla">
+                        <div class="arrow-vertical-abajo"></div>
+                    </td>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla">
+                        <div class="arrow-vertical-abajo"></div>
+                    </td>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla">
+                        <div class="arrow-vertical-arriba"></div>
+                    </td>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla">
+                        <div class="arrow-vertical-arriba"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla" style="width: 24rem;" rowspan="2">
+                        <div class="arrow-horizontal-derecha"></div>
+                    </td>
+                    <td class="celda-tabla text-uppercase shadow" rowspan="2">
+                        <a class="btn btn-outline-light fw-bold text-success bg-success-subtle w-100 h-100 align-content-center"
+                            th:href="@{/admin/ventasClientesHabitacion}"> ventas a
+                            <br> clientes por <br> habitación </a>
+                    </td>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla text-uppercase shadow" rowspan="2">
+                        <a class="btn btn-outline-light fw-bold text-secondary bg-secondary-subtle w-100 h-100 align-content-center"
+                            th:href="@{/admin/habitacionesCaracteristicas}">
+                            características de <br> habitaciones </a>
+                    </td>
+                    <td class="celda-tabla" style="width: 24rem;" rowspan="2">
+                        <div class="arrow-horizontal-derecha"></div>
+                    </td>
+                    <td class="celda-tabla text-uppercase shadow" rowspan="2">
+                        <a class="btn btn-outline-light fw-bold text-success bg-success-subtle w-100 h-100 align-content-center"
+                            th:href="@{/admin/habitacionesContenido}"> contenido <br> de
+                            <br> habitaciones </a>
+                    </td>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla text-uppercase shadow" rowspan="2">
+                        <a class="btn btn-outline-light fw-bold text-secondary bg-secondary-subtle w-100 h-100 align-content-center"
+                            th:href="@{/admin/habitacionesEstado}"> estado <br> para <br>
+                            habitaciones </a>
+                    </td>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla text-uppercase shadow" rowspan="2">
+                        <a class="btn btn-outline-light fw-bold text-secondary bg-secondary-subtle w-100 h-100 align-content-center"
+                            th:href="@{/admin/habitacionesTipos}"> tipos <br> de <br>
+                            habitaciones </a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="celda-tabla text-uppercase shadow">
+                        <a class="btn btn-outline-light fw-bold text-secondary bg-secondary-subtle w-100 h-100 align-content-center"
+                            th:href="@{/admin/credenciales}">
+                            credenciales </a>
+                    </td>
+                    <td class="celda-tabla" style="width: 24rem;">
+                        <div class="arrow-horizontal-izquierda"></div>
+                    </td>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla bg-transparent"></td>
+                    <td class="celda-tabla bg-transparent"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+    
+</body>
+
+</html>
