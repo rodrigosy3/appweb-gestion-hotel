@@ -22,20 +22,23 @@
         <nav class="mx-3" aria-label="Navegación de fechas">
             <ul class="pagination" id="barra-fechas">
                 <li class="page-item" id="prev">
-                    <a class="page-link" href="#">«</a>
+                    <a class="page-link" onclick="cambiarRango(-1)">«</a>
                 </li>
+
                 <!-- Fechas dinámicas generadas con JS -->
+
                 <li class="page-item" id="next">
-                    <a class="page-link" href="#">»</a>
+                    <a class="page-link" onclick="cambiarRango(1)">»</a>
                 </li>
             </ul>
         </nav>
 
-        <button type="button" class="btn btn-primary" id="btn-hoy">Hoy</button>
+        <button type="button" class="btn btn-primary" id="btn-hoy" onclick="irAHoy()">Hoy</button>
+
+        <input type="hidden" id="filtroFecha" name="fechaFiltro" />
     </div>
 
-
-
+    <!-- ALERTAS DE ERRORES -->
     <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center me-5" role="alert">
         <span th:text="${error}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -45,8 +48,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
-
-
+    <!-- HABITACIONES Y VENTAS -->
     <div class="container-fluid py-3">
         <div class="row">
             <!-- Primera tabla: lado izquierdo -->
@@ -65,9 +67,9 @@
                     </thead>
                     <tbody>
                         <tr th:each="hab : ${hab_antiguas}"
-                            th:classappend="${hab.estado.estado == 'RESERVADA' ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ventasVencidas[hab.id_habitacion] != null ? 'table-danger' : ''}">
+                            th:classappend="${hab.estado.estado == 'RESERVADA' ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ventasVencidas[hab.id_habitacion] != null ? 'table-danger' : mapAlertaSalida[hab.id_habitacion] != null ? 'table-warning' : ''}">
 
-                            <td class="text-center fw-bold border-light bg-body-secondary align-middle"
+                            <td class="text-center fw-bold border-light bg-secondary-subtle align-middle"
                                 th:text="${hab.numero}"
                                 th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' + hab.tipo.nombre_tipo}">
                                 N°
@@ -77,16 +79,20 @@
                             <td class="text-start px-0 ps-2">
                                 <span th:if="${ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null}">
                                     <span
-                                        th:text="${'E: ' + #temporals.format(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span><br>
+                                        th:text="${'E: ' + #temporals.format(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}">
+                                    </span><br>
                                     <span
-                                        th:text="${'S: ' + #temporals.format(ultimaVentaPorHabitacionFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span>
+                                        th:text="${'S: ' + #temporals.format(ultimaVentaPorHabitacionFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}">
+                                    </span>
                                 </span>
 
-                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}" class="text-danger fw-bold">
-                                    <span
-                                        th:text="${'E: ' + #temporals.format(ventasVencidasFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span><br>
-                                    <span
-                                        th:text="${'S: ' + #temporals.format(ventasVencidasFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span>
+                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}">
+                                    <span class="text-danger"
+                                        th:text="${'E: ' + #temporals.format(ventasVencidasFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}">
+                                    </span><br>
+                                    <span class="text-danger fw-bold"
+                                        th:text="${'S: ' + #temporals.format(ventasVencidasFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}">
+                                    </span>
                                 </span>
                             </td>
                             <!-- ############################################################################################## -->
@@ -131,18 +137,34 @@
                                 <!-- ########################################################################################### -->
 
                                 <!-- ####################### MOSTRAMOS NOMBRES Y APELLIDOS DE LOS CLIENTES ##################### -->
-                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}"
-                                    th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}">
+                                    <span th:if="${mapAlertaSalida[hab.id_habitacion] == 1}"
+                                        class="fw-bold text-light bg-warning px-3">
+                                        QUEDA MENOS DE UNA HORA <br>
+                                    </span>
+                                    <span th:if="${mapAlertaSalida[hab.id_habitacion] == 30}"
+                                        class="fw-bold text-light bg-warning px-3">
+                                        QUEDA MENOS DE 30 MINUTOS <br>
+                                    </span>
                                     <span
-                                        th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
-                                        NOMBRES Y APELLIDOS
+                                        th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                        <span
+                                            th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
+                                            NOMBRES Y APELLIDOS
+                                        </span>
                                     </span>
                                     <br />
                                 </span>
 
+
+                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
+                                    class="fw-bold text-light bg-danger px-3">
+                                    TIEMPO EXCEDIDO, AVISAR A LOS CLIENTES
+                                    <br>
+                                </span>
                                 <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ventasVencidas[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                    <span class="text-danger fw-bold"
+                                    <span class="text-danger fw-semibold"
                                         th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
                                         NOMBRES Y APELLIDOS
                                     </span>
@@ -215,7 +237,7 @@
             <!-- Segunda tabla: lado derecho -->
             <div class="col-12 col-lg-6 justify-content-center">
                 <table class="table table-hover" th:if="${!hab_modernas.isEmpty()}">
-                    <thead class="table-secondary border-light">
+                    <thead class="table-primary border-light">
                         <tr>
                             <th class="text-center">N°</th>
                             <th class="text-center">HORARIO</th>
@@ -228,9 +250,9 @@
                     </thead>
                     <tbody>
                         <tr th:each="hab : ${hab_modernas}"
-                            th:classappend="${hab.estado.estado == 'RESERVADA' ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ventasVencidas[hab.id_habitacion] != null ? 'table-danger' : ''}">
+                            th:classappend="${hab.estado.estado == 'RESERVADA' ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ventasVencidas[hab.id_habitacion] != null ? 'table-danger' : mapAlertaSalida[hab.id_habitacion] != null ? 'table-warning' : ''}">
 
-                            <td class="text-center fw-bold border-light bg-body-secondary align-middle"
+                            <td class="text-center fw-bold border-light bg-primary-subtle align-middle"
                                 th:text="${hab.numero}"
                                 th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' + hab.tipo.nombre_tipo}">
                                 N°
@@ -240,16 +262,20 @@
                             <td class="text-start px-0 ps-2">
                                 <span th:if="${ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null}">
                                     <span
-                                        th:text="${'E: ' + #temporals.format(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span><br>
+                                        th:text="${'E: ' + #temporals.format(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}">
+                                    </span><br>
                                     <span
-                                        th:text="${'S: ' + #temporals.format(ultimaVentaPorHabitacionFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span>
+                                        th:text="${'S: ' + #temporals.format(ultimaVentaPorHabitacionFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}">
+                                    </span>
                                 </span>
 
-                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}" class="text-danger fw-bold">
-                                    <span
-                                        th:text="${'E: ' + #temporals.format(ventasVencidasFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span><br>
-                                    <span
-                                        th:text="${'S: ' + #temporals.format(ventasVencidasFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}"></span>
+                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}">
+                                    <span class="text-danger"
+                                        th:text="${'E: ' + #temporals.format(ventasVencidasFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}">
+                                    </span><br>
+                                    <span class="text-danger fw-bold"
+                                        th:text="${'S: ' + #temporals.format(ventasVencidasFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}">
+                                    </span>
                                 </span>
                             </td>
                             <!-- ############################################################################################## -->
@@ -294,18 +320,34 @@
                                 <!-- ########################################################################################### -->
 
                                 <!-- ####################### MOSTRAMOS NOMBRES Y APELLIDOS DE LOS CLIENTES ##################### -->
-                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}"
-                                    th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}">
+                                    <span th:if="${mapAlertaSalida[hab.id_habitacion] == 1}"
+                                        class="fw-bold text-light bg-warning px-3">
+                                        QUEDA MENOS DE UNA HORA <br>
+                                    </span>
+                                    <span th:if="${mapAlertaSalida[hab.id_habitacion] == 30}"
+                                        class="fw-bold text-light bg-warning px-3">
+                                        QUEDA MENOS DE 30 MINUTOS <br>
+                                    </span>
                                     <span
-                                        th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
-                                        NOMBRES Y APELLIDOS
+                                        th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
+                                        <span
+                                            th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
+                                            NOMBRES Y APELLIDOS
+                                        </span>
                                     </span>
                                     <br />
                                 </span>
 
+
+                                <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
+                                    class="fw-bold text-light bg-danger px-3">
+                                    TIEMPO EXCEDIDO, AVISAR A LOS CLIENTES
+                                    <br>
+                                </span>
                                 <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ventasVencidas[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                    <span class="text-danger fw-bold"
+                                    <span class="text-danger fw-semibold"
                                         th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
                                         NOMBRES Y APELLIDOS
                                     </span>
@@ -377,116 +419,7 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const mesAnio = document.getElementById("mes-anio");
-            const barraFechas = document.getElementById("barra-fechas");
-            const btnHoy = document.getElementById("btn-hoy");
-
-            let fechaActual = new Date();
-            let fechaSeleccionada = formatearFecha(fechaActual);
-
-            // Función para obtener la fecha en formato yyyy-MM-dd HH:mm:ss
-            function formatearFecha(fecha) {
-                const año = fecha.getFullYear();
-                const mes = String(fecha.getMonth() + 1).padStart(2, "0");
-                const dia = String(fecha.getDate()).padStart(2, "0");
-                const horas = String(fecha.getHours()).padStart(2, "0");
-                const minutos = String(fecha.getMinutes()).padStart(2, "0");
-                const segundos = String(fecha.getSeconds()).padStart(2, "0");
-
-                return `${año}-${mes}-${dia} ${horas}:${minutos}:${segundos}`;
-            }
-
-            function obtenerDatosFecha(fechaStr) {
-                const fecha = new Date(fechaStr);
-                return {
-                    fechaCompleta: fechaStr,
-                    dia: fecha.getDate(),
-                    mesTexto: fecha.toLocaleString("es-ES", { month: "long" }),
-                    anio: fecha.getFullYear(),
-                    mes: fecha.getMonth() + 1, // Mes en formato numérico 1-12
-                };
-            }
-
-            function actualizarBarra(fechaStr) {
-                barraFechas.innerHTML = ''; // Limpiar la barra de fechas
-
-                let datosFecha = obtenerDatosFecha(fechaStr);
-                mesAnio.textContent = `${datosFecha.mesTexto.charAt(0).toUpperCase() + datosFecha.mesTexto.slice(1)}, ${datosFecha.anio}`;
-
-                // Botón anterior
-                let liPrev = document.createElement("li");
-                liPrev.classList.add("page-item");
-                liPrev.innerHTML = `<a class="page-link" id="prev">«</a>`;
-                barraFechas.appendChild(liPrev);
-
-                // Fechas dinámicas (3 días antes y 3 después)
-                for (let i = -3; i <= 3; i++) {
-                    let fechaTemp = new Date(fechaStr);
-                    fechaTemp.setDate(fechaTemp.getDate() + i);
-                    let fechaTempStr = formatearFecha(fechaTemp);
-                    let datosTemp = obtenerDatosFecha(fechaTempStr);
-
-                    let li = document.createElement("li");
-                    li.classList.add("page-item");
-                    if (fechaTempStr === fechaSeleccionada) {
-                        li.classList.add("active");
-                    } else {
-                        li.classList.add("opacity-75");
-                    }
-
-                    li.innerHTML = `<a class="page-link" data-fecha="${fechaTempStr}">${datosTemp.dia}</a>`;
-                    barraFechas.appendChild(li);
-                }
-
-                // Botón siguiente
-                let liNext = document.createElement("li");
-                liNext.classList.add("page-item");
-                liNext.innerHTML = `<a class="page-link" id="next">»</a>`;
-                barraFechas.appendChild(liNext);
-
-                // Reasignar eventos a los nuevos elementos generados
-                asignarEventos();
-            }
-
-            function asignarEventos() {
-                document.querySelectorAll(".page-link").forEach(link => {
-                    link.addEventListener("click", function (e) {
-                        e.preventDefault();
-                        let nuevaFecha = this.getAttribute("data-fecha");
-                        if (nuevaFecha) {
-                            fechaSeleccionada = nuevaFecha;
-                            actualizarBarra(fechaSeleccionada);
-                        }
-                    });
-                });
-
-                document.getElementById("prev").addEventListener("click", function () {
-                    let nuevaFecha = new Date(fechaSeleccionada);
-                    nuevaFecha.setDate(nuevaFecha.getDate() - 1);
-                    fechaSeleccionada = formatearFecha(nuevaFecha);
-                    actualizarBarra(fechaSeleccionada);
-                });
-
-                document.getElementById("next").addEventListener("click", function () {
-                    let nuevaFecha = new Date(fechaSeleccionada);
-                    nuevaFecha.setDate(nuevaFecha.getDate() + 1);
-                    fechaSeleccionada = formatearFecha(nuevaFecha);
-                    actualizarBarra(fechaSeleccionada);
-                });
-            }
-
-            btnHoy.addEventListener("click", function () {
-                fechaSeleccionada = formatearFecha(new Date());
-                actualizarBarra(fechaSeleccionada);
-            });
-
-            // Inicializar la barra de fechas
-            actualizarBarra(fechaSeleccionada);
-        });
-    </script>
-
+    <script th:src="@{/js/index-pagination.js}"></script>
     <script th:src="@{/js/index.js}"></script>
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
