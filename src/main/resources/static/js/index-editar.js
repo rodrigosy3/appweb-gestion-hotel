@@ -29,6 +29,11 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        if (dni.length < 8) {
+            alert("El DNI debe contener 8 números.");
+            return;
+        }
+
         let clienteExistente = clientesTemporales.find(cliente => cliente.dni === dni);
 
         if (clienteExistente) {
@@ -64,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Función para eliminar un cliente temporalmente
     window.eliminarCliente = function (button, dni) {
-        dni = String(dni);  // Convertir siempre a string
+        dni = String(dni);
 
         clientesTemporales.forEach(cliente => {
             if (cliente.dni === dni) {
@@ -161,12 +166,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function guardarVenta(event) {
-        event.preventDefault(); // Evita el envío normal del formulario
+        event.preventDefault(); // Evitar envío normal del formulario
 
         // Obtener el formulario
         let form = document.getElementById("formVentaHabitacion");
 
-        // Crear objeto FormData con los datos del formulario
+        // Objeto FormData con los datos del formulario
         let formData = new FormData(form);
 
         // Convertir clientesTemporales a JSON y agregarlo al formData
@@ -177,12 +182,11 @@ document.addEventListener("DOMContentLoaded", function () {
             method: "POST",
             body: formData
         }).then(response => {
-            if (response.ok) {
-                window.location.href = "/"; // Redirigir a la página principal después de guardar
-            } else {
+            if (!response.ok) {
                 console.log("Error al guardar la venta");
-                window.location.href = "/";
             }
+
+            window.location.href = "/"; // Redirigir a la página principal después de guardar
         }).catch(error => console.error("Error:", error));
     };
 
@@ -217,43 +221,45 @@ document.addEventListener("DOMContentLoaded", function () {
     //######################################################################################################################################################################
 
     // FECHAS EN SERVICIO DE ALOJAMIENTO
-    const fechaEntradaResumen = document.getElementById("fechaEntradaResumen");
-    const fechaEntradaResumenValor = document.getElementById("fechaEntradaResumenValor");
-    const fechaSalidaResumen = document.getElementById("fechaSalidaResumen");
-    const fechaSalidaResumenValor = document.getElementById("fechaSalidaResumenValor");
-    const diasAlojamientoResumen = document.getElementById("tiempoEstadiaResumen");
+    const resumenFechaEntrada = document.getElementById("fechaEntradaResumen");
+    const resumenFechaEntradaValor = document.getElementById("fechaEntradaResumenValor");
+    const resumenFechaSalida = document.getElementById("fechaSalidaResumen");
+    const resumenFechaSalidaValor = document.getElementById("fechaSalidaResumenValor");
+    const resumenDiasAlojamiento = document.getElementById("diasAlojamientoResumen");
 
-    const selectServicio = document.getElementById("selectTipoServicioResumen");
+    const resumenSelectServicio = document.getElementById("selectTipoServicioResumen");
+    const resumenSelectEstado = document.getElementById("selectEstadoResumen");
 
-    const descuentoResumen = document.getElementById("descuentoResumen");
-    const montoAdelantoResumen = document.getElementById("montoAdelantoResumen");
-    const montoTotalResumen = document.getElementById("montoTotalResumen");
+    const resumenDescuento = document.getElementById("descuentoResumen");
+    const resumenMontoAdelanto = document.getElementById("montoAdelantoResumen");
+    const resumenMontoTotal = document.getElementById("montoTotalResumen");
 
     const precioInput = document.getElementById("habitacionPrecio");
     const tablaFechasBody = document.getElementById("tableBodyFechasAlojamiento");
 
+    const fechaActual = new Date();
     let fechaEntradaValor;
 
     // **(1) La fecha de entrada vacía tomará la del resumen o la actual**
     if (idVentaInput.value !== null && idVentaInput.value.trim() !== "") {
-        fechaEntradaValor = new Date(fechaEntradaResumenValor.value);
+        fechaEntradaValor = new Date(resumenFechaEntradaValor.value);
 
-        fechaEntradaResumen.value = fechaParseString(fechaEntradaValor);
-        fechaSalidaResumen.value = fechaParseString(new Date(fechaSalidaResumenValor.value));
+        resumenFechaEntrada.value = fechaParseString(fechaEntradaValor);
+        resumenFechaSalida.value = fechaParseString(new Date(resumenFechaSalidaValor.value));
     } else {
-        fechaEntradaValor = new Date();
-        fechaEntradaResumen.value = fechaParseString(fechaEntradaValor);
+        fechaEntradaValor = new Date(fechaActual);
+        resumenFechaEntrada.value = fechaParseString(fechaEntradaValor);
     }
 
     manejarBloqueoServicio();
 
     // **(5) Bloquear servicio si hay más de un día**
     function manejarBloqueoServicio() {
-        if (parseInt(diasAlojamientoResumen.value) < 2) {
-            selectServicio.value = "COMPLETO";
-            selectServicio.setAttribute("disabled", true);
+        if (parseInt(resumenDiasAlojamiento.value) < 2) {
+            resumenSelectServicio.value = "COMPLETO";
+            resumenSelectServicio.setAttribute("disabled", true);
         } else {
-            selectServicio.removeAttribute("disabled");
+            resumenSelectServicio.removeAttribute("disabled");
         }
 
         actualizarFilas();
@@ -268,18 +274,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // **(6) Calcular monto total**
     function calcularMontoTotal() {
-        let tipo_servicio = selectServicio.options[selectServicio.selectedIndex];
-        let dias = parseInt(diasAlojamientoResumen.value) || 1;
-        let descuento = parseFloat(descuentoResumen.value) || 0;
-        let adelanto = parseFloat(montoAdelantoResumen.value) || 0;
-        let precioBase = parseFloat(precioInput.getAttribute("data-precio") || 0);
+        let tipo_servicio = resumenSelectServicio.options[resumenSelectServicio.selectedIndex];
+        let dias = parseInt(resumenDiasAlojamiento.value) || 1;
+        let descuento = parseFloat(resumenDescuento.value) || 0;
+        let adelanto = parseFloat(resumenMontoAdelanto.value) || 0;
+        let precioBase = parseFloat(precioInput.getAttribute("data-precio")) || 0;
 
         return tipo_servicio.getAttribute("data-tipo").includes("MEDIO") ? ((precioBase * (dias - 1)) + (precioBase / 2) - descuento - adelanto).toFixed(2) : ((dias * precioBase) - descuento - adelanto).toFixed(2);
     }
 
     // **(4) Calcular fecha de salida**
     function calcularFechaSalida(fecha, tipoServicio) {
-        let fechaSalida = fecha;
+        let fechaSalida = new Date(fecha);
 
         if (tipoServicio.includes("COMPLETO")) {
             if (fechaEntradaValor.getHours() >= 6) {
@@ -290,117 +296,120 @@ document.addEventListener("DOMContentLoaded", function () {
             fechaSalida.setHours(18, 0, 0); // 6 PM del mismo día
         }
 
-        return fechaParseString(fechaSalida);
+        return fechaSalida;
     }
 
     // **(2) Manejar el cambio de días de alojamiento**
     function actualizarFilas() {
-        const dias = parseInt(diasAlojamientoResumen.value) || 1;
+        const dias = parseInt(resumenDiasAlojamiento.value) || 1;
         tablaFechasBody.innerHTML = ""; // Limpiar la tabla antes de reconstruirla
+        let tipo_servicio = resumenSelectServicio.options[resumenSelectServicio.selectedIndex];
 
-        let fechaBase = fechaEntradaValor;
+        let fechaBase = new Date(fechaEntradaValor);
 
         for (let i = 1; i <= dias; i++) {
             let nuevaFila = document.createElement("tr");
-            let tipo_servicio = selectServicio.options[selectServicio.selectedIndex];
-            let servicio = "COMPLETO";
+            let servicio = (i === dias && tipo_servicio.getAttribute("data-tipo") === "MEDIO") ? "MEDIO" : "COMPLETO";
 
-            if (tipo_servicio.getAttribute("data-tipo") === "MEDIO" && i === dias) {
-                servicio = "MEDIO";
-            }
-
-            let fechaEntradaStr = fechaParseStringDiaHora(fechaBase);
-            let fechaSalidaStr = calcularFechaSalida(fechaBase, servicio);
-            let fechaSalidaStrDiaHora = fechaParseStringDiaHora(stringParseFecha(fechaSalidaStr));
+            let fechaSalida = calcularFechaSalida(fechaBase, servicio);
 
             nuevaFila.innerHTML = `
                             <td class="align-middle text-center">
-                                <span class="bg-success-subtle rounded-4 p-2">${fechaEntradaStr}</span>
+                                <span class="bg-success-subtle rounded-4 p-2">${fechaParseStringDiaHora(fechaBase)}</span>
                             </td>
                             <td class="align-middle text-center">
                                 <span class="bg-secondary-subtle rounded-4 p-2">
-                                    ${servicio == "COMPLETO" ? "COMPLETO" : "MEDIO DÍA"}
+                                    ${servicio === "COMPLETO" ? "COMPLETO" : "MEDIO DÍA"}
                                 </span>
                             </td>
-                            <td class="align-middle text-center"><span class="bg-danger-subtle rounded-4 p-2">${fechaSalidaStrDiaHora}</span></td>
+                            <td class="align-middle text-center"><span class="bg-danger-subtle rounded-4 p-2">${fechaParseStringDiaHora(fechaSalida)}</span></td>
                             <td class="align-middle text-center"><span class="mx-3">${'S/. ' + calcularImporte(servicio)}</span></td>
                         `;
+
             tablaFechasBody.appendChild(nuevaFila);
 
-            fechaBase = new Date(stringParseFecha(fechaSalidaStr));
+            fechaBase = new Date(fechaSalida);
         }
 
         actualizarResumen();
     }
 
     function actualizarResumen() {
-        let tipo_servicio = selectServicio.options[selectServicio.selectedIndex];
+        let tipo_servicio = resumenSelectServicio.options[resumenSelectServicio.selectedIndex];
+        let dias = parseInt(resumenDiasAlojamiento.value) || 1;
 
-        let fechaBase = fechaEntradaValor;
-        let dias = parseInt(diasAlojamientoResumen.value) || 1;
-        let fechaSalida;
+        let fechaBase = new Date(fechaEntradaValor);
+        let fechaSalida = "";
+
+        resumenFechaEntradaValor.value = fechaJsToJavaParseString(fechaEntradaValor);
 
         if (dias > 1) {
             if (tipo_servicio.getAttribute("data-tipo") == "COMPLETO") {
                 fechaBase.setDate(fechaBase.getDate() + dias);
                 fechaBase.setHours(12, 0, 0); // Medio día
             } else {
-                fechaBase.setDate(fechaBase.getDate() + dias - 1);
+                fechaBase.setDate(fechaBase.getDate() + dias);
                 fechaBase.setHours(18, 0, 0); // 6 PM
             }
 
+            resumenFechaSalidaValor.value = fechaJsToJavaParseString(fechaBase);
             fechaSalida = fechaParseString(fechaBase);
         } else {
-            fechaSalida = calcularFechaSalida(fechaBase, "COMPLETO");
+            resumenFechaSalidaValor.value = fechaJsToJavaParseString(calcularFechaSalida(fechaBase, "COMPLETO"));
+            fechaSalida = fechaParseString(calcularFechaSalida(fechaBase, "COMPLETO"));
         }
 
-        fechaSalidaResumen.value = fechaSalida;
-        montoTotalResumen.value = calcularMontoTotal();
+        resumenMontoTotal.value = calcularMontoTotal();
+        resumenFechaSalida.value = fechaSalida;
+
+        if (parseFloat(resumenMontoTotal.value) === 0.0) {
+            resumenSelectEstado.value = "PAGADO";
+            resumenSelectEstado.setAttribute("disabled", true);
+        } else {
+            resumenSelectEstado.value = "POR COBRAR";
+            resumenSelectEstado.removeAttribute("disabled");
+        }
     }
 
-    // **Actualizar el resumen final**
-    // function actualizarResumen() {
-    //     let fechaEntrada = fechaEntradaValor;
-    //     let dias = parseInt(diasAlojamientoResumen.value) || 1;
-    //     let fechaSalida;
+    function fechaJsToJavaParseString(fecha) {
+        const anio = fecha.getFullYear();
+        const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+        const dia = String(fecha.getDate()).padStart(2, '0');
+        const horas = String(fecha.getHours()).padStart(2, '0');
+        const minutos = String(fecha.getMinutes()).padStart(2, '0');
+        const segundos = String(fecha.getSeconds()).padStart(2, '0');
 
-    //     if (dias > 1) {
-    //         fechaSalida = calcularFechaSalidaParaDias(fechaEntrada, dias);
-    //     } else {
-    //         fechaSalida = calcularFechaSalida(fechaEntrada, "COMPLETO");
-    //     }
-
-    //     fechaSalidaResumen.value = fechaSalida;
-    //     montoTotalResumen.value = calcularMontoTotal();
-    // }
+        return `${anio}-${mes}-${dia}T${horas}:${minutos}:${segundos}`;
+    }
 
     // **Eventos**
-    if (fechaEntradaResumen) {
-        fechaEntradaResumen.addEventListener("change", actualizarFilas);
+    if (resumenFechaEntrada) {
+        resumenFechaEntrada.addEventListener("change", actualizarFilas);
     }
-    if (diasAlojamientoResumen) {
-        diasAlojamientoResumen.addEventListener("input", manejarBloqueoServicio);
+    if (resumenDiasAlojamiento) {
+        resumenDiasAlojamiento.addEventListener("input", manejarBloqueoServicio);
     }
-    if (selectServicio) {
-        selectServicio.addEventListener("change", actualizarFilas);
+    if (resumenSelectServicio) {
+        resumenSelectServicio.addEventListener("change", actualizarFilas);
     }
-    if (descuentoResumen) {
-        descuentoResumen.addEventListener("input", actualizarResumen);
+    if (resumenDescuento) {
+        resumenDescuento.addEventListener("input", actualizarResumen);
     }
-    if (montoAdelantoResumen) {
-        montoAdelantoResumen.addEventListener("input", actualizarResumen);
+    if (resumenMontoAdelanto) {
+        resumenMontoAdelanto.addEventListener("input", actualizarResumen);
     }
 
-    // Formatear fecha a 'YYYY-MM-DD hh:mm A'
+    // Formatear fecha a texto 'YYYY-MM-DD hh:mm A'
     function fechaParseString(fecha) {
         const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
         const opcionesHora = { hour: '2-digit', minute: '2-digit', hour12: true };
-        const fechaFormateada = fecha.toLocaleDateString('es-ES', opcionesFecha).split('/').reverse().join('-');
+        const fechaFormateada = fecha.toLocaleDateString('es-ES', opcionesFecha).split('/').join('-');
         const horaFormateada = fecha.toLocaleTimeString('es-ES', opcionesHora).replace('.', '.');
 
-        return `${fechaFormateada} ${horaFormateada}`;
+        return `${fechaFormateada}   [${horaFormateada}]`;
     }
 
+    // Formatear fecha a texto '|Día| Hora'
     function fechaParseStringDiaHora(fecha) {
         const opcionesFecha = { day: '2-digit' };
         const opcionesHora = { hour: '2-digit', minute: '2-digit', hour12: true };
@@ -409,25 +418,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return `| ${fechaFormateada} | ${horaFormateada}`;
     }
-
-    function stringParseFecha(fechaStr) {
-        let [fecha, hora] = fechaStr.split(" ");
-        let [year, month, day] = fecha.split("-").map(num => parseInt(num));
-        let [hour, minute] = hora.split(":").map(num => parseInt(num));
-        let meridiano = hora.includes("AM") ? "AM" : "PM";
-
-        // Ajustar la hora según AM/PM
-        if (meridiano === "PM" && hour < 12) {
-            hour += 12;  // Convertir a 24 horas
-        } else if (meridiano === "AM" && hour === 12) {
-            hour = 0; // Convertir medianoche a 00:00
-        }
-
-        return new Date(year, month - 1, day, hour, minute);
-    }
-
-
-
 
     function cambiarTabEstado(estado) {
         if (estado === "RESERVADA") {

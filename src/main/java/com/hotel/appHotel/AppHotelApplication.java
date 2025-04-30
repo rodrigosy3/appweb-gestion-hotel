@@ -122,7 +122,7 @@ public class AppHotelApplication {
 				repoRoles.save(rol_1);
 
 				Roles rol_2 = new Roles();
-				rol_2.setNombre("owmner".toUpperCase());
+				rol_2.setNombre("owner".toUpperCase());
 				rol_2.setNivel(1);
 				repoRoles.save(rol_2);
 

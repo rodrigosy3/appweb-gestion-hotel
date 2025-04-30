@@ -12,6 +12,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.hotel.appHotel.model.HistorialVetos;
 import com.hotel.appHotel.model.Usuarios;
@@ -19,13 +25,6 @@ import com.hotel.appHotel.repository.RolesRepository;
 import com.hotel.appHotel.service.HistorialVetosService;
 import com.hotel.appHotel.service.PdfServiceClientes;
 import com.hotel.appHotel.service.UsuariosService;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 @RequestMapping(value = "/clientes")
@@ -102,7 +101,7 @@ public class UsuariosController {
     public String actualizarUsuario(@PathVariable Long id, @ModelAttribute("usuario") Usuarios usuario, Model modelo) {
         Usuarios usuarioExistente = servicio.getUsuarioById(id);
 
-        if (usuarioExistente.getRazon_vetado() != usuario.getRazon_vetado()) {
+        if (!usuarioExistente.getRazon_vetado().equals(usuario.getRazon_vetado())) {
             Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
                     : servicio.getUsuarioById(1L);
 

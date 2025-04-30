@@ -313,7 +313,7 @@
                                             </div>
                                             <div class="col">
                                                 <input type="number" class="text-center form-control"
-                                                    th:field="*{tiempo_estadia}" id="tiempoEstadiaResumen" min="1">
+                                                    th:field="*{tiempo_estadia}" id="diasAlojamientoResumen" min="1">
                                             </div>
                                         </div>
                                         <div class="row row-cols-2 mb-4">
@@ -390,10 +390,10 @@
                                             <div class="col">
                                                 <select class="form-select text-center" th:field="*{estado}"
                                                     id="selectEstadoResumen">
-                                                    <option th:value="${'PAGADO'}" data-tipo="PAGADO" selected> PAGADO
-                                                    </option>
                                                     <option th:value="${'POR COBRAR'}" data-tipo="POR COBRAR">POR COBRAR
                                                     </option>
+                                                    <option th:value="${'PAGADO'}" data-tipo="PAGADO"> PAGADO
+                                                    </option>                                                    
                                                 </select>
                                             </div>
                                         </div>
@@ -406,7 +406,7 @@
                                         <div class="row mb-4">
                                             <div class="col text-center">
                                                 <button type="button" class="btn btn-primary w-50"
-                                                    id="btnGuardar">GUARDAR VENTA EDITADA</button>
+                                                    id="btnGuardar" th:text="${idVenta == null ? 'GENERAR LA NUEVA VENTA' : 'GUARDAR VENTA EDITADA'}"></button>
                                             </div>
                                         </div>
                                     </div>

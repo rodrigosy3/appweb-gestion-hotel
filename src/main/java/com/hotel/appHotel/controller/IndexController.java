@@ -35,7 +35,6 @@ import com.hotel.appHotel.model.HabitacionesEstado;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.model.Ventas;
 import com.hotel.appHotel.model.VentasClientesHabitacion;
-import com.hotel.appHotel.repository.VentasRepository;
 import com.hotel.appHotel.service.HabitacionesContenidoService;
 import com.hotel.appHotel.service.HabitacionesEstadoService;
 import com.hotel.appHotel.service.HabitacionesService;
@@ -43,6 +42,7 @@ import com.hotel.appHotel.service.RolesService;
 import com.hotel.appHotel.service.UsuariosService;
 import com.hotel.appHotel.service.VentasClientesHabitacionService;
 import com.hotel.appHotel.service.VentasService;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -61,8 +61,9 @@ public class IndexController {
 
     @Autowired
     VentasService servicioVentas;
-    @Autowired
-    VentasRepository repositorioVentas;
+    
+    // @Autowired
+    // VentasRepository repositorioVentas;
 
     @Autowired
     VentasClientesHabitacionService servicioVentasClientesHabitacion;
@@ -247,10 +248,10 @@ public class IndexController {
         //
 
         // EDITAR VENTA O CREAR NUEVA VENTA
-        Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);        
-        Ventas ventaHabitacion = idVenta == null ? new Ventas() : servicioVentas.getVentaById(idVenta); // OBTENER VENTA        
+        Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
+        Ventas ventaHabitacion = idVenta == null ? new Ventas() : servicioVentas.getVentaById(idVenta); // OBTENER VENTA
         Ventas ventaParaReserva = new Ventas(); // OBTENER PRIMERA VENTA RESERVADA POR HABITACION
-        
+
         if (ventaHabitacion.getId_venta() != null && ventaHabitacion.getTipo_venta().equals("RESERVA")) {
             ventaParaReserva = ventaHabitacion;
             ventaHabitacion = new Ventas();
@@ -267,9 +268,19 @@ public class IndexController {
 
     @PostMapping("/{id}")
     public String actualizarVenta(@PathVariable Long id, @ModelAttribute("ventaHabitacion") Ventas ventaHabitacion,
-            @RequestParam("clientesTemporales") String clientesJson,
+            @RequestParam(value = "clientesTemporales", required = false) String clientesJson,
             RedirectAttributes redirectAttributes) {
         Ventas ventaGuardada = new Ventas();
+
+        System.out.println("ID VENTA: " + ventaHabitacion.getId_venta());
+        System.out.println("ID HABITACION: " + id);
+        System.out.println("TIPO VENTA: " + ventaHabitacion.getTipo_venta());
+        System.out.println("FECHA ENTRADA: " + ventaHabitacion.getFecha_entrada());
+        System.out.println("FECHA SALIDA: " + ventaHabitacion.getFecha_salida());
+        System.out.println("PRECIO HABITACION: " + ventaHabitacion.getMonto_adelanto());
+        System.out.println("MONTO ADELANTO: " + ventaHabitacion.getTiempo_estadia());
+        System.out.println("PRECIO TOTAL: " + ventaHabitacion.getMonto_total());
+        
 
         // Guardar la venta
         if (ventaHabitacion.getId_venta() == null) {
