@@ -12,15 +12,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 @Entity
 @Table(name = "usuarios")
 public class Usuarios {
@@ -36,13 +30,13 @@ public class Usuarios {
     private String apellidos;
 
     @Column(name = "edad")
-    private Integer edad;
+    private Integer edad = 0;
 
     @Column(name = "dni")
     private String dni;
 
     @Column(name = "celular")
-    private String celular;
+    private String celular = "999999999";
 
     @Column(name = "estado_vetado")
     private Boolean estado_vetado = false;

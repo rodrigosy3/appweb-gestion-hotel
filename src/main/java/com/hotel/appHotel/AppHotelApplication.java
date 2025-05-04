@@ -1,8 +1,6 @@
 package com.hotel.appHotel;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.ServerSocket;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hotel.appHotel.model.Habitaciones;
 import com.hotel.appHotel.model.HabitacionesCaracteristicas;
@@ -28,8 +27,8 @@ import com.hotel.appHotel.repository.UsuariosRepository;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@SpringBootApplication
 @EnableScheduling
+@SpringBootApplication
 public class AppHotelApplication {
 	@Autowired
 	RolesRepository repoRoles;
@@ -79,33 +78,34 @@ public class AppHotelApplication {
     }
 
 	// Verifica si el servidor ya está en ejecución
-	private static boolean isServerRunning(int port) {
-		try (ServerSocket socket = new ServerSocket(port)) {
-			return false; // Puerto libre - El servidor NO está en ejecución
-		} catch (IOException e) {
-			return true; // Puerto en uso - El servidor YA está en ejecución
-		}
-	}
+	// private static boolean isServerRunning(int port) {
+	// 	try (ServerSocket socket = new ServerSocket(port)) {
+	// 		return false; // Puerto libre - El servidor NO está en ejecución
+	// 	} catch (IOException e) {
+	// 		return true; // Puerto en uso - El servidor YA está en ejecución
+	// 	}
+	// }
 
 	// Abre el navegador en la URL de la aplicación
-	private static void abrirNavegador(String url) {
-		String os = System.getProperty("os.name").toLowerCase();
-		try {
-			if (os.contains("win")) {
-				Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
-			} else if (os.contains("mac")) {
-				Runtime.getRuntime().exec("open " + url);
-			} else if (os.contains("nix") || os.contains("nux")) {
-				Runtime.getRuntime().exec("xdg-open " + url);
-			} else {
-				System.out.println("No se pudo detectar el sistema operativo para abrir el navegador.");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+	// private static void abrirNavegador(String url) {
+	// 	String os = System.getProperty("os.name").toLowerCase();
+	// 	try {
+	// 		if (os.contains("win")) {
+	// 			Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+	// 		} else if (os.contains("mac")) {
+	// 			Runtime.getRuntime().exec("open " + url);
+	// 		} else if (os.contains("nix") || os.contains("nux")) {
+	// 			Runtime.getRuntime().exec("xdg-open " + url);
+	// 		} else {
+	// 			System.out.println("No se pudo detectar el sistema operativo para abrir el navegador.");
+	// 		}
+	// 	} catch (IOException e) {
+	// 		e.printStackTrace();
+	// 	}
+	// }
 
 	@Bean
+	@Transactional
 	CommandLineRunner init() {
 		return args -> {
 			List<Roles> roles = repoRoles.findAll();

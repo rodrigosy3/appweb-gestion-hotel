@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const inputDNI = document.getElementById("inputDNI");
     const inputNombres = document.getElementById("inputNombres");
     const inputApellidos = document.getElementById("inputApellidos");
+    const inputEdad = document.getElementById("inputEdad");
+    const inputCelular = document.getElementById("inputCelular");
     const tablaClientesBody = document.getElementById("tablaClientesBody");
     const idVentaInput = document.getElementById("idVenta");
 
@@ -13,26 +15,34 @@ document.addEventListener("DOMContentLoaded", function () {
             let dni = row.cells[0].innerText;
             let nombres = row.cells[1].innerText;
             let apellidos = row.cells[2].innerText;
-            clientesTemporales.push({ dni, nombres, apellidos, eliminado: false });
+            let edad = row.cells[3].innerText;
+            let celular = row.cells[4].innerText;
+            clientesTemporales.push({ dni, nombres, apellidos, edad, celular, eliminado: false });
         });
     }
 
-    if (idVentaInput) { actualizarEstadoBoton() };
+    actualizarEstadoBoton()
+
     // Función para agregar un cliente temporalmente
     function agregarCliente() {
         const dni = inputDNI.value.trim();
         const nombres = inputNombres.value.trim().toUpperCase();
         const apellidos = inputApellidos.value.trim().toUpperCase();
+        const edad = inputEdad.value.trim();
+        const celular = inputCelular.value.trim();
 
         if (!dni || !nombres || !apellidos) {
             alert("Por favor, completa todos los campos del cliente.");
             return;
         }
 
-        if (dni.length < 8) {
+        if (dni.length < 8 || isNaN(dni)) {
             alert("El DNI debe contener 8 números.");
             return;
         }
+
+        if (!edad) edad = 0;
+        if (!celular) celular = "999999999";
 
         let clienteExistente = clientesTemporales.find(cliente => cliente.dni === dni);
 
@@ -46,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         } else {
             // Si el cliente no existe, lo agregamos como nuevo
-            clientesTemporales.push({ dni, nombres, apellidos, eliminado: false });
+            clientesTemporales.push({ dni, nombres, apellidos, edad, celular, eliminado: false });
         }
 
         const fila = document.createElement("tr");
@@ -54,6 +64,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     <td class="border align-middle">${dni}</td>
                     <td class="align-middle">${nombres}</td>
                     <td class="align-middle">${apellidos}</td>
+                    <td class="align-middle">${edad}</td>
+                    <td class="align-middle">${celular}</td>
                     <td class="text-center align-middle border">
                         <button type="button" class="btn btn-danger btn-sm" onclick="eliminarCliente(this, '${dni}')">X</button>
                     </td>
@@ -63,8 +75,10 @@ document.addEventListener("DOMContentLoaded", function () {
         inputDNI.value = "";
         inputNombres.value = "";
         inputApellidos.value = "";
+        inputEdad.value = "";
+        inputCelular.value = "";
 
-        if (clientesTemporales.length == 1) { actualizarEstadoBoton(); }
+        actualizarEstadoBoton();
     }
 
     // Función para eliminar un cliente temporalmente
@@ -78,6 +92,8 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         button.closest("tr").remove();
+
+        actualizarEstadoBoton();
     };
 
     function bloquearBtnAgregarCliente(idBtn) {
@@ -92,69 +108,6 @@ document.addEventListener("DOMContentLoaded", function () {
         btnAgregar.classList.remove("btn-danger"); // Quita el estilo rojo
         btnAgregar.classList.add("btn-success"); // Aplica el estilo verde
         btnAgregar.removeAttribute("disabled"); // Habilita el botón
-    }
-
-    // Función para buscar cliente en la BD antes de la API externa
-    function buscarClienteEnBD() {
-        const dni = inputDNI.value.trim();
-
-        if (dni < 8) {
-            alert("El DNI debe contener 8 números.");
-            return;
-        }
-
-        fetch(`/buscar-cliente?dni=${dni}`, {
-            method: "GET"
-        }).then(response => response.json()).then(data => {
-            if (data.encontrado) {
-                inputNombres.value = data.nombres;
-                inputApellidos.value = data.apellidos;
-
-                if (data.estado_vetado) {
-                    // Mostrar modal con la razón del veto
-                    document.getElementById('razonVeto').innerText = data.razon_vetado;
-                    let modalVetado = new bootstrap.Modal(document.getElementById('modalVetado'));
-                    modalVetado.show();
-
-                    // Bloquear el registro del cliente
-                    bloquearBtnAgregarCliente("btnAgregarCliente");
-
-                } else {
-                    // Manejar el caso en que el cliente no exista
-                    desbloquearBtnAgregarCliente("btnAgregarCliente");
-                }
-            } else {
-                console.log("Cliente no encontrado en la base de datos. Consultando API externa...");
-                buscarClienteEnAPI(dni);
-            }
-        }).catch(error => console.error("Error buscando cliente:", error));
-    }
-
-    function buscarClienteEnAPI(dni) {
-        if (dni.length !== 8) {
-            alert("El DNI debe tener 8 dígitos.");
-            return;
-        }
-
-        const apiUrl = `http://localhost:3000/api/dni?numero=${dni}`; // Cambia el puerto según la configuración de Spring Boot
-
-        fetch(apiUrl).then(response => {
-            console.log("Estado de la respuesta:", response.status);
-            if (!response.ok) {
-                throw new Error("Error al consultar el backend.");
-            }
-            return response.json();
-        }).then(data => {
-            if (data.numeroDocumento) {
-                document.getElementById("inputNombres").value = data.nombres || "";
-                document.getElementById("inputApellidos").value = `${data.apellidoPaterno || ""
-                    } ${data.apellidoMaterno || ""}`.trim();
-            } else {
-                alert("No se encontró información para este DNI. Agregar manualmente");
-            }
-        }).catch(error => {
-            console.error("Error al realizar la consulta:", error);
-        });
     }
 
     function actualizarEstadoBoton() {
@@ -446,7 +399,7 @@ document.addEventListener("DOMContentLoaded", function () {
             agregarCliente();
         }
         if (event.target.id === "btnBuscarDNI") {
-            buscarClienteEnBD();
+            buscarCliente("btnAgregarCliente");
         }
         if (event.target.id === "btnGuardar") {
             guardarVenta(event);
@@ -996,5 +949,61 @@ document.addEventListener("DOMContentLoaded", function () {
                     .catch(error => console.error("Error:", error));
             });
         });
+    }
+
+    // Función para buscar cliente en la BD antes de la API externa
+    function buscarCliente(btn) {
+        const dni = inputDNI.value.trim();
+
+        if (dni < 8 || isNaN(dni)) {
+            alert("El DNI debe contener 8 números.");
+            return;
+        }
+
+        fetch(`/buscar-cliente?dni=${dni}`, {
+            method: "GET"
+        }).then(response => response.json()).then(data => {
+            if (data.encontrado) {
+                inputNombres.value = data.nombres;
+                inputApellidos.value = data.apellidos;
+                inputEdad.value = data.edad;
+                inputCelular.value = data.celular;
+
+                if (data.estado_vetado) {
+                    // Mostrar modal con la razón del veto
+                    document.getElementById('razonVeto').innerText = data.razon_vetado;
+                    let modalVetado = new bootstrap.Modal(document.getElementById('modalVetado'));
+                    modalVetado.show();
+
+                    // Bloquear el registro del cliente
+                    bloquearBtnAgregarCliente("btn");
+                } else {
+                    // Manejar el caso en que el cliente no exista
+                    desbloquearBtnAgregarCliente("btn");
+                }
+            } else {
+                console.log("Cliente no encontrado en la base de datos. Consultando API externa...");
+                const apiUrl = `http://localhost:3000/api/dni?numero=${dni}`; // Cambia el puerto según la configuración de Spring Boot
+
+                fetch(apiUrl).then(response => {
+                    console.log("Estado de la respuesta:", response.status);
+                    if (!response.ok) {
+                        throw new Error("Error al consultar el backend.");
+                    }
+                    return response.json();
+                }).then(data => {
+                    if (data.numeroDocumento) {
+                        document.getElementById("inputNombres").value = data.nombres || "";
+                        document.getElementById("inputApellidos").value = `${data.apellidoPaterno || ""
+                            } ${data.apellidoMaterno || ""}`.trim();
+                    } else {
+                        alert("No se encontró información para este DNI. Agregar manualmente");
+                    }
+                }).catch(error => {
+                    alert("No se encontró información para este DNI. Agregar manualmente");
+                    console.error("Error al realizar la consulta:", error);
+                });
+            }
+        }).catch(error => console.error("Error buscando cliente:", error));
     }
 });

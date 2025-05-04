@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hotel.appHotel.model.HabitacionesCaracteristicas;
 import com.hotel.appHotel.repository.HabitacionesCaracteristicasRepository;
@@ -20,6 +21,7 @@ public class HabitacionesCaracteristicasServiceImpl implements HabitacionesCarac
     }
 
     @Override
+    @Transactional
     public HabitacionesCaracteristicas createHabitacionCaracteristica(HabitacionesCaracteristicas habitacionCaracteristica) {
         return repositorio.save(habitacionCaracteristica);
     }
@@ -30,11 +32,13 @@ public class HabitacionesCaracteristicasServiceImpl implements HabitacionesCarac
     }
 
     @Override
+    @Transactional
     public HabitacionesCaracteristicas updateHabitacionCaracteristica(HabitacionesCaracteristicas habitacionCaracteristica) {
         return repositorio.save(habitacionCaracteristica);
     }
 
     @Override
+    @Transactional
     public void deleteHabitacionCaracteristica(Long id) {
         repositorio.deleteById(id);
     }

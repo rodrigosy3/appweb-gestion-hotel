@@ -91,7 +91,7 @@
                             <form th:action="@{/actualizar-estado-habitacion}" method="post">
                                 <input type="hidden" name="id" th:value="${habitacion.id_habitacion}">
                                 <input type="hidden" name="nuevoEstado" value="DISPONIBLE">
-                                <input type="hidden" name="msgEstado" value="">
+                                <input type="hidden" name="msgEstado" value="Habitación disponible para venta">
 
                                 <div class="col text-center mt-5 mb-3">
                                     <button type="submit" class="btn btn-primary w-25 me-3"
@@ -108,8 +108,8 @@
                     <div th:case="'MANTENIMIENTO'">
                         <div class="alert alert-warning text-center" id="mantenimientoDivPrevio">
                             <h4 class="fs-2 text-uppercase">Habitación en Mantenimiento</h4>
-                            <p class="fs-4 mt-4">Esta habitación no está disponible para limpieza ni ventas. <br>
-                                Presiona en el botón azul "VER DETALLES" para editar el estado actual de la habitacion.
+                            <p class="fs-4 mt-4">Esta habitación no está disponible para ventas. <br>
+                                Presiona "VER DETALLES" para cambiar el estado actual de la habitacion.
                             </p>
 
                             <div class="col text-center mt-5 mb-3">
@@ -127,7 +127,7 @@
                         <div class="alert alert-dark text-center" id="noDisponibleDivPrevio">
                             <h4 class="fs-2 text-uppercase">Habitación No Disponible</h4>
                             <p class="fs-4 mt-4">Actualmente esta habitación está fuera de servicio. <br>
-                                Presiona en el botón azul "VER DETALLES" para editar el estado actual de la habitacion.
+                                Presiona "VER DETALLES" para cambiar el estado actual de la habitacion.
                             </p>
 
                             <div class="col text-center mt-5 mb-3">
@@ -145,15 +145,15 @@
                         <div class="alert alert-success text-center" id="reservadaDivPrevio">
                             <h4 class="fs-2 text-uppercase">Habitación Reservada</h4>
                             <p class="fs-4 mt-5">
-                                Presiona en el botón azul "VER DETALLES" para editar la Reserva. <br>
-                                Presiona en el botón verde "OCUPAR HABITACIÓN" para finalizar la reserva y generar la
+                                Presiona "VER DETALLES" para editar la Reserva. <br>
+                                Presiona "OCUPAR HABITACIÓN" para finalizar la reserva y generar la
                                 venta.
                             </p>
 
                             <form th:action="@{/actualizar-estado-habitacion}" method="post">
                                 <input type="hidden" name="id" th:value="${habitacion.id_habitacion}">
                                 <input type="hidden" name="nuevoEstado" value="OCUPADO">
-                                <input type="hidden" name="msgEstado" value="">
+                                <input type="hidden" name="msgEstado" value="Habitación ocupada por el cliente">
                                 <input type="hidden" name="id_ventaHabitacion" th:value="${ventaParaReserva.id_venta}">
 
                                 <div class="col text-center mt-5 mb-3">
@@ -170,8 +170,8 @@
                     </div>
 
                     <div th:case="*" class="tab-pane fade show active" id="venta-tab">
-                        <form th:action="@{/{id}(id=${habitacion.id_habitacion})}" th:object="${ventaHabitacion}"
-                            id="formVentaHabitacion" method="post">
+                        <form th:action="@{/{idHabitacion}(idHabitacion=${habitacion.id_habitacion})}"
+                            th:object="${ventaHabitacion}" id="formVentaHabitacion" method="post">
                             <div class="row row-cols-2 justify-content-between w-100">
                                 <div class="col">
                                     <table class="table table-sm table-hover border shadow" id="tablaClientes">
@@ -179,7 +179,9 @@
                                             <tr>
                                                 <th>D.N.I.</th>
                                                 <th>Nombres</th>
-                                                <th colspan="2">Apellidos</th>
+                                                <th>Apellidos</th>
+                                                <th>Edad</th>
+                                                <th colspan="2">Celular</th>
                                             </tr>
                                         </thead>
                                         <tbody id="tablaClientesBody">
@@ -191,6 +193,10 @@
                                                 </td>
                                                 <td class="align-middle"><span
                                                         th:text="${cliente.usuario_alojado.apellidos}"></span></td>
+                                                <td class="align-middle"><span
+                                                        th:text="${cliente.usuario_alojado.edad}"></span></td>
+                                                <td class="align-middle"><span
+                                                        th:text="${cliente.usuario_alojado.celular}"></span></td>
                                                 <td class="text-center align-middle border">
                                                     <button type="button" class="btn btn-danger btn-sm"
                                                         th:attr="onclick='eliminarCliente(this, ' + ${cliente.usuario_alojado.dni} + ')'">X</button>
@@ -204,7 +210,7 @@
                                     <div class="row row-cols-3 mb-2">
                                         <div
                                             class="col-2 w-25 align-content-center bg-primary-subtle fw-bold rounded-2">
-                                            <label class="col-form-label">D.N.I. <span class="end-0">:</span></label>
+                                            <label class="col-form-label">D.N.I. <span>:</span></label>
                                         </div>
                                         <div class="col-8 w-50">
                                             <input type="text" id="inputDNI" class="form-control" maxlength="8">
@@ -219,7 +225,7 @@
                                     <div class="row row-cols-2 mb-2">
                                         <div
                                             class="col-2 w-25 align-content-center bg-primary-subtle fw-bold rounded-2">
-                                            <label class="col-form-label">NOMBRES <span class="end-0">:</span></label>
+                                            <label class="col-form-label">NOMBRES <span>:</span></label>
                                         </div>
                                         <div class="col-9 w-75 pe-0">
                                             <input type="text" id="inputNombres" class="form-control text-uppercase">
@@ -228,10 +234,36 @@
                                     <div class="row row-cols-2 mb-2">
                                         <div
                                             class="col-2 w-25 align-content-center bg-primary-subtle fw-bold rounded-2">
-                                            <label class="col-form-label">APELLIDOS <span class="end-0">:</span></label>
+                                            <label class="col-form-label">APELLIDOS <span>:</span></label>
                                         </div>
                                         <div class="col-9 w-75 pe-0">
                                             <input type="text" id="inputApellidos" class="form-control text-uppercase">
+                                        </div>
+                                    </div>
+                                    <div class="row row-cols-2 mb-2">
+                                        <div class="col col-6">
+                                            <div class="row">
+                                                <div
+                                                    class="w-50 align-content-center bg-primary-subtle fw-bold rounded-2">
+                                                    <label class="col-form-label">CELULAR <span>:</span></label>
+                                                </div>
+                                                <div class="w-50 pe-0">
+                                                    <input type="text" id="inputCelular" maxlength="9" minlength="9"
+                                                        min="900000000" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col col-6 ps-4">
+                                            <div class="row">
+                                                <div
+                                                    class="w-50 align-content-center bg-primary-subtle fw-bold rounded-2">
+                                                    <label class="col-form-label">EDAD <span>:</span></label>
+                                                </div>
+                                                <div class="w-50 pe-0">
+                                                    <input type="number" id="inputEdad" maxlength="3" minlength="1"
+                                                        min="0" class="form-control">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -360,7 +392,8 @@
                                                 DESCUENTO: </div>
                                             <div class="col">
                                                 <input type="number" class="text-center form-control" placeholder="0.00"
-                                                    th:field="*{descuento}" id="descuentoResumen" min="0" step="0.01" readonly>
+                                                    th:field="*{descuento}" id="descuentoResumen" min="0" step="0.01"
+                                                    readonly>
                                             </div>
                                         </div>
                                         <div class="row row-cols-2 mb-2">
@@ -393,7 +426,7 @@
                                                     <option th:value="${'POR COBRAR'}" data-tipo="POR COBRAR">POR COBRAR
                                                     </option>
                                                     <option th:value="${'PAGADO'}" data-tipo="PAGADO"> PAGADO
-                                                    </option>                                                    
+                                                    </option>
                                                 </select>
                                             </div>
                                         </div>
@@ -406,7 +439,7 @@
                                         <div class="row mb-4">
                                             <div class="col text-center">
                                                 <button type="button" class="btn btn-primary w-50"
-                                                    id="btnGuardar" th:text="${idVenta == null ? 'GENERAR LA NUEVA VENTA' : 'GUARDAR VENTA EDITADA'}"></button>
+                                                    id="btnGuardar"><span th:text="${idVenta == null ? 'GENERAR LA NUEVA VENTA' : 'GUARDAR VENTA EDITADA'}"></span></button>
                                             </div>
                                         </div>
                                     </div>

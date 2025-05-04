@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hotel.appHotel.model.HistorialVetos;
 import com.hotel.appHotel.repository.HistorialVetosRepository;
@@ -19,6 +20,7 @@ public class HistorialVetosServiceImpl implements HistorialVetosService {
     }
 
     @Override
+    @Transactional
     public HistorialVetos createHistorialVeto(HistorialVetos historialVeto) {
         return repositorio.save(historialVeto);
     }
@@ -29,11 +31,13 @@ public class HistorialVetosServiceImpl implements HistorialVetosService {
     }
 
     @Override
+    @Transactional
     public HistorialVetos updateHistorialVeto(HistorialVetos historialVeto) {
         return repositorio.save(historialVeto);
     }
 
     @Override
+    @Transactional
     public void deleteHistorialVeto(Long id) {
         repositorio.deleteById(id);
     }

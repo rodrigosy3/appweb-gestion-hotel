@@ -48,6 +48,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
 public class IndexController {
+
     private static final String VIEW_INICIO = "index";
     private static final String VIEW_EDITAR = "indexEditar";
     private static final String REDIRECT_INICIO = "redirect:/";
@@ -61,9 +62,6 @@ public class IndexController {
 
     @Autowired
     VentasService servicioVentas;
-    
-    // @Autowired
-    // VentasRepository repositorioVentas;
 
     @Autowired
     VentasClientesHabitacionService servicioVentasClientesHabitacion;
@@ -165,8 +163,8 @@ public class IndexController {
         return VIEW_INICIO;
     }
 
-    @GetMapping("/editar/{id}")
-    public String editarIndexForm(@PathVariable Long id,
+    @GetMapping("/editar/{idHabitacion}")
+    public String editarIndexForm(@PathVariable Long idHabitacion,
             @RequestParam(value = "idVenta", required = false) Long idVenta,
             Model modelo, RedirectAttributes redirectAttributes) {
         // PARA MOSTRAR LAS VENTAS ACTIVAS EN LA PARTE INFERIOR
@@ -242,17 +240,15 @@ public class IndexController {
         modelo.addAttribute("ventasVencidas", ventasVencidas);
         modelo.addAttribute("ventasVencidasFechaEntrada", ventasVencidasFechaEntrada);
         modelo.addAttribute("ventasVencidasFechaSalida", ventasVencidasFechaSalida);
-
+        // 
         //
         //
-        //
-
         // EDITAR VENTA O CREAR NUEVA VENTA
-        Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
+        Habitaciones habitacion = servicioHabitaciones.getHabitacionById(idHabitacion); // OBTENER HABITACION
         Ventas ventaHabitacion = idVenta == null ? new Ventas() : servicioVentas.getVentaById(idVenta); // OBTENER VENTA
         Ventas ventaParaReserva = new Ventas(); // OBTENER PRIMERA VENTA RESERVADA POR HABITACION
 
-        if (ventaHabitacion.getId_venta() != null && ventaHabitacion.getTipo_venta().equals("RESERVA")) {
+        if (idVenta != null && ventaHabitacion.getTipo_venta().equals("RESERVA")) {
             ventaParaReserva = ventaHabitacion;
             ventaHabitacion = new Ventas();
         }
@@ -266,27 +262,18 @@ public class IndexController {
         return VIEW_EDITAR;
     }
 
-    @PostMapping("/{id}")
-    public String actualizarVenta(@PathVariable Long id, @ModelAttribute("ventaHabitacion") Ventas ventaHabitacion,
+    @PostMapping("/{idHabitacion}")
+    public String actualizarVenta(@PathVariable Long idHabitacion, @ModelAttribute("ventaHabitacion") Ventas ventaHabitacion,
             @RequestParam(value = "clientesTemporales", required = false) String clientesJson,
             RedirectAttributes redirectAttributes) {
-        Ventas ventaGuardada = new Ventas();
-
-        System.out.println("ID VENTA: " + ventaHabitacion.getId_venta());
-        System.out.println("ID HABITACION: " + id);
-        System.out.println("TIPO VENTA: " + ventaHabitacion.getTipo_venta());
-        System.out.println("FECHA ENTRADA: " + ventaHabitacion.getFecha_entrada());
-        System.out.println("FECHA SALIDA: " + ventaHabitacion.getFecha_salida());
-        System.out.println("PRECIO HABITACION: " + ventaHabitacion.getMonto_adelanto());
-        System.out.println("MONTO ADELANTO: " + ventaHabitacion.getTiempo_estadia());
-        System.out.println("PRECIO TOTAL: " + ventaHabitacion.getMonto_total());
-        
+        Ventas ventaGuardada;
 
         // Guardar la venta
         if (ventaHabitacion.getId_venta() == null) {
-            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
-                    : servicioUsuarios.getUsuarioById(1L);
-            Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
+            // Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
+            //         : servicioUsuarios.getUsuarioById(1L);
+            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(1L);
+            Habitaciones habitacion = servicioHabitaciones.getHabitacionById(idHabitacion);
 
             habitacion.setEstado(servicioHabitacionesEstado.getByEstado("OCUPADO"));
             habitacion.setRazon_estado("");
@@ -300,8 +287,18 @@ public class IndexController {
             Ventas ventaExistente = servicioVentas.getVentaById(ventaHabitacion.getId_venta());
 
             // Copiar los datos de la venta a la venta existente
-            BeanUtils.copyProperties(ventaHabitacion, ventaExistente, "habitacion", "usuario_responsable",
-                    "fecha_creacion");
+            ventaExistente.setFecha_entrada(ventaHabitacion.getFecha_entrada());
+            ventaExistente.setFecha_salida(ventaHabitacion.getFecha_salida());
+            ventaExistente.setTiempo_estadia(ventaHabitacion.getTiempo_estadia());
+            ventaExistente.setEstado(ventaHabitacion.getEstado());
+            ventaExistente.setEstado_estadia(ventaHabitacion.getEstado_estadia());
+            ventaExistente.setDescuento(ventaHabitacion.getDescuento());
+            ventaExistente.setMonto_total(ventaHabitacion.getMonto_total());
+            ventaExistente.setMonto_adelanto(ventaHabitacion.getMonto_adelanto());
+            ventaExistente.setTipo_servicio(ventaHabitacion.getTipo_servicio());
+            ventaExistente.setTipo_venta(ventaHabitacion.getTipo_venta());            
+            // BeanUtils.copyProperties(ventaHabitacion, ventaExistente, "habitacion", "usuario_responsable",
+            //         "fecha_creacion");
             servicioVentas.updateVenta(ventaExistente);
 
             ventaGuardada = servicioVentas.getVentaById(ventaExistente.getId_venta());
@@ -316,11 +313,14 @@ public class IndexController {
             clientes = objectMapper.readValue(clientesJson, new TypeReference<List<ClienteDTO>>() {
             });
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            System.out.println("ERROR: " + e.getMessage());
         }
 
         // Procesar clientes
         for (ClienteDTO cliente : clientes) {
+            System.out.println("Cliente: " + cliente.getNombres() + " " + cliente.getApellidos() + " - DNI: "
+                    + cliente.getDni() + " - Celular: " + cliente.getCelular());
+
             Usuarios usuario = servicioUsuarios.getUsuarioByDni(cliente.getDni());
 
             if (usuario == null) {
@@ -329,6 +329,8 @@ public class IndexController {
                 usuario.setDni(cliente.getDni());
                 usuario.setNombres(cliente.getNombres());
                 usuario.setApellidos(cliente.getApellidos());
+                usuario.setEdad(cliente.getEdad());
+                usuario.setCelular(cliente.getCelular());
                 usuario.setRol(servicioRoles.getRolById(1L));
 
                 usuario = servicioUsuarios.createUsuario(usuario);
@@ -363,7 +365,7 @@ public class IndexController {
             RedirectAttributes redirectAttributes) {
         Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
 
-        Ventas ventaReservada = new Ventas();
+        Ventas ventaReservada;
 
         // Guardar la venta
         if (ventaParaReserva.getId_venta() == null) {
@@ -407,7 +409,7 @@ public class IndexController {
             clientes = objectMapper.readValue(clientesJson, new TypeReference<List<ClienteDTO>>() {
             });
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            System.out.println("ERROR: " + e.getMessage());
         }
 
         // Procesar clientes
@@ -420,6 +422,8 @@ public class IndexController {
                 usuario.setDni(cliente.getDni());
                 usuario.setNombres(cliente.getNombres());
                 usuario.setApellidos(cliente.getApellidos());
+                usuario.setEdad(cliente.getEdad());
+                usuario.setCelular(cliente.getCelular());
                 usuario.setRol(servicioRoles.getRolById(1L));
 
                 usuario = servicioUsuarios.createUsuario(usuario);
@@ -456,6 +460,8 @@ public class IndexController {
             respuesta.put("encontrado", true);
             respuesta.put("nombres", cliente.getNombres());
             respuesta.put("apellidos", cliente.getApellidos());
+            respuesta.put("edad", cliente.getEdad());
+            respuesta.put("celular", cliente.getCelular());
             respuesta.put("estado_vetado", cliente.getEstado_vetado());
             respuesta.put("razon_vetado", cliente.getRazon_vetado());
         } else {
@@ -520,13 +526,13 @@ public class IndexController {
     public String actualizarEstadoHabitacion(@RequestParam("id") Long id,
             @RequestParam("nuevoEstado") String nuevoEstado,
             @RequestParam("msgEstado") String msgEstado,
-            @RequestParam(value = "id_ventaHabitacion", required = false) String id_ventaHabitacion,
+            @RequestParam(value = "id_ventaHabitacion", required = false) Long id_ventaHabitacion,
             RedirectAttributes redirectAttributes) {
         HabitacionesEstado estadoNuevo = servicioHabitacionesEstado.getByEstado(nuevoEstado);
         Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
 
         if (id_ventaHabitacion != null) {
-            Ventas venta = servicioVentas.getVentaById(Long.parseLong(id_ventaHabitacion));
+            Ventas venta = servicioVentas.getVentaById(id_ventaHabitacion);
 
             venta.setEstado_estadia("SIN PROBLEMAS");
             servicioVentas.updateVenta(venta);
@@ -599,7 +605,7 @@ public class IndexController {
         return obtenerVentas()
                 .stream()
                 .filter(venta -> (venta.getEstado_estadia().equals("SIN PROBLEMAS")
-                        && !venta.getTipo_venta().equals("RESERVA CANCELADA")))
+                && !venta.getTipo_venta().equals("RESERVA CANCELADA")))
                 .collect(Collectors.toList());
     }
 

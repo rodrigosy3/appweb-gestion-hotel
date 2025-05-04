@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hotel.appHotel.model.HabitacionesEstado;
 import com.hotel.appHotel.repository.HabitacionesEstadoRepository;
@@ -20,6 +21,7 @@ public class HabitacionesEstadoServiceImpl implements HabitacionesEstadoService 
     }
 
     @Override
+    @Transactional
     public HabitacionesEstado createHabitacionEstado(HabitacionesEstado habitacionEstado) {
         return repositorio.save(habitacionEstado);
     }
@@ -30,11 +32,13 @@ public class HabitacionesEstadoServiceImpl implements HabitacionesEstadoService 
     }
 
     @Override
+    @Transactional
     public HabitacionesEstado updateHabitacionEstado(HabitacionesEstado habitacionEstado) {
         return repositorio.save(habitacionEstado);
     }
 
     @Override
+    @Transactional
     public void deleteHabitacionEstado(Long id) {
         repositorio.deleteById(id);
     }

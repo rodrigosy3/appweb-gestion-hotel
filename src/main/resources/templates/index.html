@@ -214,7 +214,7 @@
                             <!-- ######################################################################################################### -->
 
                             <td class="text-center align-middle">
-                                <form th:action="@{/editar/{id}(id=${hab.id_habitacion})}">
+                                <form th:action="@{/editar/{idHabitacion}(idHabitacion=${hab.id_habitacion})}">
                                     <input th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}" type="hidden"
                                         name="idVenta"
                                         th:value="${ultimaVentaPorHabitacion[hab.id_habitacion]?.id_venta}">
@@ -227,6 +227,10 @@
                                         ventasVencidas[hab.id_habitacion] != null ? ventasVencidas[hab.id_habitacion].id_venta : ''}" th:title="'Venta: ' + ${ventaID}">
                                         Editar
                                     </button>
+                                </form>
+                                <form th:action="@{/nueva-venta/{idHabitacion}(idHabitacion=${hab.id_habitacion})}">
+                                    <button th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] == null}" type="submit"
+                                        class="btn btn-sm btn-success">Alquilar</button>
                                 </form>
                             </td>
                         </tr>
@@ -397,7 +401,7 @@
                             <!-- ######################################################################################################### -->
 
                             <td class="text-center align-middle">
-                                <form th:action="@{/editar/{id}(id=${hab.id_habitacion})}">
+                                <form th:action="@{/editar/{idHabitacion}(idHabitacion=${hab.id_habitacion})}">
                                     <input th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}" type="hidden"
                                         name="idVenta"
                                         th:value="${ultimaVentaPorHabitacion[hab.id_habitacion]?.id_venta}">

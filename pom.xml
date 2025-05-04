@@ -72,12 +72,12 @@
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
-        <dependency>
+        <!-- <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>6.6.13.Final</version>
             <type>pom</type>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -92,11 +92,11 @@
         </dependency>
 
         <!-- Eliminar al crear ejecutable -->
-        <dependency>
+        <!-- <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
             <optional>true</optional>
-        </dependency>
+        </dependency> -->
     </dependencies>
 
     <build>

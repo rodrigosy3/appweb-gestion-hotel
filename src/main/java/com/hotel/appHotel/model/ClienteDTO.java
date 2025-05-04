@@ -9,5 +9,7 @@ public class ClienteDTO {
     private String dni;
     private String nombres;
     private String apellidos;
+    private Integer edad;
+    private String celular;
     private boolean eliminado;
 }

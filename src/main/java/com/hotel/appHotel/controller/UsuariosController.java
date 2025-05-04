@@ -72,8 +72,9 @@ public class UsuariosController {
         usuario.setApellidos(usuario.getApellidos().toUpperCase());
 
         if (usuario.getEstado_vetado()) {
-            Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
-                    : servicio.getUsuarioById(1L);
+            // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
+            //         : servicio.getUsuarioById(1L);
+            Usuarios usuario_admin = servicio.getUsuarioById(1L);
 
             HistorialVetos historialNuevo = new HistorialVetos();
 

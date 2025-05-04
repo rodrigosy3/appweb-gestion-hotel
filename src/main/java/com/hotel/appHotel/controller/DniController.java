@@ -1,7 +1,15 @@
 package com.hotel.appHotel.controller;
 
-import org.springframework.http.*;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
@@ -28,7 +36,7 @@ public class DniController {
                 String.class
             );
             return ResponseEntity.ok(response.getBody());
-        } catch (Exception e) {
+        } catch (RestClientException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al consultar la API: " + e.getMessage());
         }
     }

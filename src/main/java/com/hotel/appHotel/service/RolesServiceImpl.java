@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hotel.appHotel.model.Roles;
 import com.hotel.appHotel.repository.RolesRepository;
@@ -20,6 +21,7 @@ public class RolesServiceImpl implements RolesService {
     }
 
     @Override
+    @Transactional
     public Roles createRol(Roles rol) {
         return repositorio.save(rol);
     }
@@ -30,11 +32,13 @@ public class RolesServiceImpl implements RolesService {
     }
 
     @Override
+    @Transactional
     public Roles updateRol(Roles rol) {
         return repositorio.save(rol);
     }
 
     @Override
+    @Transactional
     public void deleteRol(Long id) {
         repositorio.deleteById(id);
     }

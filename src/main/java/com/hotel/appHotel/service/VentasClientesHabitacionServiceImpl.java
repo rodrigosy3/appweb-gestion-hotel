@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hotel.appHotel.model.VentasClientesHabitacion;
 import com.hotel.appHotel.repository.VentasClientesHabitacionRepository;
@@ -20,6 +21,7 @@ public class VentasClientesHabitacionServiceImpl implements VentasClientesHabita
     }
 
     @Override
+    @Transactional
     public VentasClientesHabitacion createVentaClienteHabitacion(VentasClientesHabitacion ventaClienteHabitacion) {
         return repositorio.save(ventaClienteHabitacion);
     }
@@ -30,11 +32,13 @@ public class VentasClientesHabitacionServiceImpl implements VentasClientesHabita
     }
 
     @Override
+    @Transactional
     public VentasClientesHabitacion updateVentaClienteHabitacion(VentasClientesHabitacion ventaClienteHabitacion) {
         return repositorio.save(ventaClienteHabitacion);
     }
 
     @Override
+    @Transactional
     public void deleteVentaClienteHabitacionById(Long id) {
         repositorio.deleteById(id);
     }
@@ -45,6 +49,7 @@ public class VentasClientesHabitacionServiceImpl implements VentasClientesHabita
     }
 
     @Override
+    @Transactional
     public void deleteByVentaCliente(Long id_venta, Long id_usuario) {
         repositorio.deleteByVentaIdAndUsuarioId(id_venta, id_usuario);
     }

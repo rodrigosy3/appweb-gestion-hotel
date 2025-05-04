@@ -22,6 +22,7 @@ public class VentasServiceImpl implements VentasService {
     }
 
     @Override
+    @Transactional
     public Ventas createVenta(Ventas venta) {
         return repositorio.save(venta);
     }
@@ -32,11 +33,13 @@ public class VentasServiceImpl implements VentasService {
     }
 
     @Override
+    @Transactional
     public Ventas updateVenta(Ventas venta) {
         return repositorio.save(venta);
     }
 
     @Override
+    @Transactional
     public void deleteVenta(Long id) {
         repositorio.deleteById(id);
     }

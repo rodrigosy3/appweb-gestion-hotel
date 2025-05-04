@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hotel.appHotel.model.HabitacionesContenido;
 import com.hotel.appHotel.repository.HabitacionesContenidoRepository;
@@ -20,6 +21,7 @@ public class HabitacionesContenidoServiceImpl implements HabitacionesContenidoSe
     }
 
     @Override
+    @Transactional
     public HabitacionesContenido createHabitacionContenido(HabitacionesContenido habitacionContenido) {
         return repositorio.save(habitacionContenido);
     }
@@ -30,11 +32,13 @@ public class HabitacionesContenidoServiceImpl implements HabitacionesContenidoSe
     }
 
     @Override
+    @Transactional
     public HabitacionesContenido updateHabitacionContenido(HabitacionesContenido habitacionContenido) {
         return repositorio.save(habitacionContenido);
     }
 
     @Override
+    @Transactional
     public void deleteHabitacionContenido(Long id) {
         repositorio.deleteById(id);
     }
