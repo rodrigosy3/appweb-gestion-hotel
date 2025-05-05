@@ -412,8 +412,9 @@
                                             <div class="col">
                                                 <input type="number"
                                                     class="text-center form-control bg-success-subtle fw-bold rounded-2"
-                                                    th:field="*{monto_total}" id="montoTotalResumen" min="0" step="0.01"
-                                                    readonly>
+                                                    id="montoTotalResumen" min="0" step="0.01" readonly>
+                                                <input type="hidden" th:field="*{monto_total}"
+                                                    id="montoTotalResumenValor">
                                             </div>
                                         </div>
                                         <div class="row row-cols-2 mb-4">
@@ -438,8 +439,8 @@
 
                                         <div class="row mb-4">
                                             <div class="col text-center">
-                                                <button type="button" class="btn btn-primary w-50"
-                                                    id="btnGuardar"><span th:text="${idVenta == null ? 'GENERAR LA NUEVA VENTA' : 'GUARDAR VENTA EDITADA'}"></span></button>
+                                                <button type="button" class="btn btn-primary w-50" id="btnGuardar"
+                                                    th:text="*{id_venta == null} ? 'GENERAR LA NUEVA VENTA' : 'GUARDAR VENTA EDITADA'"></button>
                                             </div>
                                         </div>
                                     </div>
@@ -533,7 +534,9 @@
                                             <tr>
                                                 <th>D.N.I.</th>
                                                 <th>Nombres</th>
-                                                <th colspan="2">Apellidos</th>
+                                                <th>Apellidos</th>
+                                                <th>Edad</th>
+                                                <th colspan="2">Celular</th>
                                             </tr>
                                         </thead>
                                         <tbody id="reservatablaClientesBody">
@@ -545,6 +548,10 @@
                                                 </td>
                                                 <td class="align-middle"><span
                                                         th:text="${cliente.usuario_alojado.apellidos}"></span></td>
+                                                <td class="align-middle"><span
+                                                        th:text="${cliente.usuario_alojado.edad}"></span></td>
+                                                <td class="align-middle"><span
+                                                        th:text="${cliente.usuario_alojado.celular}"></span></td>
                                                 <td class="text-center align-middle border">
                                                     <button type="button" class="btn btn-danger btn-sm"
                                                         th:attr="onclick='eliminarCliente(this, ' + ${cliente.usuario_alojado.dni} + ')'">X</button>
@@ -588,6 +595,32 @@
                                         <div class="col-9 w-75 pe-0">
                                             <input type="text" id="reservainputApellidos"
                                                 class="form-control text-uppercase">
+                                        </div>
+                                    </div>
+                                    <div class="row row-cols-2 mb-2">
+                                        <div class="col col-6">
+                                            <div class="row">
+                                                <div
+                                                    class="w-50 align-content-center bg-primary-subtle fw-bold rounded-2">
+                                                    <label class="col-form-label">CELULAR <span>:</span></label>
+                                                </div>
+                                                <div class="w-50 pe-0">
+                                                    <input type="text" id="reservaInputCelular" maxlength="9"
+                                                        minlength="9" min="900000000" class="form-control">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col col-6 ps-4">
+                                            <div class="row">
+                                                <div
+                                                    class="w-50 align-content-center bg-primary-subtle fw-bold rounded-2">
+                                                    <label class="col-form-label">EDAD <span>:</span></label>
+                                                </div>
+                                                <div class="w-50 pe-0">
+                                                    <input type="number" id="reservaInputEdad" maxlength="3"
+                                                        minlength="1" min="0" class="form-control">
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="row">
@@ -669,7 +702,9 @@
                                                 DE ENTRADA: </div>
                                             <div class="col">
                                                 <input type="datetime-local" class="text-center form-control"
-                                                    th:field="*{fecha_entrada}" id="reservafechaEntradaResumen">
+                                                    id="reservafechaEntradaResumen">
+                                                <input type="hidden" th:field="*{fecha_entrada}"
+                                                    id="reservafechaEntradaResumenValor">
                                             </div>
                                         </div>
 
@@ -686,7 +721,7 @@
                                         <div class="row row-cols-2 mb-2">
                                             <div class="col align-content-center bg-primary-subtle fw-bold rounded-2">
                                                 TIPO
-                                                DE SERVICIO:</div>
+                                                DE SERVICIO (Último día):</div>
                                             <div class="col">
                                                 <select class="form-select text-center" th:field="*{tipo_servicio}"
                                                     id="reservaselectTipoServicioResumen">
@@ -705,7 +740,9 @@
                                                 DE SALIDA: </div>
                                             <div class="col">
                                                 <input type="text" class="text-center form-control bg-secondary-subtle"
-                                                    th:field="*{fecha_salida}" id="reservafechaSalidaResumen" readonly>
+                                                    id="reservafechaSalidaResumen" readonly>
+                                                <input type="hidden" th:field="*{fecha_salida}"
+                                                    id="reservafechaSalidaResumenValor">
                                             </div>
                                         </div>
 
@@ -715,7 +752,7 @@
                                             <div class="col">
                                                 <input type="number" class="text-center form-control" placeholder="0.00"
                                                     th:field="*{descuento}" id="reservadescuentoResumen" min="0"
-                                                    step="0.01">
+                                                    step="0.01" readonly>
                                             </div>
                                         </div>
                                         <div class="row row-cols-2 mb-2">
@@ -734,8 +771,9 @@
                                             <div class="col">
                                                 <input type="number"
                                                     class="text-center form-control bg-success-subtle fw-bold rounded-2"
-                                                    th:field="*{monto_total}" id="reservamontoTotalResumen" min="0"
-                                                    step="0.01" readonly>
+                                                    id="reservamontoTotalResumen" min="0" step="0.01" readonly>
+                                                <input type="hidden" th:field="*{monto_total}"
+                                                    id="reservamontoTotalResumenValor">
                                             </div>
                                         </div>
                                         <div class="row row-cols-2 mb-4">
@@ -745,9 +783,9 @@
                                             <div class="col">
                                                 <select class="form-select text-center" th:field="*{estado}"
                                                     id="reservaselectEstadoResumen">
-                                                    <option th:value="${'PAGADO'}" data-tipo="PAGADO" selected> PAGADO
-                                                    </option>
                                                     <option th:value="${'POR COBRAR'}" data-tipo="POR COBRAR">POR COBRAR
+                                                    </option>
+                                                    <option th:value="${'PAGADO'}" data-tipo="PAGADO" selected> PAGADO
                                                     </option>
                                                 </select>
                                             </div>
@@ -761,8 +799,8 @@
                                         <div class="row mb-4">
                                             <div class="col text-center">
                                                 <button type="button" class="btn btn-primary w-50"
-                                                    id="reservabtnGuardar">GUARDAR
-                                                    RESERVA</button>
+                                                    id="reservabtnGuardar"
+                                                    th:text="*{id_venta == null} ? 'GUARDAR LA NUEVA RESERVA' : 'GUARDAR RESERVA EDITADA'"></button>
                                             </div>
                                         </div>
                                     </div>

@@ -2,7 +2,6 @@ package com.hotel.appHotel.model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -16,9 +15,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "habitaciones")
 public class Habitaciones {
@@ -57,10 +62,10 @@ public class Habitaciones {
     private boolean eliminado = false;
     
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "habitacion")
-    private Set<Ventas> habitacionesVentas = new HashSet<>();
+    private Set<Ventas> habitacionesVentas;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "habitacion")
-    private Set<HabitacionesContenido> habitacionesContenido = new HashSet<>();
+    private Set<HabitacionesContenido> habitacionesContenido;
 
     // Genera la fecha en el momento del guardado y no cuando se empezó a crear la entidad
     @PrePersist

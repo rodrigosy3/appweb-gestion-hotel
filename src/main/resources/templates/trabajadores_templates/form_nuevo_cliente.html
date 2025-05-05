@@ -56,7 +56,7 @@
                                 <input type="number" class="form-control" id="inputId" name="edad" min="0" value="18">
                             </div>
                         </div>
-                        <div class="mb-3">
+                        <!-- <div class="mb-3">
                             <label class="form-label">ESTADO DE VETO</label>
                             <select class="form-select" th:field="*{estado_vetado}" id="estadoVeto" required>
                                 <option th:value="${false}">NO VETADO</option>
@@ -67,7 +67,7 @@
                             <label class="form-label">RAZÓN DE VETADO</label>
                             <textarea class="form-control" name="razon_vetado" id="razonVeto"
                                 placeholder="Escribe la razón del estado de veto del usuario"></textarea>
-                        </div>
+                        </div> -->
 
                         <div class="row mx-5">
                             <button type="button" class="btn btn-danger col mx-3" data-bs-toggle="modal"
@@ -133,27 +133,6 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            let estadoVeto = document.getElementById("estadoVeto");
-            let razonVeto = document.getElementById("razonVeto");
-
-            // Función para actualizar el campo "razón de veto"
-            function actualizarEstadoVeto() {
-                if (estadoVeto.value === "true") {
-                    razonVeto.setAttribute("required", "true"); // Se vuelve obligatorio
-                    razonVeto.removeAttribute("disabled"); // Se habilita
-                } else {
-                    razonVeto.removeAttribute("required"); // Deja de ser obligatorio
-                    razonVeto.setAttribute("disabled", "true"); // Se deshabilita
-                    razonVeto.value = ""; // Limpia el contenido si se cambia a "NO VETADO"
-                }
-            }
-
-            // Ejecutar la función al cargar la página para reflejar el estado actual
-            actualizarEstadoVeto();
-
-            // Agregar evento para detectar cambios en el select
-            estadoVeto.addEventListener("change", actualizarEstadoVeto);
-
             const inputDNI = document.getElementById("inputDNI");
             const inputNombres = document.getElementById("inputNombres");
             const inputApellidos = document.getElementById("inputApellidos");
