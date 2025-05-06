@@ -130,15 +130,15 @@
                                 </span>
                                 <!-- ########################################################################################### -->
 
-                                <!-- ####################### MOSTRAMOS NOMBRES Y APELLIDOS DE LOS CLIENTES ##################### -->
+                                <!-- ####################### NOMBRES Y APELLIDOS DE LOS CLIENTES ##################### -->
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}">
                                     <span th:if="${mapAlertaSalida[hab.id_habitacion] == 1}"
                                         class="fw-bold text-light bg-warning px-3">
-                                        QUEDA MENOS DE UNA HORA <br>
+                                        QUEDA MENOS DE UNA HORA PARA DESOCUPAR <br>
                                     </span>
                                     <span th:if="${mapAlertaSalida[hab.id_habitacion] == 30}"
                                         class="fw-bold text-light bg-warning px-3">
-                                        QUEDA MENOS DE 30 MINUTOS <br>
+                                        QUEDA MENOS DE 30 MINUTOS PARA DESOCUPAR <br>
                                     </span>
                                     <span
                                         th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
@@ -149,7 +149,6 @@
                                     </span>
                                     <br />
                                 </span>
-
 
                                 <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
                                     class="fw-bold text-light bg-danger px-3">
@@ -168,7 +167,7 @@
                             </td>
                             <!-- ###################################################################################################### -->
 
-                            <!-- ################################## MOSTRAMOS LA EDAD DE LOS CLIENTES #################################### -->
+                            <!-- ################################## EDAD DE LOS CLIENTES #################################### -->
                             <td class="text-center">
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
@@ -183,7 +182,7 @@
                             </td>
                             <!-- ######################################################################################################### -->
 
-                            <!-- ################################## MOSTRAMOS EL D.N.I. DE LOS CLIENTES ################################## -->
+                            <!-- ################################## D.N.I. DE LOS CLIENTES ################################## -->
                             <td class="text-center">
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">

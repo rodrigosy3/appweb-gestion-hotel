@@ -3,7 +3,6 @@ package com.hotel.appHotel.controller;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -12,11 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -270,9 +267,9 @@ public class IndexController {
 
         // Guardar la venta
         if (ventaHabitacion.getId_venta() == null) {
-            // Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
-            //         : servicioUsuarios.getUsuarioById(1L);
-            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(1L);
+            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
+                    : servicioUsuarios.getUsuarioById(1L);
+            // Usuarios usuario_admin = servicioUsuarios.getUsuarioById(1L);
             Habitaciones habitacion = servicioHabitaciones.getHabitacionById(idHabitacion);
 
             habitacion.setEstado(servicioHabitacionesEstado.getByEstado("OCUPADO"));
@@ -296,7 +293,7 @@ public class IndexController {
             ventaExistente.setMonto_total(ventaHabitacion.getMonto_total());
             ventaExistente.setMonto_adelanto(ventaHabitacion.getMonto_adelanto());
             ventaExistente.setTipo_servicio(ventaHabitacion.getTipo_servicio());
-            ventaExistente.setTipo_venta(ventaHabitacion.getTipo_venta());            
+            ventaExistente.setTipo_venta(ventaHabitacion.getTipo_venta());
             // BeanUtils.copyProperties(ventaHabitacion, ventaExistente, "habitacion", "usuario_responsable",
             //         "fecha_creacion");
             servicioVentas.updateVenta(ventaExistente);
@@ -357,7 +354,6 @@ public class IndexController {
         return REDIRECT_INICIO;
     }
 
-    @Transactional
     @PostMapping("/reservar-habitacion/{id}")
     public String actualizarVentaReservada(@PathVariable Long id,
             @ModelAttribute("ventaParaReserva") Ventas ventaParaReserva,
@@ -373,8 +369,8 @@ public class IndexController {
                     : servicioUsuarios.getUsuarioById(1L);
 
             ventaParaReserva.setHabitacion(habitacion);
-            ventaParaReserva.setTipo_venta("RESERVA");
-            ventaParaReserva.setFecha_entrada(parseTimeToString(ventaParaReserva.getFecha_entrada()));
+            ventaParaReserva.setTipo_venta(ventaParaReserva.getTipo_venta());
+            ventaParaReserva.setFecha_entrada(ventaParaReserva.getFecha_entrada());
             ventaParaReserva.setUsuario_responsable(usuario_admin);
 
             ventaReservada = servicioVentas.createVenta(ventaParaReserva);
@@ -382,10 +378,18 @@ public class IndexController {
             Ventas ventaReservadaExistente = servicioVentas.getVentaById(ventaParaReserva.getId_venta());
 
             // Copiar los datos de la venta a la venta existente
-            BeanUtils.copyProperties(ventaParaReserva, ventaReservadaExistente, "usuario_responsable", "habitacion",
-                    "fecha_creacion", "tipo_venta", "fecha_entrada");
-            ventaReservadaExistente.setFecha_entrada(parseTimeToString(ventaParaReserva.getFecha_entrada()));
-            ventaReservadaExistente.setTipo_venta("RESERVA");
+            ventaReservadaExistente.setFecha_entrada(ventaParaReserva.getFecha_entrada());
+            ventaReservadaExistente.setFecha_salida(ventaParaReserva.getFecha_salida());
+            ventaReservadaExistente.setTiempo_estadia(ventaParaReserva.getTiempo_estadia());
+            ventaReservadaExistente.setEstado(ventaParaReserva.getEstado());
+            ventaReservadaExistente.setEstado_estadia(ventaParaReserva.getEstado_estadia());
+            ventaReservadaExistente.setDescuento(ventaParaReserva.getDescuento());
+            ventaReservadaExistente.setMonto_total(ventaParaReserva.getMonto_total());
+            ventaReservadaExistente.setMonto_adelanto(ventaParaReserva.getMonto_adelanto());
+            ventaReservadaExistente.setTipo_servicio(ventaParaReserva.getTipo_servicio());
+            ventaReservadaExistente.setTipo_venta(ventaParaReserva.getTipo_venta());
+            // BeanUtils.copyProperties(ventaParaReserva, ventaReservadaExistente, "habitacion", "usuario_responsable",
+            //         "fecha_creacion");
             servicioVentas.updateVenta(ventaReservadaExistente);
 
             ventaReservada = servicioVentas.getVentaById(ventaReservadaExistente.getId_venta());
@@ -395,7 +399,12 @@ public class IndexController {
 
         if (fecha_entrada_reserva.isEqual(LocalDate.now())) {
             habitacion.setEstado(servicioHabitacionesEstado.getByEstado("RESERVADA"));
-            habitacion.setRazon_estado("");
+            habitacion.setRazon_estado("Habitación reservada");
+
+            servicioHabitaciones.updateHabitacion(habitacion);
+        } else {
+            habitacion.setEstado(servicioHabitacionesEstado.getByEstado("DISPONIBLE"));
+            habitacion.setRazon_estado("Habitación libre para alquilar");
 
             servicioHabitaciones.updateHabitacion(habitacion);
         }
@@ -471,7 +480,6 @@ public class IndexController {
         return respuesta;
     }
 
-    @Transactional
     @PostMapping("/actualizar-estado/{id}")
     @ResponseBody
     public ResponseEntity<?> actualizarEstadoVenta(@PathVariable Long id) {
@@ -488,7 +496,6 @@ public class IndexController {
         return ResponseEntity.ok().body(Collections.singletonMap("mensaje", "Estado actualizado correctamente"));
     }
 
-    @Transactional
     @PostMapping("/cancelar-reserva/{id}")
     @ResponseBody
     public ResponseEntity<String> cancelarReserva(@PathVariable Long id) {
@@ -611,12 +618,5 @@ public class IndexController {
 
     public LocalDateTime parseStringToLocalDateTime(String fechaStr) {
         return LocalDateTime.parse(fechaStr);
-    }
-
-    private String parseTimeToString(String fecha) {
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME; // Formato recibido
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"); // Formato deseado
-
-        return LocalDateTime.parse(fecha, inputFormatter).format(outputFormatter);
     }
 }

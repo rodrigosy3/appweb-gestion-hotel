@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let celular = row.cells[4].innerText;
             clientesTemporales.push({ dni, nombres, apellidos, edad, celular, eliminado: false });
         });
-        
+
         bloquearBtnGuardarRegistro(clientesTemporales, "btnGuardar")
     }
 
@@ -522,17 +522,19 @@ document.addEventListener("DOMContentLoaded", function () {
     let reservaFechaEntradaValor;
 
     // **(1) La fecha de entrada vacía tomará la del resumen o la actual**
-    if (reservainputDNI.value !== null && reservainputDNI.value.trim() !== "") {
-        reservaFechaEntradaValor = fechaJavaToJsToDatetimelocal(new Date(reservaResumenFechaEntradaValor.value));
+    if (reservaidVentaInput) {
+        if (reservainputDNI.value !== null && reservainputDNI.value.trim() !== "") {
+            reservaFechaEntradaValor = fechaJavaToJsToDatetimelocal(new Date(reservaResumenFechaEntradaValor.value));
 
-        reservaResumenFechaEntrada.value = reservaFechaEntradaValor;
-        reservaResumenFechaSalida.value = fechaParseString(new Date(reservaResumenFechaSalidaValor.value));
-    } else {
-        reservaFechaEntradaValor = fechaJavaToJsToDatetimelocal(new Date(reservafechaActual));
-        reservaResumenFechaEntrada.value = reservaFechaEntradaValor;
+            reservaResumenFechaEntrada.value = reservaFechaEntradaValor;
+            reservaResumenFechaSalida.value = fechaParseString(new Date(reservaResumenFechaSalidaValor.value));
+        } else {
+            reservaFechaEntradaValor = fechaJavaToJsToDatetimelocal(new Date(reservafechaActual));
+            reservaResumenFechaEntrada.value = reservaFechaEntradaValor;
+        }
+
+        reservamanejarBloqueoServicio();
     }
-
-    reservamanejarBloqueoServicio();
 
     // **(5) Bloquear servicio si hay más de un día**
     function reservamanejarBloqueoServicio() {
