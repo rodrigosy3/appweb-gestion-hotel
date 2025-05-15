@@ -3,22 +3,21 @@ package com.hotel.appHotel.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.hotel.appHotel.model.HabitacionesEstado;
 import com.hotel.appHotel.service.HabitacionesEstadoService;
-
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/admin/habitacionesEstado")
@@ -36,6 +35,7 @@ public class A_HabitacionesEstadoController {
     @GetMapping
     public String listarHabitacionesEstado(Model modelo) {
         modelo.addAttribute("habitacionesEstado", obtenerHabitacionesEstado());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
 
         return VIEW_LISTAR;
     }
@@ -45,6 +45,7 @@ public class A_HabitacionesEstadoController {
         HabitacionesEstado habitacionEstado = new HabitacionesEstado();
 
         modelo.addAttribute("habitacionesEstado", obtenerHabitacionesEstado());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
         modelo.addAttribute("habitacionEstado", habitacionEstado);
 
         return VIEW_NUEVO;
@@ -61,6 +62,7 @@ public class A_HabitacionesEstadoController {
     @GetMapping("/editar/{id}")
     public String editarHabitacionEstadoForm(@PathVariable Long id, Model modelo) {
         modelo.addAttribute("habitacionesEstado", obtenerHabitacionesEstado());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
         modelo.addAttribute("habitacionEstado", servicio.getHabitacionEstadoById(id));
 
         return VIEW_EDITAR;
@@ -74,7 +76,7 @@ public class A_HabitacionesEstadoController {
         habitacionEstadoExistente.setEstado(habitacionEstado.getEstado().toUpperCase());
         habitacionEstadoExistente.setMensaje(habitacionEstado.getMensaje());
         habitacionEstadoExistente
-                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
 
         servicio.updateHabitacionEstado(habitacionEstadoExistente);
 
@@ -98,5 +100,15 @@ public class A_HabitacionesEstadoController {
                 .filter(habitacionEstado -> !habitacionEstado.isEliminado())
                 .sorted(Comparator.comparing(HabitacionesEstado::getId_habitacion_estado).reversed())
                 .collect(Collectors.toList());
+    }
+
+    private HashMap<Long, LocalDateTime> obtenerFechasCreacionEnLocalDateTime() {
+        HashMap<Long, LocalDateTime> fechasCreacion = new HashMap<>();
+
+        for (HabitacionesEstado habitacionEstado : obtenerHabitacionesEstado()) {
+            fechasCreacion.put(habitacionEstado.getId_habitacion_estado(), LocalDateTime.parse(habitacionEstado.getFecha_creacion()));
+        }
+
+        return fechasCreacion;
     }
 }

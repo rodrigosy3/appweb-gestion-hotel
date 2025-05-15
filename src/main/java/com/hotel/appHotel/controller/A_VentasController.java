@@ -3,16 +3,17 @@ package com.hotel.appHotel.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -20,11 +21,9 @@ import com.hotel.appHotel.model.Habitaciones;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.model.Ventas;
 import com.hotel.appHotel.repository.HabitacionesEstadoRepository;
+import com.hotel.appHotel.service.HabitacionesService;
 import com.hotel.appHotel.service.UsuariosService;
 import com.hotel.appHotel.service.VentasService;
-import com.hotel.appHotel.service.HabitacionesService;
-
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/admin/ventas")
@@ -51,6 +50,9 @@ public class A_VentasController {
     @GetMapping
     public String listarVentas(Model modelo) {
         modelo.addAttribute("ventas", obtenerVentas());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
+        modelo.addAttribute("fechasEntrada", obtenerFechasEntradaEnLocalDateTime());
+        modelo.addAttribute("fechasSalida", obtenerFechasSalidaEnLocalDateTime());
 
         return VIEW_LISTAR;
     }
@@ -85,6 +87,9 @@ public class A_VentasController {
         modelo.addAttribute("habitaciones", habitaciones);
         modelo.addAttribute("usuarios", usuarios_responsables);
         modelo.addAttribute("ventas", obtenerVentas());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
+        modelo.addAttribute("fechasEntrada", obtenerFechasEntradaEnLocalDateTime());
+        modelo.addAttribute("fechasSalida", obtenerFechasSalidaEnLocalDateTime());
         modelo.addAttribute("venta", venta);
 
         return VIEW_NUEVO;
@@ -92,8 +97,8 @@ public class A_VentasController {
 
     @PostMapping
     public String crearVenta(@ModelAttribute("venta") Ventas venta) {
-        venta.setFecha_entrada(convertirFormatoFecha(venta.getFecha_entrada()));
-        venta.setFecha_salida(convertirFormatoFecha(venta.getFecha_salida()));
+        venta.setFecha_entrada(venta.getFecha_entrada());
+        venta.setFecha_salida(venta.getFecha_salida());
 
         servicio.createVenta(venta);
 
@@ -132,12 +137,15 @@ public class A_VentasController {
         }
 
         Ventas venta = servicio.getVentaById(id);
-        venta.setFecha_entrada(convertirFormatoFechaVista(venta.getFecha_entrada()));
-        venta.setFecha_salida(convertirFormatoFechaVista(venta.getFecha_salida()));
+        venta.setFecha_entrada(venta.getFecha_entrada());
+        venta.setFecha_salida(venta.getFecha_salida());
 
         modelo.addAttribute("habitaciones", habitaciones);
         modelo.addAttribute("usuarios", usuarios_responsables);
         modelo.addAttribute("ventas", obtenerVentas());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
+        modelo.addAttribute("fechasEntrada", obtenerFechasEntradaEnLocalDateTime());
+        modelo.addAttribute("fechasSalida", obtenerFechasSalidaEnLocalDateTime());
         modelo.addAttribute("venta", servicio.getVentaById(id));
 
         return VIEW_EDITAR;
@@ -149,8 +157,8 @@ public class A_VentasController {
         Ventas ventaExistente = servicio.getVentaById(id);
 
         ventaExistente.setUsuario_responsable(venta.getUsuario_responsable());
-        ventaExistente.setFecha_entrada(convertirFormatoFecha(venta.getFecha_entrada()));
-        ventaExistente.setFecha_salida(convertirFormatoFecha(venta.getFecha_salida()));
+        ventaExistente.setFecha_entrada(venta.getFecha_entrada());
+        ventaExistente.setFecha_salida(venta.getFecha_salida());
         ventaExistente.setDescuento(venta.getDescuento());
         ventaExistente.setMonto_adelanto(venta.getMonto_adelanto());
         ventaExistente.setMonto_total(venta.getMonto_total());
@@ -161,7 +169,7 @@ public class A_VentasController {
         ventaExistente.setTipo_servicio(venta.getTipo_servicio());
 
         ventaExistente
-                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
 
         servicio.updateVenta(ventaExistente);
 
@@ -184,28 +192,12 @@ public class A_VentasController {
     @PostMapping("/eliminar/{id}")
     public String eliminarVenta(@PathVariable Long id) {
         Ventas ventaExistente = servicio.getVentaById(id);
-        
+
         ventaExistente.setEliminado(true);
 
         servicio.updateVenta(ventaExistente);
 
         return REDIRECT_LISTAR;
-    }
-
-    private String convertirFormatoFecha(String fecha) {
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME; // Formato recibido
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a"); // Formato deseado
-
-        return LocalDateTime.parse(fecha, inputFormatter).format(outputFormatter);
-    }
-
-    private String convertirFormatoFechaVista(String fecha) {
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a"); // Formato con "p. m."
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"); // Formato para
-                                                                                               // datetime-local
-
-        LocalDateTime dateTime = LocalDateTime.parse(fecha, inputFormatter);
-        return dateTime.format(outputFormatter); // Convertir a formato compatible con datetime-local
     }
 
     private List<Ventas> obtenerVentas() {
@@ -214,5 +206,35 @@ public class A_VentasController {
                 .filter(venta -> !venta.isEliminado()) // Filtrar las que no estén eliminadas
                 .sorted(Comparator.comparing(Ventas::getId_venta).reversed()) // Ordenar en orden descendente
                 .collect(Collectors.toList());
+    }
+
+    private HashMap<Long, LocalDateTime> obtenerFechasCreacionEnLocalDateTime() {
+        HashMap<Long, LocalDateTime> fechasCreacion = new HashMap<>();
+
+        for (Ventas venta : obtenerVentas()) {
+            fechasCreacion.put(venta.getId_venta(), LocalDateTime.parse(venta.getFecha_creacion()));
+        }
+
+        return fechasCreacion;
+    }
+
+    private HashMap<Long, LocalDateTime> obtenerFechasEntradaEnLocalDateTime() {
+        HashMap<Long, LocalDateTime> fechasEntrada = new HashMap<>();
+
+        for (Ventas venta : obtenerVentas()) {
+            fechasEntrada.put(venta.getId_venta(), LocalDateTime.parse(venta.getFecha_entrada()));
+        }
+
+        return fechasEntrada;
+    }
+
+    private HashMap<Long, LocalDateTime> obtenerFechasSalidaEnLocalDateTime() {
+        HashMap<Long, LocalDateTime> fechasSalida = new HashMap<>();
+
+        for (Ventas venta : obtenerVentas()) {
+            fechasSalida.put(venta.getId_venta(), LocalDateTime.parse(venta.getFecha_salida()));
+        }
+
+        return fechasSalida;
     }
 }

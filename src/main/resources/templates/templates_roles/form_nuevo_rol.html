@@ -80,7 +80,7 @@
                             <td th:text="${rol.id_rol}" class="text-center">ID</td>
                             <td th:text="${rol.nombre}">NOMBRE</td>
                             <td th:text="${rol.nivel}" class="text-center">NIVEL</td>
-                            <td th:text="${rol.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                            <td th:text="${#temporals.format(fechasCreacion[rol.id_rol],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
                         </tr>
                     </tbody>
                 </table>

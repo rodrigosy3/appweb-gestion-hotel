@@ -136,7 +136,7 @@
                                 ESTADO DE VETO</td>
                             <td th:text="${usuario.razon_vetado}">RAZÓN DE VETO</td>
                             <td th:text="${usuario.rol.nombre}">ROL</td>
-                            <td th:text="${usuario.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                            <td th:text="${#temporals.format(fechasCreacion[usuario.id_usuario],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
                         </tr>
                     </tbody>
                 </table>

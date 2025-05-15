@@ -78,13 +78,18 @@
                     <td class="text-center" th:text="${venta.monto_adelanto}">MONTO ADELANTO</td>
                     <td class="text-center" th:text="${venta.monto_total}">MONTO TOTAL</td>
                     <td class="text-center" th:text="${venta.tipo_venta}">TIPO DE VENTA</td>
-                    <td class="text-center" th:text="${venta.fecha_entrada}">FECHA DE ENTRADA</td>
-                    <td class="text-center" th:text="${venta.fecha_salida}">FECHA DE SALIDA</td>
+                    <td class="text-center"
+                        th:text="${#temporals.format(fechasEntrada[venta.id_venta],'yyyy-MM-dd hh:mm a')}">FECHA DE
+                        ENTRADA</td>
+                    <td class="text-center"
+                        th:text="${#temporals.format(fechasSalida[venta.id_venta],'yyyy-MM-dd hh:mm a')}">FECHA DE
+                        SALIDA</td>
                     <td class="text-center" th:text="${venta.estado}">ESTADO</td>
                     <td th:text="${venta.usuario_responsable.nombres + ' ' + venta.usuario_responsable.apellidos}">
                         USUARIO RESPONSABLE</td>
 
-                    <td th:text="${venta.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                    <td th:text="${#temporals.format(fechasCreacion[venta.id_venta],'yyyy-MM-dd hh:mm:ss a')}"
+                        class="text-center">FECHA DE CREACIÓN</td>
                 </tr>
             </tbody>
         </table>

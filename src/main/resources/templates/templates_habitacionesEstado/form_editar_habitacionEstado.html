@@ -40,7 +40,7 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">FECHA DE CREACIÓN (Se cambiará por la fecha actual)</label>
-                                <input type="text" class="form-control" th:field="*{fecha_creacion}"
+                                <input type="text" class="form-control" th:value="${#temporals.format(fechasCreacion[habitacionEstado.id_habitacion_estado],'yyyy-MM-dd hh:mm:ss a')}"
                                     name="fecha_creacion" disabled>
                             </div>
 
@@ -76,7 +76,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr th:each="rol: ${roles}">
+                        <tr th:each="habitacionEstado: ${habitacionesEstado}">
                             <td class="text-center" style="width: 12px;">
                                 <a class="btn btn-sm btn-primary" role="button" title="EDITAR ESTADO PARA HABITACIÓN"
                                     th:href="@{/admin/habitacionesEstado/editar/{id}(id=${habitacionEstado.id_habitacion_estado})}">
@@ -92,7 +92,7 @@
                             <td th:text="${habitacionEstado.id_habitacion_estado}" class="text-center">ID</td>
                             <td th:text="${habitacionEstado.estado}">NOMBRE DEL ESTADO</td>
                             <td th:text="${habitacionEstado.mensaje}">MENSAJE</td>
-                            <td th:text="${rol.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                            <td th:text="${#temporals.format(fechasCreacion[habitacionEstado.id_habitacion_estado],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
                         </tr>
                     </tbody>
                 </table>

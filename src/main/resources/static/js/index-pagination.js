@@ -11,6 +11,7 @@ const fechaURL = params.get("fechaFiltro");
 // Si hay una fecha en la URL, calcular cuántos días se ha desplazado desde hoy
 if (fechaURL) {
     const hoy = new Date();
+    hoy.setHours(0,0,0,0);
     const fechaFiltro = new Date(fechaURL + "T00:00:00");
     const diferencia = Math.floor((fechaFiltro - hoy) / (1000 * 60 * 60 * 24));
     diasDesplazados = diferencia;
@@ -112,20 +113,24 @@ function actualizarURLyInput(fecha) {
     const fechaISO = formatoFechaLocalISO(fecha);
 
     if (esHoy) {
-        limpiarURL();
-        inputFiltroFecha.value = "";
+        window.location.href = `/`;
     } else {
-        const nuevaURL = `?fecha=${fechaISO}`;
-        window.history.replaceState({}, "", nuevaURL);
-        inputFiltroFecha.value = fechaISO;
-    }
-}
+        // const nuevaURL = `?fechaFiltro=${fechaISO}`;
+        // window.history.replaceState({}, "", nuevaURL);
+        // inputFiltroFecha.value = fechaISO;
 
-// Limpia la URL (quita parámetros sin recargar)
-function limpiarURL() {
-    const nuevaURL = window.location.pathname;
-    window.history.replaceState({}, "", nuevaURL);
+        window.location.href = `?fechaFiltro=${fechaISO}`;
+    }
 }
 
 // Inicializar barra al cargar
 renderizarFechas();
+
+// document.getElementById("filtroFecha").addEventListener("change", function() {
+//     const fecha = this.value;
+//     fetch(`/ventas?fecha=${fecha}`)
+//         .then(response => response.text())
+//         .then(html => {
+//             document.getElementById("tablaVentas").innerHTML = html;
+//         });
+// });

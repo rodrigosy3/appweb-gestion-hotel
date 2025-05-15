@@ -3,22 +3,21 @@ package com.hotel.appHotel.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.hotel.appHotel.model.HabitacionesCaracteristicas;
 import com.hotel.appHotel.service.HabitacionesCaracteristicasService;
-
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/admin/habitacionesCaracteristicas")
@@ -36,6 +35,7 @@ public class A_HabitacionesCaracteristicasController {
     @GetMapping
     public String listarHabitacionesCaracteristicas(Model modelo) {
         modelo.addAttribute("habitacionesCaracteristicas", obtenerHabitacionesCaracteristicas());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
 
         return VIEW_LISTAR;
     }
@@ -45,6 +45,7 @@ public class A_HabitacionesCaracteristicasController {
         HabitacionesCaracteristicas habitacionCaracteristica = new HabitacionesCaracteristicas();
 
         modelo.addAttribute("habitacionesCaracteristicas", obtenerHabitacionesCaracteristicas());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
         modelo.addAttribute("habitacionCaracteristica", habitacionCaracteristica);
 
         return VIEW_NUEVO;
@@ -64,6 +65,7 @@ public class A_HabitacionesCaracteristicasController {
     @GetMapping("/editar/{id}")
     public String editarHabitacionCaracteristicaForm(@PathVariable Long id, Model modelo) {
         modelo.addAttribute("habitacionesCaracteristicas", obtenerHabitacionesCaracteristicas());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
         modelo.addAttribute("habitacionCaracteristica", servicio.getHabitacionCaracteristicaById(id));
 
         return VIEW_EDITAR;
@@ -81,7 +83,7 @@ public class A_HabitacionesCaracteristicasController {
         habitacionCaracteristicaExistente.setPrecio(habitacionCaracteristica.getPrecio());
 
         habitacionCaracteristicaExistente
-                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
 
         servicio.updateHabitacionCaracteristica(habitacionCaracteristicaExistente);
 
@@ -102,8 +104,18 @@ public class A_HabitacionesCaracteristicasController {
     private List<HabitacionesCaracteristicas> obtenerHabitacionesCaracteristicas() {
         return servicio.getHabitacionesCaracteristica()
                 .stream()
-                .filter(habitacionCaracteristica ->!habitacionCaracteristica.isEliminado())
+                .filter(habitacionCaracteristica -> !habitacionCaracteristica.isEliminado())
                 .sorted(Comparator.comparing(HabitacionesCaracteristicas::getId_habitacion_caracteristica).reversed())
                 .collect(Collectors.toList());
+    }
+
+    private HashMap<Long, LocalDateTime> obtenerFechasCreacionEnLocalDateTime() {
+        HashMap<Long, LocalDateTime> fechasCreacion = new HashMap<>();
+
+        for (HabitacionesCaracteristicas habitacionCaracteristica : obtenerHabitacionesCaracteristicas()) {
+            fechasCreacion.put(habitacionCaracteristica.getId_habitacion_caracteristica(), LocalDateTime.parse(habitacionCaracteristica.getFecha_creacion()));
+        }
+
+        return fechasCreacion;
     }
 }

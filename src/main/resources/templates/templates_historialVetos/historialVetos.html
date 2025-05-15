@@ -67,7 +67,7 @@
                         USUARIO VETADO</td>
                     <td th:text="${historialVeto.razon}">RAZÓN DEL VETO</td>
 
-                    <td th:text="${historialVeto.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                    <td th:text="${#temporals.format(fechasCreacion[historialVeto.id_historial_veto],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
                 </tr>
             </tbody>
         </table>

@@ -3,16 +3,17 @@ package com.hotel.appHotel.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -22,8 +23,6 @@ import com.hotel.appHotel.model.VentasClientesHabitacion;
 import com.hotel.appHotel.service.UsuariosService;
 import com.hotel.appHotel.service.VentasClientesHabitacionService;
 import com.hotel.appHotel.service.VentasService;
-
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/admin/ventasClientesHabitacion")
@@ -47,6 +46,7 @@ public class A_VentasClientesHabitacionController {
     @GetMapping
     public String listarVentasClientesHabitacion(Model modelo) {
         modelo.addAttribute("ventasClientesHabitacion", obtenerVentasClientesHabitacion());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
 
         return VIEW_LISTAR;
     }
@@ -77,6 +77,7 @@ public class A_VentasClientesHabitacionController {
         modelo.addAttribute("ventas", ventas);
         modelo.addAttribute("usuarios_cliente", usuarios_cliente);
         modelo.addAttribute("ventasClientesHabitacion", obtenerVentasClientesHabitacion());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
         modelo.addAttribute("ventaClienteHabitacion", ventaClienteHabitacion);
 
         return VIEW_NUEVO;
@@ -109,6 +110,7 @@ public class A_VentasClientesHabitacionController {
         modelo.addAttribute("ventas", ventas);
         modelo.addAttribute("usuarios_cliente", usuarios_cliente);
         modelo.addAttribute("ventasClientesHabitacion", obtenerVentasClientesHabitacion());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
         modelo.addAttribute("ventaClienteHabitacion", servicio.getVentaClienteHabitacionById(id));
 
         return VIEW_EDITAR;
@@ -123,7 +125,7 @@ public class A_VentasClientesHabitacionController {
         ventaClienteHabitacionExistente.setVenta(ventaClienteHabitacion.getVenta());
 
         ventaClienteHabitacionExistente
-                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
 
         servicio.updateVentaClienteHabitacion(ventaClienteHabitacionExistente);
 
@@ -161,5 +163,15 @@ public class A_VentasClientesHabitacionController {
                 .stream()
                 .filter(usuario -> !usuario.isEliminado())
                 .collect(Collectors.toList());
+    }
+
+    private HashMap<Long, LocalDateTime> obtenerFechasCreacionEnLocalDateTime() {
+        HashMap<Long, LocalDateTime> fechasCreacion = new HashMap<>();
+
+        for (VentasClientesHabitacion ventaClienteHabitacion : obtenerVentasClientesHabitacion()) {
+            fechasCreacion.put(ventaClienteHabitacion.getId_venta_cliente_habitacion(), LocalDateTime.parse(ventaClienteHabitacion.getFecha_creacion()));
+        }
+
+        return fechasCreacion;
     }
 }

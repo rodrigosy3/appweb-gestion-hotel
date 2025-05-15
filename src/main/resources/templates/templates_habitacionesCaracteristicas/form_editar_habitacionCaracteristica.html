@@ -104,7 +104,7 @@
                             <td th:text="${habitacionCaracteristica.descripcion}">DESCRIPCION</td>
                             <td th:text="${habitacionCaracteristica.precio}" class="text-center">PRECIO PARA DESCUENTO
                             </td>
-                            <td th:text="${habitacionCaracteristica.fecha_creacion}" class="text-center">FECHA DE
+                            <td th:text="${#temporals.format(fechasCreacion[habitacionCaracteristica.id_habitacion_caracteristica],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE
                                 CREACIÓN</td>
                         </tr>
                     </tbody>

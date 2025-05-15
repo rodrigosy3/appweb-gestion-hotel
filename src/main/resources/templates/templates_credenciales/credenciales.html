@@ -56,7 +56,7 @@
                     <td th:text="${credencial.usuario.rol.nombre}">ROL</td>
                     <td th:text="${credencial.usuario.dni}" class="text-center">USUARIO PARA ACCESO</td>
                     <td th:text="${credencial.contrasena}" class="text-center">CONTRASEÑA</td>
-                    <td th:text="${credencial.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                    <td th:text="${#temporals.format(fechasCreacion[credencial.id_credencial],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
                 </tr>
             </tbody>
         </table>

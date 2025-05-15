@@ -69,7 +69,7 @@
                         th:text="${'['+ ventaClienteHabitacion.venta.habitacion.numero+']'+' (' + ventaClienteHabitacion.venta.habitacion.tipo.abreviacion_tipo + ')' + ' ' + ventaClienteHabitacion.venta.habitacion.tipo.nombre_tipo}">
                         HABITACIÓN</td>
 
-                    <td th:text="${ventaClienteHabitacion.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                    <td th:text="${#temporals.format(fechasCreacion[ventaClienteHabitacion.id_venta_cliente_habitacion],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
                 </tr>
             </tbody>
         </table>

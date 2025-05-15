@@ -1,7 +1,10 @@
 package com.hotel.appHotel.controller;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -33,7 +35,17 @@ public class VentasController {
 
     @GetMapping
     public String listarVentas(Model modelo) {
+        Map<Long, LocalDateTime> ventasFechasEntradas = new HashMap<>();
+        Map<Long, LocalDateTime> ventasFechasSalidas = new HashMap<>();
+
+        for (Ventas venta : obtenerVentas()) {
+            ventasFechasEntradas.put(venta.getId_venta(), LocalDateTime.parse(venta.getFecha_entrada()));
+            ventasFechasSalidas.put(venta.getId_venta(), LocalDateTime.parse(venta.getFecha_salida()));
+        }
+
         modelo.addAttribute("ventas", obtenerVentas());
+        modelo.addAttribute("ventasFechasEntradas", ventasFechasEntradas);
+        modelo.addAttribute("ventasFechasSalidas", ventasFechasSalidas);
 
         return VIEW_LISTAR;
     }

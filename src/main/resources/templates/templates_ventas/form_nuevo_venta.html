@@ -51,7 +51,7 @@
                             <div class="row row-cols-3 justify-content-evenly">
                                 <div class="mb-3 col-auto text-center w-25">
                                     <label class="form-label">TIEMPO DE ESTADÍA</label>
-                                    <input type="number" class="form-control text-center" min="1"
+                                    <input type="number" class="form-control text-center" min="1" id="tiempoEstadiaInput"
                                         th:field="*{tiempo_estadia}" required>
                                 </div>
                                 <div class="mb-3 col-auto text-center w-50">
@@ -88,13 +88,16 @@
                             <div class="row justify-content-evenly">
                                 <div class="mb-3 col-auto text-center w-50">
                                     <label class="form-label">FECHA DE ENTRADA</label>
-                                    <input type="datetime-local" class="form-control text-center"
-                                        th:field="*{fecha_entrada}" required>
+                                    <input type="datetime-local" class="form-control text-center" id="fecha_entrada"
+                                        required>
+                                    <input type="hidden" name="fecha_entrada" id="fecha_entrada_valor">
                                 </div>
                                 <div class="mb-3 col-auto text-center w-50">
                                     <label class="form-label">FECHA DE SALIDA</label>
-                                    <input type="datetime-local" class="form-control text-center"
-                                        th:field="*{fecha_salida}" required>
+                                    <input type="datetime-local" class="form-control text-center" id="fecha_salida"
+                                        required>
+                                    <input type="hidden" name="fecha_salida" id="fecha_salida_valor">
+
                                 </div>
                             </div>
                             <div class="row justify-content-evenly">
@@ -184,14 +187,15 @@
                             <td class="text-center" th:text="${venta.monto_adelanto}">MONTO ADELANTO</td>
                             <td class="text-center" th:text="${venta.monto_total}">MONTO TOTAL</td>
                             <td class="text-center" th:text="${venta.tipo_venta}">TIPO DE VENTA</td>
-                            <td class="text-center" th:text="${venta.fecha_entrada}">FECHA DE ENTRADA</td>
-                            <td class="text-center" th:text="${venta.fecha_salida}">FECHA DE SALIDA</td>
+                            <td class="text-center" th:text="${#temporals.format(fechasEntrada[venta.id_venta],'yyyy-MM-dd hh:mm a')}">FECHA DE ENTRADA</td>
+                            <td class="text-center" th:text="${#temporals.format(fechasSalida[venta.id_venta],'yyyy-MM-dd hh:mm a')}">FECHA DE SALIDA</td>
                             <td class="text-center" th:text="${venta.estado}">ESTADO</td>
                             <td
                                 th:text="${venta.usuario_responsable.nombres + ' ' + venta.usuario_responsable.apellidos}">
                                 USUARIO RESPONSABLE</td>
 
-                            <td th:text="${venta.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                            <td th:text="${#temporals.format(fechasCreacion[venta.id_venta],'yyyy-MM-dd hh:mm:ss a')}"
+                                class="text-center">FECHA DE CREACIÓN</td>
                         </tr>
                     </tbody>
                 </table>
@@ -203,6 +207,31 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            const fechaEntrada = document.getElementById("fecha_entrada");
+            const fechaEntradaValor = document.getElementById("fecha_entrada_valor");
+            const fechaSalida = document.getElementById("fecha_salida");
+            const fechaSalidaValor = document.getElementById("fecha_salida_valor");
+            const dias = document.getElementById("tiempoEstadiaInput");
+            
+            const fecha_actual = new Date();
+
+            fechaEntrada.value = fechaJavaToJsToDatetimelocal(new Date(fecha_actual));
+            fechaEntradaValor.value = fechaJsToJavaParseString(new Date(fechaEntrada.value));
+            fechaSalida.value = fechaJavaToJsToDatetimelocal(new Date(fecha_actual));
+            fechaSalidaValor.value = fechaJsToJavaParseString(new Date(fechaSalida.value));
+
+            if (fechaEntrada) {
+                fechaEntrada.addEventListener("change", function () {
+                    fechaEntradaValor.value = fechaJsToJavaParseString(new Date(fechaEntrada.value));
+                });
+            }
+            if (fechaSalida) {
+                fechaSalida.addEventListener("change", function () {
+                    fechaSalidaValor.value = fechaJsToJavaParseString(new Date(fechaSalida.value));
+                });
+            }
+
+
             const usuarioResponsableSelect = document.getElementById("usuarioResponsableSelect");
             const rolUsuarioResponsableInput = document.getElementById("rolUsuarioResponsableInput");
             const habitacionSelect = document.getElementById("habitacionSelect");
@@ -239,7 +268,7 @@
 
                     if (tipo_servicio === "COMPLETO") {
                         precioHabitacionInput.value = precio_habitacion;
-                        
+
                         actualizarMontoTotal();
                     } else if (tipo_servicio === "MEDIO") {
                         precioHabitacionInput.value = precio_habitacion / 2;
@@ -258,8 +287,8 @@
                 const precioHabitacionInputValue = parseFloat(precioHabitacionInput.value);
                 const descuentoInputValue = parseFloat(descuentoInput.value);
                 const montoAdelantoInputValue = parseFloat(montoAdelantoInput.value);
-                
-                montoTotalInput.value = precioHabitacionInputValue - (descuentoInputValue + montoAdelantoInputValue);
+
+                montoTotalInput.value = precioHabitacionInputValue - descuentoInputValue;
             }
 
             descuentoInput.addEventListener("change", actualizarMontoTotal);
@@ -267,9 +296,50 @@
             precioHabitacionInput.addEventListener("change", actualizarMontoTotal);
 
             actualizarMontoTotal();
+
+
+
+            // Convertir fecha Java a JS para enviar a datetime-local de HTML
+            function fechaJavaToJsToDatetimelocal(date) {
+                let year = date.getFullYear();
+                let month = String(date.getMonth() + 1).padStart(2, "0"); // Meses van de 0-11
+                let day = String(date.getDate()).padStart(2, "0");
+                let hours = String(date.getHours()).padStart(2, "0");
+                let minutes = String(date.getMinutes()).padStart(2, "0");
+
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
+            }
+
+            // Convertir fecha JS a String en formato Java
+            function fechaJsToJavaParseString(fecha) {
+                const anio = fecha.getFullYear();
+                const mes = String(fecha.getMonth() + 1).padStart(2, '0');
+                const dia = String(fecha.getDate()).padStart(2, '0');
+                const horas = String(fecha.getHours()).padStart(2, '0');
+                const minutos = String(fecha.getMinutes()).padStart(2, '0');
+                const segundos = String(fecha.getSeconds()).padStart(2, '0');
+
+                return `${anio}-${mes}-${dia}T${horas}:${minutos}:${segundos}`;
+            }
+
+            function calcularFechaSalida(fecha, tipoServicio, p_fechaEntradaValor) {
+                let fechaSalida = new Date(fecha);
+                p_fechaEntradaValor = new Date(p_fechaEntradaValor);
+
+                if (tipoServicio.includes("COMPLETO")) {
+                    if (p_fechaEntradaValor.getHours() >= 6) {
+                        fechaSalida.setDate(fechaSalida.getDate() + 1); // Día siguiente
+                    }
+                    fechaSalida.setHours(12, 0, 0); // Medio día del mismo día
+                } else {
+                    fechaSalida.setHours(18, 0, 0); // 6 PM del mismo día
+                }
+
+                return fechaSalida;
+            }
         });
     </script>
-    
+
     <script th:src="@{/js/index.js}" defer></script>
     <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>

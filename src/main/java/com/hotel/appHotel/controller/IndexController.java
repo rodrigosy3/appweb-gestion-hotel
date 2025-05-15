@@ -73,7 +73,7 @@ public class IndexController {
     HabitacionesContenidoService servicioHabitacionesContenido;
 
     @GetMapping
-    public String getDatos(@RequestParam(value = "fecha", required = false) String fecha, Model modelo) {
+    public String getDatos(@RequestParam(value = "fechaFiltro", required = false) String fechaFiltro, Model modelo) {
         Map<Long, Ventas> ultimaVentaPorHabitacion = new HashMap<>();
         Map<Long, LocalDateTime> ultimaVentaPorHabitacionFechaEntrada = new HashMap<>();
         Map<Long, LocalDateTime> ultimaVentaPorHabitacionFechaSalida = new HashMap<>();
@@ -84,28 +84,51 @@ public class IndexController {
 
         Map<Long, Integer> mapAlertaSalida = new HashMap<>();
 
-        LocalDateTime fechaActual = LocalDateTime.now();
+        LocalDateTime fechaBase = LocalDateTime.now();
 
-        if (fecha != null && !fecha.isEmpty()) {
-            // LocalDate fechaFormateada =
-            // parseStringToLocalDateTime(fecha).toLocalDate();
-            System.out.println(fecha);
+        if (fechaFiltro != null && !fechaFiltro.isEmpty()) {
+            System.out.println(fechaFiltro);
+            fechaBase = LocalDateTime.parse(fechaFiltro + "T00:00:00");
 
-            // if (fechaActual.toLocalDate() != fechaFormateada) {
-            // System.out.println("FECHA FILTRO: " + fechaFormateada);
-            // }
+            for (Ventas venta : obtenerVentasActivas()) {
+                LocalDateTime fechaEntrada = parseStringToLocalDateTime(venta.getFecha_entrada());
+                LocalDateTime fechaSalida = parseStringToLocalDateTime(venta.getFecha_salida());
+
+                Long id_habitacion = venta.getHabitacion().getId_habitacion();
+
+                if (fechaEntrada.toLocalDate().equals(fechaBase.toLocalDate())
+                        || fechaSalida.toLocalDate().equals(fechaBase.toLocalDate())
+                        || (fechaEntrada.isBefore(fechaBase) && fechaSalida.isAfter(fechaBase))) {
+
+                    if (ultimaVentaPorHabitacion.containsKey(id_habitacion)) {
+                        if (fechaEntrada.isAfter(
+                                parseStringToLocalDateTime(
+                                        ultimaVentaPorHabitacion.get(id_habitacion).getFecha_entrada()))) {
+
+                            ultimaVentaPorHabitacion.put(id_habitacion, venta);
+                            ultimaVentaPorHabitacionFechaEntrada.put(id_habitacion, fechaEntrada);
+                            ultimaVentaPorHabitacionFechaSalida.put(id_habitacion, fechaSalida);
+                        }
+                    } else {
+                        ultimaVentaPorHabitacion.put(id_habitacion, venta);
+                        ultimaVentaPorHabitacionFechaEntrada.put(id_habitacion, fechaEntrada);
+                        ultimaVentaPorHabitacionFechaSalida.put(id_habitacion, fechaSalida);
+                    }
+                }
+            }
+
         } else {
             for (Ventas venta : obtenerVentasActivas()) {
                 LocalDateTime fechaEntrada = parseStringToLocalDateTime(venta.getFecha_entrada());
                 LocalDateTime fechaSalida = parseStringToLocalDateTime(venta.getFecha_salida());
 
-                Duration tiempoRestante = Duration.between(fechaActual, fechaSalida);
+                Duration tiempoRestante = Duration.between(fechaBase, fechaSalida);
 
                 Long id_habitacion = venta.getHabitacion().getId_habitacion();
 
-                if (fechaEntrada.toLocalDate().equals(fechaActual.toLocalDate())
-                        || fechaEntrada.isBefore(fechaActual)) {
-                    if (fechaSalida.isAfter(fechaActual) || fechaSalida.equals(fechaActual)) {
+                if (fechaEntrada.toLocalDate().equals(fechaBase.toLocalDate())
+                        || fechaEntrada.isBefore(fechaBase)) {
+                    if (fechaSalida.isAfter(fechaBase) || fechaSalida.equals(fechaBase)) {
                         if (ultimaVentaPorHabitacion.containsKey(id_habitacion)) {
                             if (fechaEntrada.isAfter(
                                     parseStringToLocalDateTime(
@@ -156,6 +179,8 @@ public class IndexController {
         modelo.addAttribute("ventasVencidas", ventasVencidas);
         modelo.addAttribute("ventasVencidasFechaEntrada", ventasVencidasFechaEntrada);
         modelo.addAttribute("ventasVencidasFechaSalida", ventasVencidasFechaSalida);
+
+        modelo.addAttribute("fechaFiltro", fechaFiltro);
 
         return VIEW_INICIO;
     }
@@ -267,8 +292,7 @@ public class IndexController {
 
         // Guardar la venta
         if (ventaHabitacion.getId_venta() == null) {
-            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
-                    : servicioUsuarios.getUsuarioById(1L);
+            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(1L);
             // Usuarios usuario_admin = servicioUsuarios.getUsuarioById(1L);
             Habitaciones habitacion = servicioHabitaciones.getHabitacionById(idHabitacion);
 
@@ -365,8 +389,7 @@ public class IndexController {
 
         // Guardar la venta
         if (ventaParaReserva.getId_venta() == null) {
-            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(2L) != null ? servicioUsuarios.getUsuarioById(2L)
-                    : servicioUsuarios.getUsuarioById(1L);
+            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(1L);
 
             ventaParaReserva.setHabitacion(habitacion);
             ventaParaReserva.setTipo_venta(ventaParaReserva.getTipo_venta());

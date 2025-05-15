@@ -27,7 +27,7 @@
             <div class="my-auto">
                 <a class="btn btn-primary" th:href="@{/ventas/exportar-pdf}" target="_blank">
                     <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
-                </a>                
+                </a>
             </div>
         </div>
 
@@ -35,18 +35,18 @@
             <thead class="table-dark">
                 <tr>
                     <th class="text-center align-middle">HABITACIÓN</th>
-                    <th>CLIENTES</th>
-                    <th class="text-center">PRECIO DE LA HABITACIÓN</th>
-                    <th class="text-center">TIEMPO DE ESTADÍA</th>
-                    <th class="text-center">TIPO DE SERVICIO</th>
-                    <th class="text-center">DESCUENTO</th>
-                    <th class="text-center">MONTO ADELANTO</th>
-                    <th class="text-center">MONTO TOTAL</th>
-                    <th class="text-center">TIPO DE VENTA</th>
-                    <th class="text-center">FECHA DE ENTRADA</th>
-                    <th class="text-center">FECHA DE SALIDA</th>
-                    <th class="text-center">ESTADO</th>
-                    <th>USUARIO RESPONSABLE</th>
+                    <th class="text-center align-middle">CLIENTES</th>
+                    <th class="text-center align-middle">PRECIO DE LA HABITACIÓN</th>
+                    <th class="text-center align-middle">TIEMPO DE ESTADÍA</th>
+                    <th class="text-center align-middle">TIPO DE SERVICIO</th>
+                    <th class="text-center align-middle">DESCUENTO</th>
+                    <th class="text-center align-middle">MONTO ADELANTO</th>
+                    <th class="text-center align-middle">MONTO TOTAL</th>
+                    <th class="text-center align-middle">TIPO DE VENTA</th>
+                    <th class="text-center align-middle">FECHA DE ENTRADA</th>
+                    <th class="text-center align-middle">FECHA DE SALIDA</th>
+                    <th class="text-center align-middle">ESTADO</th>
+                    <th class="text-center align-middle">USUARIO RESPONSABLE</th>
                 </tr>
             </thead>
             <tbody>
@@ -68,8 +68,12 @@
                     <td class="text-center" th:text="${venta.monto_adelanto}">MONTO ADELANTO</td>
                     <td class="text-center" th:text="${venta.monto_total}">MONTO TOTAL</td>
                     <td class="text-center" th:text="${venta.tipo_venta}">TIPO DE VENTA</td>
-                    <td class="text-center" th:text="${venta.fecha_entrada}">FECHA DE ENTRADA</td>
-                    <td class="text-center" th:text="${venta.fecha_salida}">FECHA DE SALIDA</td>
+                    <td class="text-center"
+                        th:text="${#temporals.format(ventasFechasEntradas[venta.id_venta],'yyyy-MM-dd hh:mm a')}">
+                        FECHA DE ENTRADA</td>
+                    <td class="text-center"
+                        th:text="${#temporals.format(ventasFechasSalidas[venta.id_venta],'yyyy-MM-dd hh:mm a')}">FECHA
+                        DE SALIDA</td>
                     <td class="text-center" th:text="${venta.estado}">ESTADO</td>
                     <td th:text="${venta.usuario_responsable.nombres + ' ' + venta.usuario_responsable.apellidos}">
                         USUARIO RESPONSABLE</td>

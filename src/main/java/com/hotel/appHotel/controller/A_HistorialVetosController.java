@@ -3,24 +3,24 @@ package com.hotel.appHotel.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hotel.appHotel.model.HistorialVetos;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.service.HistorialVetosService;
 import com.hotel.appHotel.service.UsuariosService;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/admin/historialVetos")
@@ -41,6 +41,7 @@ public class A_HistorialVetosController {
     @GetMapping
     public String listarHistorialVetos(Model modelo) {
         modelo.addAttribute("historialVetos", obtenerHistorialVetos());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
 
         return VIEW_LISTAR;
     }
@@ -66,6 +67,7 @@ public class A_HistorialVetosController {
             modelo.addAttribute("usuarios_responsables", usuarios_responsables);
             modelo.addAttribute("usuarios_clientes", usuarios_clientes);
             modelo.addAttribute("historialVetos", obtenerHistorialVetos());
+            modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
             modelo.addAttribute("historialVeto", historialVeto);
 
             return VIEW_NUEVO;
@@ -106,6 +108,7 @@ public class A_HistorialVetosController {
             modelo.addAttribute("usuarios_clientes", usuarios_clientes);
             modelo.addAttribute("usuarios_responsables", usuarios_responsables);
             modelo.addAttribute("historialVetos", obtenerHistorialVetos());
+            modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
             modelo.addAttribute("historialVeto", servicio.getHistorialVetoById(id));
 
             return VIEW_EDITAR;
@@ -122,7 +125,7 @@ public class A_HistorialVetosController {
         historialVetoExistente.setUsuario_responsable(historialVeto.getUsuario_responsable());
         historialVetoExistente.setRazon(historialVeto.getRazon());
         historialVetoExistente
-                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
 
         if (!usuarioExistente.getEstado_vetado()) {
             usuarioExistente.setEstado_vetado(true);
@@ -165,5 +168,15 @@ public class A_HistorialVetosController {
                 .stream()
                 .filter(usuario -> !usuario.isEliminado())
                 .collect(Collectors.toList());
+    }
+
+    private HashMap<Long, LocalDateTime> obtenerFechasCreacionEnLocalDateTime() {
+        HashMap<Long, LocalDateTime> fechasCreacion = new HashMap<>();
+
+        for (HistorialVetos historialVeto : obtenerHistorialVetos()) {
+            fechasCreacion.put(historialVeto.getId_historial_veto(), LocalDateTime.parse(historialVeto.getFecha_creacion()));
+        }
+
+        return fechasCreacion;
     }
 }

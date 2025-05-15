@@ -33,7 +33,7 @@
             </ul>
         </nav>
 
-        <button type="button" class="btn btn-primary" id="btn-hoy" onclick="irAHoy()">Hoy</button>
+        <a type="button" class="btn btn-primary" id="btn-hoy" th:href="@{/}">Hoy</a>
 
         <input type="hidden" id="filtroFecha" name="fechaFiltro" />
     </div>
@@ -53,7 +53,7 @@
         <div class="row">
             <!-- Primera tabla: lado izquierdo -->
             <div class="col-12 col-lg-6 justify-content-center">
-                <table class="table table-hover" th:if="${!hab_antiguas.isEmpty()}">
+                <table class="table table-hover" th:if="${hab_antiguas != null}">
                     <thead class="table-secondary border-light">
                         <tr>
                             <th class="text-center">N°</th>
@@ -67,7 +67,7 @@
                     </thead>
                     <tbody>
                         <tr th:each="hab : ${hab_antiguas}"
-                            th:classappend="${hab.estado.estado == 'RESERVADA' ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ventasVencidas[hab.id_habitacion] != null ? 'table-danger' : mapAlertaSalida[hab.id_habitacion] != null ? 'table-warning' : ''}">
+                            th:classappend="${hab.estado.estado == 'RESERVADA' && ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ventasVencidas[hab.id_habitacion] != null ? 'table-danger' : mapAlertaSalida[hab.id_habitacion] != null ? 'table-warning' : ''}">
 
                             <td class="text-center fw-bold border-light bg-secondary-subtle align-middle"
                                 th:text="${hab.numero}"
@@ -100,7 +100,7 @@
                             <!-- #################### CONDICIONES SOBRE EL ESTADO DE LA VENTA Y HABITACION #################### -->
                             <td>
                                 <!-- ######## CONDICIONES DE LAS HABITACIONES ######## -->
-                                <span th:if="${hab.estado.estado == 'RESERVADA'}"
+                                <span th:if="${hab.estado.estado == 'RESERVADA' && ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null}"
                                     class="bg-primary-subtle fw-bold text-primary">
                                     HABITACIÓN RESERVADA <br>
                                 </span>
@@ -234,7 +234,7 @@
 
             <!-- Segunda tabla: lado derecho -->
             <div class="col-12 col-lg-6 justify-content-center">
-                <table class="table table-hover" th:if="${!hab_modernas.isEmpty()}">
+                <table class="table table-hover" th:if="${hab_modernas != null}">
                     <thead class="table-primary border-light">
                         <tr>
                             <th class="text-center">N°</th>
@@ -248,7 +248,7 @@
                     </thead>
                     <tbody>
                         <tr th:each="hab : ${hab_modernas}"
-                            th:classappend="${hab.estado.estado == 'RESERVADA' ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ventasVencidas[hab.id_habitacion] != null ? 'table-danger' : mapAlertaSalida[hab.id_habitacion] != null ? 'table-warning' : ''}">
+                            th:classappend="${hab.estado.estado == 'RESERVADA' && ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ventasVencidas[hab.id_habitacion] != null ? 'table-danger' : mapAlertaSalida[hab.id_habitacion] != null ? 'table-warning' : ''}">
 
                             <td class="text-center fw-bold border-light bg-primary-subtle align-middle"
                                 th:text="${hab.numero}"
@@ -281,7 +281,7 @@
                             <!-- #################### CONDICIONES SOBRE EL ESTADO DE LA VENTA Y HABITACION #################### -->
                             <td>
                                 <!-- ######## CONDICIONES DE LAS HABITACIONES ######## -->
-                                <span th:if="${hab.estado.estado == 'RESERVADA'}"
+                                <span th:if="${hab.estado.estado == 'RESERVADA' && ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null}"
                                     class="bg-primary-subtle fw-bold text-primary">
                                     HABITACIÓN RESERVADA <br>
                                 </span>

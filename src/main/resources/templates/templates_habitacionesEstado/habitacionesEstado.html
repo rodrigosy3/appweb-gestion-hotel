@@ -53,7 +53,7 @@
                     <td th:text="${habitacionEstado.id_habitacion_estado}" class="text-center">ID</td>
                     <td th:text="${habitacionEstado.estado}">NOMBRE DEL ESTADO</td>
                     <td th:text="${habitacionEstado.mensaje}">MENSAJE</td>
-                    <td th:text="${habitacionEstado.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                    <td th:text="${#temporals.format(fechasCreacion[habitacionEstado.id_habitacion_estado],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
                 </tr>
             </tbody>
         </table>

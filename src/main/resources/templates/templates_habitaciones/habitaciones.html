@@ -65,7 +65,7 @@
                         th:text="${'(' + habitacion.tipo.abreviacion_tipo + ')' + ' ' + habitacion.tipo.nombre_tipo}">TIPO DE
                         HABITACIÓN</td>
 
-                    <td th:text="${habitacion.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                    <td th:text="${#temporals.format(fechasCreacion[habitacion.id_habitacion],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
                 </tr>
             </tbody>
         </table>

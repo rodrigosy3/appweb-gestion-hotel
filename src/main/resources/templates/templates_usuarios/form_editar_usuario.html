@@ -80,7 +80,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label">FECHA DE CREACIÓN (Se cambiará por la fecha actual)</label>
-                                <input type="text" class="form-control" th:field="*{fecha_creacion}"
+                                <input type="text" class="form-control" th:value="${#temporals.format(fechasCreacion[usuario.id_usuario],'yyyy-MM-dd hh:mm:ss a')}"
                                     name="fecha_creacion" disabled>
                             </div>
 
@@ -145,7 +145,7 @@
                                 ESTADO DE VETO</td>
                             <td th:text="${usuario.razon_vetado}">RAZÓN DE VETO</td>
                             <td th:text="${usuario.rol.nombre}">ROL</td>
-                            <td th:text="${usuario.fecha_creacion}" class="text-center">FECHA DE CREACIÓN</td>
+                            <td th:text="${#temporals.format(fechasCreacion[usuario.id_usuario],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
                         </tr>
                     </tbody>
                 </table>

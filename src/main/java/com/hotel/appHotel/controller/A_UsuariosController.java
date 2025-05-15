@@ -3,12 +3,18 @@ package com.hotel.appHotel.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.hotel.appHotel.model.Credenciales;
 import com.hotel.appHotel.model.Roles;
@@ -16,12 +22,6 @@ import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.service.CredencialesService;
 import com.hotel.appHotel.service.RolesService;
 import com.hotel.appHotel.service.UsuariosService;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequestMapping(value = "/admin/usuarios")
@@ -45,6 +45,7 @@ public class A_UsuariosController {
     @GetMapping
     public String listarUsuarios(Model modelo) {
         modelo.addAttribute("usuarios", obtenerUsuarios());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
 
         return VIEW_LISTAR;
     }
@@ -55,6 +56,7 @@ public class A_UsuariosController {
 
         modelo.addAttribute("roles", obtenerRoles());
         modelo.addAttribute("usuarios", obtenerUsuarios());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
         modelo.addAttribute("usuario", usuario);
 
         return VIEW_NUEVO;
@@ -76,6 +78,7 @@ public class A_UsuariosController {
     public String editarUsuarioForm(@PathVariable Long id, Model modelo) {
         modelo.addAttribute("roles", obtenerRoles());
         modelo.addAttribute("usuarios", obtenerUsuarios());
+        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
         modelo.addAttribute("usuario", servicio.getUsuarioById(id));
 
         return VIEW_EDITAR;
@@ -94,7 +97,7 @@ public class A_UsuariosController {
         usuarioExistente.setRazon_vetado(usuario.getRazon_vetado());
         usuarioExistente.setRol(usuario.getRol());
         usuarioExistente
-                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
 
         if (usuarioExistente.getRol().getNivel() != 0) {
             asignarCredenciales(usuarioExistente);
@@ -180,5 +183,15 @@ public class A_UsuariosController {
 
             credencialesServicio.createCredencial(credencialNuevo);
         }
+    }
+
+    private HashMap<Long, LocalDateTime> obtenerFechasCreacionEnLocalDateTime() {
+        HashMap<Long, LocalDateTime> fechasCreacion = new HashMap<>();
+
+        for (Usuarios usuario : obtenerUsuarios()) {
+            fechasCreacion.put(usuario.getId_usuario(), LocalDateTime.parse(usuario.getFecha_creacion()));
+        }
+
+        return fechasCreacion;
     }
 }

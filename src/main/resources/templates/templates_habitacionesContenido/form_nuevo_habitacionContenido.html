@@ -125,7 +125,7 @@
                             <td class="text-center" th:text="${habitacionContenido.razon_estado}">RAZÓN DE SU ESTADO
                             </td>
 
-                            <td th:text="${habitacionContenido.fecha_creacion}" class="text-center">FECHA DE CREACIÓN
+                            <td th:text="${#temporals.format(fechasCreacion[habitacionContenido.id_habitacion_contenido],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN
                             </td>
                         </tr>
                     </tbody>

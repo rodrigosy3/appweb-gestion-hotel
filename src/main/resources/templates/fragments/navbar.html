@@ -4,7 +4,7 @@
             <li class="nav-item">
                 <a class="nav-link fs-4 active" aria-current="page" th:href="@{/}">INICIO</a>
             </li>
-            <!-- <a class="navbar-brand fs-2 m-0" th:href="@{/admin}"><i class="bi bi-building-fill"></i></a> -->
+            <a class="navbar-brand fs-2 m-0" th:href="@{/admin}"><i class="bi bi-building-fill"></i></a>
             <li class="nav-item pt-4">
                 <div class="ms-4 text-secondary" th:text="${'DATOS: ' + dbSize}"></div>
             </li>
@@ -18,7 +18,7 @@
         </div>
 
         <div class="navbar-nav">
-            <ul class="navbar-nav align-items-center">
+            <ul class="navbar-nav align-items-center">                
                 <li class="nav-item">
                     <a class="nav-link" aria-current="page" th:href="@{/clientes}">CLIENTES</a>
                 </li>
