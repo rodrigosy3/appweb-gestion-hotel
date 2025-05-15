@@ -1,9 +1,3 @@
-function redireccionar(button) {
-  const url = button.getAttribute("data-url-redireccion");
-  console.log("Redirigiendo a:", url);
-  window.location.href = url;
-}
-
 // FUNCIONES PARA EL RELOJ
 function updateClock() {
   const clock = document.getElementById("digital-clock");
@@ -38,3 +32,19 @@ function updateClock() {
 // Actualizar el reloj cada segundo
 setInterval(updateClock, 1000);
 updateClock(); // Llamar inmediatamente para evitar retrasos
+
+const btn_editar_1 = document.getElementById("btn-editar-1");
+const btn_editar_2 = document.getElementById("btn-editar-2");
+
+// Leer el parámetro fecha de la URL
+const params_2 = new URLSearchParams(window.location.search);
+const fechaURL_2 = params_2.get("fechaFiltro");
+
+// Si hay una fecha en la URL, calcular cuántos días se ha desplazado desde hoy
+if (fechaURL_2) {
+  btn_editar_1.setAttribute("disabled", "true");
+  btn_editar_2.setAttribute("disabled", "true");
+} else {
+  btn_editar_1.removeAttribute("disabled");
+  btn_editar_2.removeAttribute("disabled");
+}
