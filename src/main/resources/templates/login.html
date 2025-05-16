@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card-login {
+            max-width: 400px;
+            margin: 200px auto;
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-login .card-body {
+            padding: 2rem;
+        }
+
+        .form-control:focus {
+            box-shadow: none;
+            border-color: #0d6efd;
+        }
+
+        .btn-login {
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card card-login">
+        <div class="card-body">
+
+            <div th:if="${param.error}" class="alert alert-danger mt-3 p-2 text-center">
+                Usuario o contraseña inválidos.
+            </div>
+            <div th:if="${param.logout}" class="alert alert-success mt-3 p-2 text-center">
+                Has cerrado sesión correctamente.
+            </div>
+
+            <h3 class="card-title text-center mb-4">BIENVENIDO</h3>
+
+            <form th:action="@{/login}" method="post">
+                <div class="mb-3 text-center">
+                    <label for="username" class="form-label fw-bold">USUARIO</label>
+                    <input type="text" class="form-control text-center" id="username" name="username"
+                        placeholder="Ingresa tu D.N.I." required autofocus>
+                </div>
+
+                <div class="mb-3 text-center">
+                    <label for="password" class="form-label fw-bold">CONTRASEÑA</label>
+                    <input type="password" class="form-control text-center" id="password" name="password"
+                        placeholder="Ingresa tu contraseña" required>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-login mt-3">
+                        Iniciar sesión
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>
