@@ -22,7 +22,7 @@ public class SecurityConfig {
                 // permitimos CSS, JS y la página de login
                 .requestMatchers("/css/**", "/js/**", "/login").permitAll()
                 // solo roles OWNER (nivel 1) y ADMINISTRADOR (nivel 2) acceden a /admin/**
-                .requestMatchers("/admin/**").hasAnyRole("OWNER", "ADMIN")
+                .requestMatchers("/admin/**").hasAnyRole("OWNER", "ADMINISTRADOR")
                 // cualquier otra URL requiere autenticación
                 .anyRequest().authenticated()
                 )

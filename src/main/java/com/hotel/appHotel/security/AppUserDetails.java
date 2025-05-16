@@ -56,4 +56,9 @@ public class AppUserDetails implements UserDetails {
     public boolean isEnabled() {
         return !cred.isEliminado();
     }
+
+    public String getNombres() {
+        return user.getNombres();
+    }
+
 }
