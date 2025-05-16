@@ -12,7 +12,7 @@ import com.hotel.appHotel.model.Credenciales;
 @Repository
 public interface CredencialesRepository extends JpaRepository<Credenciales, Long> {
 
-    @Query("SELECT c FROM Credenciales c WHERE c.usuario.dni = :dni AND c.eliminado = false")
+    @Query(value = "SELECT c.* FROM credenciales c INNER JOIN usuarios u ON c.usuario = u.id_usuario WHERE u.dni = :dni AND c.eliminado = false", nativeQuery = true)
     Optional<Credenciales> buscarPorDni(@Param("dni") String dni);
 
 }

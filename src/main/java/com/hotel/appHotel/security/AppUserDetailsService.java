@@ -30,13 +30,12 @@ public class AppUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) {
         System.out.println(" >>> loadUserByUsername: intentando buscar DNI=" + username);
         return repo.buscarPorDni(username)
-                .map(c -> {
-                    System.out.println("    ✓ encontrado credencial: " + c);
-                    return new AppUserDetails(c);
-                })
-                .orElseThrow(() -> {
-                    System.out.println("    ✗ no encontró credencial");
-                    return new UsernameNotFoundException("No existe usuario " + username);
-                });
+                .map(AppUserDetails::new)
+                .orElseThrow(
+                        () -> {
+                            System.out.println("    ✗ no encontró credencial");
+                            return new UsernameNotFoundException("No existe usuario " + username);
+                        }
+                );
     }
 }

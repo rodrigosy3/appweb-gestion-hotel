@@ -11,4 +11,8 @@ public class AuthController {
         return "login";  // Thymeleaf en src/main/resources/templates/login.html
     }
 
+    @GetMapping("/acceso-denegado")
+    public String accesoDenegado() {
+        return "acceso_denegado";
+    }
 }

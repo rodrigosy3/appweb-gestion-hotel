@@ -23,7 +23,7 @@ public class AppUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // extrae el rol del usuario y lo convierte en ROLE_xxx
-        String nombreRol = user.getRol().getNombre().toUpperCase();
+        String nombreRol = user.getRol().getNombre();
         return List.of(new SimpleGrantedAuthority("ROLE_" + nombreRol));
     }
 
