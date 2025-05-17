@@ -2,6 +2,9 @@ package com.hotel.appHotel.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import com.hotel.appHotel.model.Usuarios;
 
 public interface UsuariosService {
@@ -18,4 +21,6 @@ public interface UsuariosService {
     public List<Usuarios> getUsuariosExcluyendoRol(String rol);
 
     public Usuarios getUsuarioByDni(String dni);
+
+    Page<Usuarios> getUsuariosNoEliminados(Pageable pageable);
 }

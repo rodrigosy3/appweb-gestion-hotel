@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+
+    <style>
+        body {
+            background-color: #fff3cd;
+        }
+
+        .error-container {
+            margin-top: 10%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container text-center error-container">
+        <h1 class="display-4 text-warning">Ha ocurrido un error inesperado</h1>
+        <p class="lead">Lo sentimos, estamos trabajando para solucionarlo.</p>
+        <a th:href="@{/}" class="btn btn-warning mt-3">Volver al inicio</a>
+
+        <h2 class="text-dark mt-5">Detalles del error</h2>
+        <p th:text="'Código de error: ' + ${status}"></p>
+        <p th:text="'Mensaje: ' + ${message}"></p>
+
+    </div>
+</body>
+
+</html>

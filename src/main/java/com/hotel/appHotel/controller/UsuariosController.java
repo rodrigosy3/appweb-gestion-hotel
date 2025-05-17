@@ -2,11 +2,14 @@ package com.hotel.appHotel.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.hotel.appHotel.model.HistorialVetos;
 import com.hotel.appHotel.model.Usuarios;
@@ -49,16 +53,33 @@ public class UsuariosController {
     private PdfServiceClientes pdfServiceClientes;
 
     @GetMapping
-    public String listarUsuarios(Model modelo) {
-        modelo.addAttribute("usuarios", obtenerUsuarios());
+    public String listarUsuariosPorPagina(@RequestParam Map<String, Object> params, Model model) {
+        int page = params.get("page") != null ? (Integer.parseInt(params.get("page").toString()) - 1) : 0;
+
+        PageRequest pageRequest = PageRequest.of(page, 20);
+
+        Page<Usuarios> pageUsuarios = servicio.getUsuariosNoEliminados(pageRequest);
+
+        int totalPages = pageUsuarios.getTotalPages();
+
+        if (totalPages > 0) {
+            List<Integer> pages = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pages", pages);
+        }
+
+        model.addAttribute("usuarios", pageUsuarios.getContent());
+        model.addAttribute("actualPage", page + 1);
+        model.addAttribute("nextPage", page + 2);
+        model.addAttribute("prevPage", page);
+        model.addAttribute("lastPage", totalPages);
 
         return VIEW_LISTAR;
     }
 
     @GetMapping("/nuevo")
     public String nuevoUsuarioForm(Model modelo) {
-        modelo.addAttribute("usuarios", obtenerUsuarios());
-
         Usuarios usuario = new Usuarios();
         modelo.addAttribute("usuario", usuario);
 
@@ -92,7 +113,6 @@ public class UsuariosController {
 
     @GetMapping("/editar/{id}")
     public String editarUsuarioForm(@PathVariable Long id, Model modelo) {
-        modelo.addAttribute("usuarios", obtenerUsuarios());
         modelo.addAttribute("usuario", servicio.getUsuarioById(id));
 
         return VIEW_EDITAR;
@@ -124,7 +144,7 @@ public class UsuariosController {
         usuarioExistente.setRazon_vetado(usuario.getRazon_vetado());
 
         usuarioExistente
-                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                .setFecha_creacion(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
 
         servicio.updateUsuario(usuarioExistente);
 
@@ -154,8 +174,13 @@ public class UsuariosController {
     }
 
     @GetMapping("/exportar-pdf")
-    public ResponseEntity<byte[]> exportarVentasPdf() {
-        byte[] pdf = pdfServiceClientes.generarPdfClientes(obtenerUsuarios());
+    public ResponseEntity<byte[]> exportarVentasPdf(@RequestParam(defaultValue = "1") int page) {
+        int pageSize = 20;
+        PageRequest pageable = PageRequest.of(page - 1, pageSize);
+
+        Page<Usuarios> usuariosPage = servicio.getUsuariosNoEliminados(pageable);
+
+        byte[] pdf = pdfServiceClientes.generarPdfClientes(usuariosPage.getContent());
 
         if (pdf == null) {
             return ResponseEntity.badRequest().build();
@@ -166,12 +191,5 @@ public class UsuariosController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
     }
-
-    private List<Usuarios> obtenerUsuarios() {
-        return servicio.getUsuarios()
-                .stream()
-                .filter(usuario -> !usuario.isEliminado() && usuario.getRol().getNivel() == 0)
-                .sorted(Comparator.comparing(Usuarios::getId_usuario).reversed())
-                .collect(Collectors.toList());
-    }
+    
 }

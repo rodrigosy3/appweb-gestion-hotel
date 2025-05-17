@@ -78,54 +78,6 @@
                 </div>
             </div>
         </div>
-
-        <div class="mx-auto w-75">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <h1 class="text-center">LISTA DE CLIENTES</h1>
-                </div>
-                <div class="my-auto">
-                    <a class="btn btn-primary" th:href="@{/clientes/nuevo}" role="button">AGREGAR CLIENTE</a>
-                </div>
-            </div>
-
-            <table class="table border table-hover shadow">
-                <thead class="table-dark">
-                    <tr>
-                        <th class="text-center">DNI</th>
-                        <th>NOMBRES</th>
-                        <th>APELLIDOS</th>
-                        <th>CELULAR</th>
-                        <th>EDAD</th>
-                        <th class="text-center">ESTADO DE VETO</th>
-                        <th>RAZÓN DE VETO</th>
-                        <th class="text-center w-auto">ACCIONES</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="usuario: ${usuarios}"
-                        th:classappend="${usuario.estado_vetado ? 'table-danger' : 'table-success'}">
-                        <td th:text="${usuario.dni}" class="text-center fw-bold">DNI</td>
-                        <td th:text="${usuario.nombres}">NOMBRES</td>
-                        <td th:text="${usuario.apellidos}">APELLIDOS</td>
-                        <td th:text="${usuario.celular}">CELULAR</td>
-                        <td th:text="${usuario.edad}">EDAD</td>
-                        <td th:text="${usuario.estado_vetado? 'VETADO' : 'NO VETADO'}"
-                            th:class="${usuario.estado_vetado? 'bg-danger text-light text-center' : 'bg-success text-light text-center'}">
-                            ESTADO DE VETO</td>
-                        <td th:text="${usuario.razon_vetado}"
-                            th:class="${usuario.razon_vetado == ''? 'bg-secondary-subtle' : ''}">
-                            RAZÓN DE VETO</td>
-                        <td class="text-center border border-secondary-subtle">
-                            <a class="btn btn-sm btn-primary" role="button"
-                                th:href="@{/clientes/editar/{id}(id=${usuario.id_usuario})}">
-                                EDITAR
-                            </a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
     </div>
 
 

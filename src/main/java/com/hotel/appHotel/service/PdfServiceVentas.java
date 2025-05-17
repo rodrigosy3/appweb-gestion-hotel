@@ -1,13 +1,22 @@
 package com.hotel.appHotel.service;
 
-import com.hotel.appHotel.model.Ventas;
-import com.hotel.appHotel.model.VentasClientesHabitacion;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.*;
-import org.springframework.stereotype.Service;
-
 import java.io.ByteArrayOutputStream;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.hotel.appHotel.model.Ventas;
+import com.hotel.appHotel.model.VentasClientesHabitacion;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 @Service
 public class PdfServiceVentas {
@@ -34,11 +43,11 @@ public class PdfServiceVentas {
 
             // Encabezados
             Font fontEncabezado = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD);
-            String[] encabezados = { "ID", "Hab.", "Cliente", "Precio habitación", "Días alojado",
-                    "Tipo de servicio",
-                    "Descuento", "Monto Adelanto", "Monto total", "Tipo de venta", "Fecha Entrada", "Fecha Salida",
-                    "Estado", "Responsable" };
-            float[] columnWidths = { 2f, 3f, 10f, 5f, 4f, 6f, 4f, 5f, 5f, 6f, 8f, 8f, 5f, 5f };
+            String[] encabezados = {"ID", "Hab.", "Cliente", "Precio habitación", "Días alojado",
+                "Tipo de servicio",
+                "Descuento", "Monto Adelanto", "Monto total", "Tipo de venta", "Fecha Entrada", "Fecha Salida",
+                "Estado", "Responsable"};
+            float[] columnWidths = {2f, 3f, 10f, 5f, 4f, 6f, 4f, 5f, 5f, 6f, 8f, 8f, 5f, 5f};
             table.setWidths(columnWidths);
 
             for (String encabezado : encabezados) {
@@ -60,11 +69,16 @@ public class PdfServiceVentas {
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 table.addCell(cell);
 
+                StringBuilder clientesTexto = new StringBuilder();
                 for (VentasClientesHabitacion cliente : venta.getVentasClientesHabitacion()) {
-                    cell = new PdfPCell(new Phrase(String.valueOf(cliente.getUsuario_alojado().getNombres() + ' '
-                            + cliente.getUsuario_alojado().getApellidos()), fontDatos));
-                    table.addCell(cell);
+                    clientesTexto.append(cliente.getUsuario_alojado().getNombres())
+                            .append(" ")
+                            .append(cliente.getUsuario_alojado().getApellidos())
+                            .append("\n");
                 }
+
+                cell = new PdfPCell(new Phrase(clientesTexto.toString().trim(), fontDatos));
+                table.addCell(cell);
 
                 cell = new PdfPCell(new Phrase(String.valueOf("S/. " + venta.getHabitacion().getPrecio()), fontDatos));
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);

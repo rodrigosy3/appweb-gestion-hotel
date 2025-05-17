@@ -1,22 +1,25 @@
 package com.hotel.appHotel.controller;
 
-import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.hotel.appHotel.model.HistorialVetos;
 import com.hotel.appHotel.service.HistorialVetosService;
 import com.hotel.appHotel.service.PdfServiceHistorialVetos;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping(value = "/historialVetos")
@@ -31,16 +34,40 @@ public class HistorialVetosController {
     @Autowired
     private PdfServiceHistorialVetos pdfServiceHistorialVetos;
 
-    @GetMapping
-    public String listarHistorialVetos(Model modelo) {
-        modelo.addAttribute("historialVetos", obtenerHistorialVetos());
+        @GetMapping
+    public String listarHistorialVetosPorPagina(@RequestParam Map<String, Object> params, Model model) {
+        int page = params.get("page") != null ? (Integer.parseInt(params.get("page").toString()) - 1) : 0;
+
+        PageRequest pageRequest = PageRequest.of(page, 25);
+
+        Page<HistorialVetos> pageUsuarios = servicio.getHistorialVetosNoEliminados(pageRequest);
+
+        int totalPages = pageUsuarios.getTotalPages();
+
+        if (totalPages > 0) {
+            List<Integer> pages = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pages", pages);
+        }
+
+        model.addAttribute("historialVetos", pageUsuarios.getContent());
+        model.addAttribute("actualPage", page + 1);
+        model.addAttribute("nextPage", page + 2);
+        model.addAttribute("prevPage", page);
+        model.addAttribute("lastPage", totalPages);
 
         return VIEW_LISTAR;
     }
 
     @GetMapping("/exportar-pdf")
-    public ResponseEntity<byte[]> exportarVentasPdf() {
-        byte[] pdf = pdfServiceHistorialVetos.generarPdfHistorialVetos(obtenerHistorialVetos());
+    public ResponseEntity<byte[]> exportarVentasPdf(@RequestParam(defaultValue = "1") int page) {
+        int pageSize = 25;
+        PageRequest pageable = PageRequest.of(page - 1, pageSize);
+
+        Page<HistorialVetos> historialVetosPage = servicio.getHistorialVetosNoEliminados(pageable);
+
+        byte[] pdf = pdfServiceHistorialVetos.generarPdfHistorialVetos(historialVetosPage.getContent());
 
         if (pdf == null) {
             return ResponseEntity.badRequest().build();
@@ -52,10 +79,4 @@ public class HistorialVetosController {
                 .body(pdf);
     }
 
-    private List<HistorialVetos> obtenerHistorialVetos() {
-        return servicio.getHistorialVetos().stream()
-        .filter(historialVeto -> !historialVeto.isEliminado())
-        .sorted(Comparator.comparing(HistorialVetos::getId_historial_veto).reversed())
-        .collect(Collectors.toList());
-    }
 }

@@ -90,7 +90,7 @@ public class IndexController {
             System.out.println(fechaFiltro);
             fechaBase = LocalDateTime.parse(fechaFiltro + "T00:00:00");
 
-            for (Ventas venta : obtenerVentasActivas()) {
+            for (Ventas venta : obtenerVentas()) {
                 LocalDateTime fechaEntrada = parseStringToLocalDateTime(venta.getFecha_entrada());
                 LocalDateTime fechaSalida = parseStringToLocalDateTime(venta.getFecha_salida());
 

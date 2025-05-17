@@ -29,6 +29,7 @@ import lombok.Setter;
 public class Ventas {
 
     @Id
+    @Column(name = "id_venta")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id_venta;
 
@@ -72,7 +73,7 @@ public class Ventas {
 
     @Column(name = "fecha_creacion")
     private String fecha_creacion; // ISO 8601
-    
+
     @Column(name = "eliminado")
     private boolean eliminado = false;
 
@@ -84,4 +85,5 @@ public class Ventas {
     private void prePersist() {
         this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
     }
+
 }

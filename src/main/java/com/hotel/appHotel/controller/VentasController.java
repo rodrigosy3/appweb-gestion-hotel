@@ -1,13 +1,13 @@
 package com.hotel.appHotel.controller;
 
-import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.hotel.appHotel.model.Ventas;
 import com.hotel.appHotel.service.PdfServiceVentas;
@@ -34,25 +35,39 @@ public class VentasController {
     private PdfServiceVentas pdfService;
 
     @GetMapping
-    public String listarVentas(Model modelo) {
-        Map<Long, LocalDateTime> ventasFechasEntradas = new HashMap<>();
-        Map<Long, LocalDateTime> ventasFechasSalidas = new HashMap<>();
+    public String listarVentasPorPagina(@RequestParam Map<String, Object> params, Model model) {
+        int page = params.get("page") != null ? (Integer.parseInt(params.get("page").toString()) - 1)  : 0;
 
-        for (Ventas venta : obtenerVentas()) {
-            ventasFechasEntradas.put(venta.getId_venta(), LocalDateTime.parse(venta.getFecha_entrada()));
-            ventasFechasSalidas.put(venta.getId_venta(), LocalDateTime.parse(venta.getFecha_salida()));
+        PageRequest pageRequest = PageRequest.of(page, 20);
+
+        Page<Ventas> pageVentas = servicio.getVentasNoEliminadas(pageRequest);
+
+        int totalPages = pageVentas.getTotalPages();
+
+        if (totalPages > 0) {
+            List<Integer> pages = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pages", pages);
         }
 
-        modelo.addAttribute("ventas", obtenerVentas());
-        modelo.addAttribute("ventasFechasEntradas", ventasFechasEntradas);
-        modelo.addAttribute("ventasFechasSalidas", ventasFechasSalidas);
+        model.addAttribute("ventas", pageVentas.getContent());
+        model.addAttribute("actualPage", page + 1);
+        model.addAttribute("nextPage", page + 2);
+        model.addAttribute("prevPage", page);
+        model.addAttribute("lastPage", totalPages);
 
         return VIEW_LISTAR;
     }
 
     @GetMapping("/exportar-pdf")
-    public ResponseEntity<byte[]> exportarVentasPdf() {
-        byte[] pdf = pdfService.generarPdfVentas(obtenerVentas());
+    public ResponseEntity<byte[]> exportarVentasPdf(@RequestParam(defaultValue = "1") int page) {
+        int pageSize = 20;
+        PageRequest pageable = PageRequest.of(page - 1, pageSize);
+
+        Page<Ventas> ventasPage = servicio.getVentasNoEliminadas(pageable);
+
+        byte[] pdf = pdfService.generarPdfVentas(ventasPage.getContent());
 
         if (pdf == null) {
             return ResponseEntity.badRequest().build();
@@ -62,13 +77,5 @@ public class VentasController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ventas.pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
-    }
-
-    private List<Ventas> obtenerVentas() {
-        return servicio.getVentas()
-                .stream()
-                .filter(venta -> !venta.isEliminado())
-                .sorted(Comparator.comparing(Ventas::getId_venta).reversed())
-                .collect(Collectors.toList());
     }
 }

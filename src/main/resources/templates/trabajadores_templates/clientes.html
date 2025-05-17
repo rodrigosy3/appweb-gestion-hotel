@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
 <head>
     <meta charset="UTF-8">
@@ -18,11 +19,30 @@
         <div class="d-flex justify-content-between">
             <div class="d-flex">
                 <h1 class="text-center">LISTA DE CLIENTES</h1>
-                <a class="btn btn-primary ms-5 my-auto" th:href="@{/clientes/exportar-pdf}" target="_blank">
-                    <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
-                </a> 
             </div>
+
+            <div>
+                <nav aria-label="pagination-usuarios">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${prevPage == 0 ? 'disabled' : ''}">
+                            <a th:href="@{|/clientes?page=${prevPage}|}" class="page-link">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="page : ${pages}"
+                            th:classappend="${actualPage == page ? 'active' : ''}">
+                            <a class="page-link" th:href="@{|/clientes?page=${page}|}" th:text="${page}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${actualPage == lastPage ? 'disabled' : ''}">
+                            <a th:href="@{|/clientes?page=${nextPage}|}" class="page-link">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
             <div class="my-auto">
+                <a class="btn btn-primary ms-5 my-auto" th:href="@{/clientes/exportar-pdf(page=${actualPage})}"
+                    target="_blank">
+                    <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                </a>
                 <a class="btn btn-primary" th:href="@{/clientes/nuevo}" role="button">AGREGAR CLIENTE</a>
             </div>
         </div>
@@ -60,8 +80,9 @@
                             th:href="@{/clientes/editar/{id}(id=${usuario.id_usuario})}">
                             EDITAR
                         </a>
-                        <button th:disabled="${usuario.estado_vetado}" class="btn btn-sm btn-danger btn-vetar" th:data-id="${usuario.id_usuario}"
-                            th:data-nombre="${usuario.nombres}" th:data-vetado="${usuario.estado_vetado}">
+                        <button th:disabled="${usuario.estado_vetado}" class="btn btn-sm btn-danger btn-vetar"
+                            th:data-id="${usuario.id_usuario}" th:data-nombre="${usuario.nombres}"
+                            th:data-vetado="${usuario.estado_vetado}">
                             VETAR CLIENTE
                         </button>
                     </td>
@@ -70,7 +91,8 @@
         </table>
 
         <!-- Modal para ingresar la razón del veto -->
-        <div class="modal fade bg-danger bg-opacity-50 align-content-center" id="modalVeto" tabindex="-1" aria-labelledby="modalVetoLabel" aria-hidden="true">
+        <div class="modal fade bg-danger bg-opacity-50 align-content-center" id="modalVeto" tabindex="-1"
+            aria-labelledby="modalVetoLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -98,7 +120,7 @@
             let idClienteInput = document.getElementById("idClienteVeto");
             let nombreClienteText = document.getElementById("nombreCliente");
             let razonVetoInput = document.getElementById("razonVeto");
-            let btnConfirmarVeto = document.getElementById("btnConfirmarVeto"); 
+            let btnConfirmarVeto = document.getElementById("btnConfirmarVeto");
 
             // Agregar evento a todos los botones de "Vetar Cliente"
             document.querySelectorAll(".btn-vetar").forEach(boton => {
