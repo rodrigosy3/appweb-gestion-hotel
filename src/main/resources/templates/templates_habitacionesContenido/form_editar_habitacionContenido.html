@@ -81,7 +81,7 @@
 
                             <div class="mb-3">
                                 <label class="form-label">FECHA DE CREACIÓN (Se cambiará por la fecha actual)</label>
-                                <input type="text" class="form-control" th:value="${#temporals.format(fechasCreacion[habitacionContenido.id_habitacion_contenido],'yyyy-MM-dd hh:mm:ss a')}"
+                                <input type="text" class="form-control" th:value="${#temporals.format(T(java.time.LocalDateTime).parse(habitacionContenido.fecha_creacion), 'dd-MM-yyyy hh:mm a')}"
                                     name="fecha_creacion" disabled>
                             </div>
 

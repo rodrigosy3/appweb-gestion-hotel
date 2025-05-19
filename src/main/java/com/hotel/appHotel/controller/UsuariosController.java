@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -13,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,8 +25,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.hotel.appHotel.model.Credenciales;
 import com.hotel.appHotel.model.HistorialVetos;
 import com.hotel.appHotel.model.Usuarios;
+import com.hotel.appHotel.repository.CredencialesRepository;
 import com.hotel.appHotel.repository.RolesRepository;
 import com.hotel.appHotel.service.HistorialVetosService;
 import com.hotel.appHotel.service.PdfServiceClientes;
@@ -48,6 +52,9 @@ public class UsuariosController {
 
     @Autowired
     private HistorialVetosService historialVetosService;
+
+    @Autowired
+    private CredencialesRepository repositorioCredenciales;
 
     @Autowired
     private PdfServiceClientes pdfServiceClientes;
@@ -92,20 +99,6 @@ public class UsuariosController {
         usuario.setNombres(usuario.getNombres().toUpperCase());
         usuario.setApellidos(usuario.getApellidos().toUpperCase());
 
-        if (usuario.getEstado_vetado()) {
-            // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
-            //         : servicio.getUsuarioById(1L);
-            Usuarios usuario_admin = servicio.getUsuarioById(1L);
-
-            HistorialVetos historialNuevo = new HistorialVetos();
-
-            historialNuevo.setUsuario_responsable(usuario_admin);
-            historialNuevo.setUsuario_vetado(usuario);
-            historialNuevo.setRazon(usuario.getRazon_vetado());
-
-            historialVetosService.createHistorialVeto(historialNuevo);
-        }
-
         servicio.createUsuario(usuario);
 
         return REDIRECT_LISTAR;
@@ -123,12 +116,19 @@ public class UsuariosController {
         Usuarios usuarioExistente = servicio.getUsuarioById(id);
 
         if (!usuarioExistente.getRazon_vetado().equals(usuario.getRazon_vetado())) {
-            Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
-                    : servicio.getUsuarioById(1L);
-
             HistorialVetos historialNuevo = new HistorialVetos();
 
-            historialNuevo.setUsuario_responsable(usuario_admin);
+            // Logica para asignar el usuario responsable del cambio de la venta
+            // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
+            //         : servicio.getUsuarioById(1L);
+            String dni = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            Optional<Credenciales> credencialOpt = repositorioCredenciales.buscarPorDni(dni);
+            Usuarios usuario_responsable = credencialOpt.get().getUsuario();
+
+            historialNuevo.setUsuario_responsable(usuario_responsable);
+            /////////////////////////////////////////////////////////////////////
+
             historialNuevo.setUsuario_vetado(usuarioExistente);
             historialNuevo.setRazon(usuario.getRazon_vetado());
 
@@ -159,12 +159,19 @@ public class UsuariosController {
         usuario.setRazon_vetado(datos.getRazon_vetado());
         servicio.updateUsuario(usuario);
 
-        Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
-                : servicio.getUsuarioById(1L);
-
         HistorialVetos historialNuevo = new HistorialVetos();
 
-        historialNuevo.setUsuario_responsable(usuario_admin);
+        // Logica para asignar el usuario responsable del cambio de la venta
+        // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
+        //         : servicio.getUsuarioById(1L);
+        String dni = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Optional<Credenciales> credencialOpt = repositorioCredenciales.buscarPorDni(dni);
+        Usuarios usuario_responsable = credencialOpt.get().getUsuario();
+
+        historialNuevo.setUsuario_responsable(usuario_responsable);
+        /////////////////////////////////////////////////////////////////////
+
         historialNuevo.setUsuario_vetado(usuario);
         historialNuevo.setRazon(usuario.getRazon_vetado());
 
@@ -191,5 +198,5 @@ public class UsuariosController {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
     }
-    
+
 }

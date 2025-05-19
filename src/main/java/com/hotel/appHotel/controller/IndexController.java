@@ -9,10 +9,12 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,12 +28,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hotel.appHotel.model.ClienteDTO;
+import com.hotel.appHotel.model.Credenciales;
 import com.hotel.appHotel.model.Habitaciones;
 import com.hotel.appHotel.model.HabitacionesContenido;
 import com.hotel.appHotel.model.HabitacionesEstado;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.model.Ventas;
 import com.hotel.appHotel.model.VentasClientesHabitacion;
+import com.hotel.appHotel.repository.CredencialesRepository;
 import com.hotel.appHotel.service.HabitacionesContenidoService;
 import com.hotel.appHotel.service.HabitacionesEstadoService;
 import com.hotel.appHotel.service.HabitacionesService;
@@ -71,6 +75,9 @@ public class IndexController {
 
     @Autowired
     HabitacionesContenidoService servicioHabitacionesContenido;
+
+    @Autowired
+    CredencialesRepository repositorioCredenciales;
 
     @GetMapping
     public String getDatos(@RequestParam(value = "fechaFiltro", required = false) String fechaFiltro, Model modelo) {
@@ -292,8 +299,6 @@ public class IndexController {
 
         // Guardar la venta
         if (ventaHabitacion.getId_venta() == null) {
-            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(1L);
-            // Usuarios usuario_admin = servicioUsuarios.getUsuarioById(1L);
             Habitaciones habitacion = servicioHabitaciones.getHabitacionById(idHabitacion);
 
             habitacion.setEstado(servicioHabitacionesEstado.getByEstado("OCUPADO"));
@@ -301,7 +306,17 @@ public class IndexController {
             servicioHabitaciones.updateHabitacion(habitacion);
 
             ventaHabitacion.setHabitacion(habitacion);
-            ventaHabitacion.setUsuario_responsable(usuario_admin);
+
+            // Logica para asignar el usuario responsable del cambio de la venta
+            // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
+            //         : servicio.getUsuarioById(1L);
+            String dni = SecurityContextHolder.getContext().getAuthentication().getName();
+
+            Optional<Credenciales> credencialOpt = repositorioCredenciales.buscarPorDni(dni);
+            Usuarios usuario_responsable = credencialOpt.get().getUsuario();
+
+            ventaHabitacion.setUsuario_responsable(usuario_responsable);
+            /////////////////////////////////////////////////////////////////////
 
             ventaGuardada = servicioVentas.createVenta(ventaHabitacion);
         } else {
@@ -387,14 +402,22 @@ public class IndexController {
 
         Ventas ventaReservada;
 
+        // Logica para asignar el usuario responsable del cambio de la venta
+        // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
+        //         : servicio.getUsuarioById(1L);
+        String dni = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Optional<Credenciales> credencialOpt = repositorioCredenciales.buscarPorDni(dni);
+        Usuarios usuario_responsable = credencialOpt.get().getUsuario();
+        /////////////////////////////////////////////////////////////////////
+
         // Guardar la venta
         if (ventaParaReserva.getId_venta() == null) {
-            Usuarios usuario_admin = servicioUsuarios.getUsuarioById(1L);
-
             ventaParaReserva.setHabitacion(habitacion);
             ventaParaReserva.setTipo_venta(ventaParaReserva.getTipo_venta());
             ventaParaReserva.setFecha_entrada(ventaParaReserva.getFecha_entrada());
-            ventaParaReserva.setUsuario_responsable(usuario_admin);
+
+            ventaParaReserva.setUsuario_responsable(usuario_responsable);
 
             ventaReservada = servicioVentas.createVenta(ventaParaReserva);
         } else {
@@ -411,6 +434,7 @@ public class IndexController {
             ventaReservadaExistente.setMonto_adelanto(ventaParaReserva.getMonto_adelanto());
             ventaReservadaExistente.setTipo_servicio(ventaParaReserva.getTipo_servicio());
             ventaReservadaExistente.setTipo_venta(ventaParaReserva.getTipo_venta());
+            ventaReservadaExistente.setUsuario_responsable(usuario_responsable);
             // BeanUtils.copyProperties(ventaParaReserva, ventaReservadaExistente, "habitacion", "usuario_responsable",
             //         "fecha_creacion");
             servicioVentas.updateVenta(ventaReservadaExistente);
@@ -526,6 +550,16 @@ public class IndexController {
         Habitaciones habitacion = servicioHabitaciones.getHabitacionById(venta.getHabitacion().getId_habitacion());
         HabitacionesEstado estadoDisponible = servicioHabitacionesEstado.getByEstado("DISPONIBLE");
 
+        // Logica para asignar el usuario responsable del cambio de la venta
+        // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
+        //         : servicio.getUsuarioById(1L);
+        String dni = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Optional<Credenciales> credencialOpt = repositorioCredenciales.buscarPorDni(dni);
+        Usuarios usuario_responsable = credencialOpt.get().getUsuario();
+        /////////////////////////////////////////////////////////////////////
+        
+        venta.setUsuario_responsable(usuario_responsable);
         venta.setTipo_venta("RESERVA CANCELADA");
         servicioVentas.updateVenta(venta);
 
@@ -539,6 +573,16 @@ public class IndexController {
     public String actualizarVentaReservada(@PathVariable Long id) {
         Ventas venta = servicioVentas.getVentaById(id);
 
+        // Logica para asignar el usuario responsable del cambio de la venta
+        // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
+        //         : servicio.getUsuarioById(1L);
+        String dni = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        Optional<Credenciales> credencialOpt = repositorioCredenciales.buscarPorDni(dni);
+        Usuarios usuario_responsable = credencialOpt.get().getUsuario();
+        /////////////////////////////////////////////////////////////////////
+        
+        venta.setUsuario_responsable(usuario_responsable);
         venta.setTipo_venta("ALQUILER");
         servicioVentas.updateVenta(venta);
 

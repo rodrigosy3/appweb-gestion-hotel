@@ -24,6 +24,23 @@
             <div>
                 <h1 class="text-center">LISTA DE HISTORIAL DE VETOS</h1>
             </div>
+
+            <div>
+                <nav aria-label="pagination-ventas">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${prevPage == 0 ? 'disabled' : ''}">
+                            <a th:href="@{|/admin/historialVetos?page=${prevPage}|}" class="page-link">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="page : ${pages}" th:classappend="${actualPage == page ? 'active' : ''}">
+                            <a class="page-link" th:href="@{|/admin/historialVetos?page=${page}|}" th:text="${page}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${actualPage == lastPage ? 'disabled' : ''}">
+                            <a th:href="@{|/admin/historialVetos?page=${nextPage}|}" class="page-link">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
             <div class="my-auto">
                 <a class="btn btn-primary" th:href="@{/admin/historialVetos/nuevo}" role="button">AGREGAR HISTORIAL DE
                     VETO</a>
@@ -67,7 +84,7 @@
                         USUARIO VETADO</td>
                     <td th:text="${historialVeto.razon}">RAZÓN DEL VETO</td>
 
-                    <td th:text="${#temporals.format(fechasCreacion[historialVeto.id_historial_veto],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
+                    <td th:text="${#temporals.format(T(java.time.LocalDateTime).parse(historialVeto.fecha_creacion), 'dd-MM-yyyy hh:mm a')}" class="text-center">FECHA DE CREACIÓN</td>
                 </tr>
             </tbody>
         </table>

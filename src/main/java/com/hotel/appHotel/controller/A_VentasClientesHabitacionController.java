@@ -3,11 +3,14 @@ package com.hotel.appHotel.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hotel.appHotel.model.Usuarios;
@@ -44,9 +48,27 @@ public class A_VentasClientesHabitacionController {
     private VentasService ventasServicio;
 
     @GetMapping
-    public String listarVentasClientesHabitacion(Model modelo) {
-        modelo.addAttribute("ventasClientesHabitacion", obtenerVentasClientesHabitacion());
-        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
+    public String listarVentasClientesHabitacionPorPagina(@RequestParam Map<String, Object> params, Model model) {
+        int page = params.get("page") != null ? (Integer.parseInt(params.get("page").toString()) - 1) : 0;
+
+        PageRequest pageRequest = PageRequest.of(page, 20);
+
+        Page<VentasClientesHabitacion> pageEntidad = servicio.getVentasClientesHabitacionNoEliminados(pageRequest);
+
+        int totalPages = pageEntidad.getTotalPages();
+
+        if (totalPages > 0) {
+            List<Integer> pages = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pages", pages);
+        }
+
+        model.addAttribute("ventasClientesHabitacion", pageEntidad.getContent());
+        model.addAttribute("actualPage", page + 1);
+        model.addAttribute("nextPage", page + 2);
+        model.addAttribute("prevPage", page);
+        model.addAttribute("lastPage", totalPages);
 
         return VIEW_LISTAR;
     }
@@ -76,8 +98,6 @@ public class A_VentasClientesHabitacionController {
 
         modelo.addAttribute("ventas", ventas);
         modelo.addAttribute("usuarios_cliente", usuarios_cliente);
-        modelo.addAttribute("ventasClientesHabitacion", obtenerVentasClientesHabitacion());
-        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
         modelo.addAttribute("ventaClienteHabitacion", ventaClienteHabitacion);
 
         return VIEW_NUEVO;
@@ -109,8 +129,6 @@ public class A_VentasClientesHabitacionController {
 
         modelo.addAttribute("ventas", ventas);
         modelo.addAttribute("usuarios_cliente", usuarios_cliente);
-        modelo.addAttribute("ventasClientesHabitacion", obtenerVentasClientesHabitacion());
-        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
         modelo.addAttribute("ventaClienteHabitacion", servicio.getVentaClienteHabitacionById(id));
 
         return VIEW_EDITAR;
@@ -143,18 +161,11 @@ public class A_VentasClientesHabitacionController {
         return REDIRECT_LISTAR;
     }
 
-    private List<VentasClientesHabitacion> obtenerVentasClientesHabitacion() {
-        return servicio.getVentasClientesHabitacion()
-                .stream()
-                .filter(ventaClienteHabitacion -> !ventaClienteHabitacion.isEliminado())
-                .sorted(Comparator.comparing(VentasClientesHabitacion::getId_venta_cliente_habitacion).reversed())
-                .collect(Collectors.toList());
-    }
-
     private List<Ventas> obtenerVentas() {
         return ventasServicio.getVentas()
                 .stream()
                 .filter(venta -> !venta.isEliminado())
+                .sorted(Comparator.comparing(Ventas::getId_venta).reversed())
                 .collect(Collectors.toList());
     }
 
@@ -162,16 +173,7 @@ public class A_VentasClientesHabitacionController {
         return usuariosServicio.getUsuarios()
                 .stream()
                 .filter(usuario -> !usuario.isEliminado())
+                .sorted(Comparator.comparing(Usuarios::getId_usuario).reversed())
                 .collect(Collectors.toList());
-    }
-
-    private HashMap<Long, LocalDateTime> obtenerFechasCreacionEnLocalDateTime() {
-        HashMap<Long, LocalDateTime> fechasCreacion = new HashMap<>();
-
-        for (VentasClientesHabitacion ventaClienteHabitacion : obtenerVentasClientesHabitacion()) {
-            fechasCreacion.put(ventaClienteHabitacion.getId_venta_cliente_habitacion(), LocalDateTime.parse(ventaClienteHabitacion.getFecha_creacion()));
-        }
-
-        return fechasCreacion;
     }
 }

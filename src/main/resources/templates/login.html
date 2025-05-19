@@ -9,15 +9,28 @@
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <style>
         body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+
             background-color: #f8f9fa;
         }
 
+        .main-container {
+            width: 100%;
+            max-width: 500px;
+            margin: auto;
+        }
+
         .card-login {
-            max-width: 400px;
-            margin: 200px auto;
+            max-width: 500px;
+            margin: 50px 0;
             border: none;
             border-radius: 0.75rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            position: relative;
         }
 
         .card-login .card-body {
@@ -37,36 +50,44 @@
 </head>
 
 <body>
-    <div class="card card-login">
-        <div class="card-body">
+    <div class="main-container">
+        <div class="card card-login shadow">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">BIENVENIDO</h3>
 
-            <div th:if="${param.error}" class="alert alert-danger mt-3 p-2 text-center">
+                <form th:action="@{/login}" method="post">
+                    <div class="mb-3 text-center mx-5">
+                        <label for="username" class="form-label fw-bold">USUARIO</label>
+                        <input type="text" class="form-control text-center" id="username" name="username"
+                            placeholder="Ingresa tu D.N.I." required autofocus>
+                    </div>
+
+                    <div class="mb-3 text-center mx-5">
+                        <label for="password" class="form-label fw-bold">CONTRASEÑA</label>
+                        <input type="password" class="form-control text-center" id="password" name="password"
+                            placeholder="Ingresa tu contraseña" required>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-login mt-3">
+                            Iniciar sesión
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div th:if="${param.error}" class="alert alert-danger p-2 text-sm-center">
                 Usuario o contraseña inválidos.
             </div>
-            <div th:if="${param.logout}" class="alert alert-success mt-3 p-2 text-center">
+            <div th:if="${param.logout}" class="alert alert-success p-2 text-center">
                 Has cerrado sesión correctamente.
             </div>
+        </div>
 
-            <h3 class="card-title text-center mb-4">BIENVENIDO</h3>
-
-            <form th:action="@{/login}" method="post">
-                <div class="mb-3 text-center">
-                    <label for="username" class="form-label fw-bold">USUARIO</label>
-                    <input type="text" class="form-control text-center" id="username" name="username"
-                        placeholder="Ingresa tu D.N.I." required autofocus>
-                </div>
-
-                <div class="mb-3 text-center">
-                    <label for="password" class="form-label fw-bold">CONTRASEÑA</label>
-                    <input type="password" class="form-control text-center" id="password" name="password"
-                        placeholder="Ingresa tu contraseña" required>
-                </div>
-
-                <div class="d-grid">
-                    <button type="submit" class="btn btn-primary btn-login mt-3">
-                        Iniciar sesión
-                    </button>
-                </div>
+        <div class="text-center">
+            <form th:action="@{/shutdown}" method="post"
+                onsubmit="return confirm('¿Estás seguro de que deseas apagar la aplicación?')">
+                <button type="submit" class="btn btn-danger shadow">Apagar aplicación</button>
             </form>
         </div>
     </div>

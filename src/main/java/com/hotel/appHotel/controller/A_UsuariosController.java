@@ -3,11 +3,14 @@ package com.hotel.appHotel.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.hotel.appHotel.model.Credenciales;
 import com.hotel.appHotel.model.Roles;
@@ -43,9 +47,27 @@ public class A_UsuariosController {
     private CredencialesService credencialesServicio;
 
     @GetMapping
-    public String listarUsuarios(Model modelo) {
-        modelo.addAttribute("usuarios", obtenerUsuarios());
-        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
+    public String listarUsuariosPorPagina(@RequestParam Map<String, Object> params, Model model) {
+        int page = params.get("page") != null ? (Integer.parseInt(params.get("page").toString()) - 1) : 0;
+
+        PageRequest pageRequest = PageRequest.of(page, 25);
+
+        Page<Usuarios> pageEntidad = servicio.getUsuariosNoEliminadosAll(pageRequest);
+
+        int totalPages = pageEntidad.getTotalPages();
+
+        if (totalPages > 0) {
+            List<Integer> pages = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pages", pages);
+        }
+
+        model.addAttribute("usuarios", pageEntidad.getContent());
+        model.addAttribute("actualPage", page + 1);
+        model.addAttribute("nextPage", page + 2);
+        model.addAttribute("prevPage", page);
+        model.addAttribute("lastPage", totalPages);
 
         return VIEW_LISTAR;
     }
@@ -55,8 +77,6 @@ public class A_UsuariosController {
         Usuarios usuario = new Usuarios();
 
         modelo.addAttribute("roles", obtenerRoles());
-        modelo.addAttribute("usuarios", obtenerUsuarios());
-        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
         modelo.addAttribute("usuario", usuario);
 
         return VIEW_NUEVO;
@@ -69,7 +89,9 @@ public class A_UsuariosController {
 
         servicio.createUsuario(usuario);
 
-        if (usuario.getRol().getNivel() != 0) asignarCredenciales(usuario);
+        if (usuario.getRol().getNivel() != 0) {
+            asignarCredenciales(usuario);
+        }
 
         return REDIRECT_LISTAR;
     }
@@ -77,8 +99,6 @@ public class A_UsuariosController {
     @GetMapping("/editar/{id}")
     public String editarUsuarioForm(@PathVariable Long id, Model modelo) {
         modelo.addAttribute("roles", obtenerRoles());
-        modelo.addAttribute("usuarios", obtenerUsuarios());
-        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
         modelo.addAttribute("usuario", servicio.getUsuarioById(id));
 
         return VIEW_EDITAR;
@@ -142,14 +162,6 @@ public class A_UsuariosController {
         return REDIRECT_LISTAR;
     }
 
-    private List<Usuarios> obtenerUsuarios() {
-        return servicio.getUsuarios()
-                .stream()
-                .filter(usuario -> !usuario.isEliminado())
-                .sorted(Comparator.comparing(Usuarios::getId_usuario).reversed())
-                .collect(Collectors.toList());
-    }
-
     private List<Roles> obtenerRoles() {
         return rolesService.getRoles()
                 .stream()
@@ -183,15 +195,5 @@ public class A_UsuariosController {
 
             credencialesServicio.createCredencial(credencialNuevo);
         }
-    }
-
-    private HashMap<Long, LocalDateTime> obtenerFechasCreacionEnLocalDateTime() {
-        HashMap<Long, LocalDateTime> fechasCreacion = new HashMap<>();
-
-        for (Usuarios usuario : obtenerUsuarios()) {
-            fechasCreacion.put(usuario.getId_usuario(), LocalDateTime.parse(usuario.getFecha_creacion()));
-        }
-
-        return fechasCreacion;
     }
 }

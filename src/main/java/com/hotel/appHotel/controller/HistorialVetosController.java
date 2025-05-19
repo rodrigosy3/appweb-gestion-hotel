@@ -34,15 +34,15 @@ public class HistorialVetosController {
     @Autowired
     private PdfServiceHistorialVetos pdfServiceHistorialVetos;
 
-        @GetMapping
+    @GetMapping
     public String listarHistorialVetosPorPagina(@RequestParam Map<String, Object> params, Model model) {
         int page = params.get("page") != null ? (Integer.parseInt(params.get("page").toString()) - 1) : 0;
 
-        PageRequest pageRequest = PageRequest.of(page, 25);
+        PageRequest pageRequest = PageRequest.of(page, 20);
 
-        Page<HistorialVetos> pageUsuarios = servicio.getHistorialVetosNoEliminados(pageRequest);
+        Page<HistorialVetos> pageEntidad = servicio.getHistorialVetosNoEliminados(pageRequest);
 
-        int totalPages = pageUsuarios.getTotalPages();
+        int totalPages = pageEntidad.getTotalPages();
 
         if (totalPages > 0) {
             List<Integer> pages = IntStream.rangeClosed(1, totalPages)
@@ -51,7 +51,7 @@ public class HistorialVetosController {
             model.addAttribute("pages", pages);
         }
 
-        model.addAttribute("historialVetos", pageUsuarios.getContent());
+        model.addAttribute("historialVetos", pageEntidad.getContent());
         model.addAttribute("actualPage", page + 1);
         model.addAttribute("nextPage", page + 2);
         model.addAttribute("prevPage", page);

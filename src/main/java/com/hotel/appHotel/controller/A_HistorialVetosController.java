@@ -2,12 +2,14 @@ package com.hotel.appHotel.controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hotel.appHotel.model.HistorialVetos;
@@ -39,9 +42,27 @@ public class A_HistorialVetosController {
     private UsuariosService usuariosServicio;
 
     @GetMapping
-    public String listarHistorialVetos(Model modelo) {
-        modelo.addAttribute("historialVetos", obtenerHistorialVetos());
-        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
+    public String listarHistorialVetosPorPagina(@RequestParam Map<String, Object> params, Model model) {
+        int page = params.get("page") != null ? (Integer.parseInt(params.get("page").toString()) - 1) : 0;
+
+        PageRequest pageRequest = PageRequest.of(page, 20);
+
+        Page<HistorialVetos> pageEntidad = servicio.getHistorialVetosNoEliminados(pageRequest);
+
+        int totalPages = pageEntidad.getTotalPages();
+
+        if (totalPages > 0) {
+            List<Integer> pages = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pages", pages);
+        }
+
+        model.addAttribute("historialVetos", pageEntidad.getContent());
+        model.addAttribute("actualPage", page + 1);
+        model.addAttribute("nextPage", page + 2);
+        model.addAttribute("prevPage", page);
+        model.addAttribute("lastPage", totalPages);
 
         return VIEW_LISTAR;
     }
@@ -66,8 +87,6 @@ public class A_HistorialVetosController {
         } else {
             modelo.addAttribute("usuarios_responsables", usuarios_responsables);
             modelo.addAttribute("usuarios_clientes", usuarios_clientes);
-            modelo.addAttribute("historialVetos", obtenerHistorialVetos());
-            modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
             modelo.addAttribute("historialVeto", historialVeto);
 
             return VIEW_NUEVO;
@@ -107,8 +126,6 @@ public class A_HistorialVetosController {
         } else {
             modelo.addAttribute("usuarios_clientes", usuarios_clientes);
             modelo.addAttribute("usuarios_responsables", usuarios_responsables);
-            modelo.addAttribute("historialVetos", obtenerHistorialVetos());
-            modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
             modelo.addAttribute("historialVeto", servicio.getHistorialVetoById(id));
 
             return VIEW_EDITAR;
@@ -155,28 +172,10 @@ public class A_HistorialVetosController {
         return REDIRECT_LISTAR;
     }
 
-    private List<HistorialVetos> obtenerHistorialVetos() {
-        return servicio.getHistorialVetos()
-                .stream()
-                .filter(historialVeto -> !historialVeto.isEliminado())
-                .sorted(Comparator.comparing(HistorialVetos::getId_historial_veto).reversed())
-                .collect(Collectors.toList());
-    }
-
     private List<Usuarios> obtenerUsuarios() {
         return usuariosServicio.getUsuarios()
                 .stream()
                 .filter(usuario -> !usuario.isEliminado())
                 .collect(Collectors.toList());
-    }
-
-    private HashMap<Long, LocalDateTime> obtenerFechasCreacionEnLocalDateTime() {
-        HashMap<Long, LocalDateTime> fechasCreacion = new HashMap<>();
-
-        for (HistorialVetos historialVeto : obtenerHistorialVetos()) {
-            fechasCreacion.put(historialVeto.getId_historial_veto(), LocalDateTime.parse(historialVeto.getFecha_creacion()));
-        }
-
-        return fechasCreacion;
     }
 }

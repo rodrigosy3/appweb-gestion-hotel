@@ -24,6 +24,24 @@
             <div>
                 <h1 class="text-center">LISTA DE VENTAS POR CLIENTE Y HABITACIÓN</h1>
             </div>
+
+            <div>
+                <nav aria-label="pagination-usuarios">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${prevPage == 0 ? 'disabled' : ''}">
+                            <a th:href="@{|/admin/usuarios?page=${prevPage}|}" class="page-link">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="page : ${pages}"
+                            th:classappend="${actualPage == page ? 'active' : ''}">
+                            <a class="page-link" th:href="@{|/admin/usuarios?page=${page}|}" th:text="${page}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${actualPage == lastPage ? 'disabled' : ''}">
+                            <a th:href="@{|/admin/usuarios?page=${nextPage}|}" class="page-link">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
             <div class="my-auto">
                 <a class="btn btn-primary" th:href="@{/admin/ventasClientesHabitacion/nuevo}" role="button">AGREGAR
                     REGISTRO</a>
@@ -69,7 +87,7 @@
                         th:text="${'['+ ventaClienteHabitacion.venta.habitacion.numero+']'+' (' + ventaClienteHabitacion.venta.habitacion.tipo.abreviacion_tipo + ')' + ' ' + ventaClienteHabitacion.venta.habitacion.tipo.nombre_tipo}">
                         HABITACIÓN</td>
 
-                    <td th:text="${#temporals.format(fechasCreacion[ventaClienteHabitacion.id_venta_cliente_habitacion],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
+                    <td th:text="${#temporals.format(T(java.time.LocalDateTime).parse(ventaClienteHabitacion.fecha_creacion), 'dd-MM-yyyy hh:mm a')}" class="text-center">FECHA DE CREACIÓN</td>
                 </tr>
             </tbody>
         </table>

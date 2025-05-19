@@ -21,4 +21,7 @@ public interface UsuariosRepository extends JpaRepository<Usuarios, Long> {
     @Query("SELECT u FROM Usuarios u WHERE u.eliminado = false AND u.rol.nivel = 0 ORDER BY u.id_usuario DESC")
     Page<Usuarios> findByEliminadoFalseDesc(Pageable pageable);
 
+    @Query("SELECT u FROM Usuarios u WHERE u.eliminado = false ORDER BY u.id_usuario DESC")
+    Page<Usuarios> findByEliminadoFalseDescAll(Pageable pageable);
+
 }

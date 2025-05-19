@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
 <head>
     <meta charset="UTF-8">
@@ -24,6 +25,23 @@
             <div>
                 <h1 class="text-center">LISTA DE VENTAS</h1>
             </div>
+
+            <div>
+                <nav aria-label="pagination-ventas">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${prevPage == 0 ? 'disabled' : ''}">
+                            <a th:href="@{|/admin/ventas?page=${prevPage}|}" class="page-link">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="page : ${pages}" th:classappend="${actualPage == page ? 'active' : ''}">
+                            <a class="page-link" th:href="@{|/admin/ventas?page=${page}|}" th:text="${page}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${actualPage == lastPage ? 'disabled' : ''}">
+                            <a th:href="@{|/admin/ventas?page=${nextPage}|}" class="page-link">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
             <div class="my-auto">
                 <a class="btn btn-primary" th:href="@{/admin/ventas/nuevo}" role="button">AGREGAR
                     REGISTRO</a>
@@ -79,16 +97,17 @@
                     <td class="text-center" th:text="${venta.monto_total}">MONTO TOTAL</td>
                     <td class="text-center" th:text="${venta.tipo_venta}">TIPO DE VENTA</td>
                     <td class="text-center"
-                        th:text="${#temporals.format(fechasEntrada[venta.id_venta],'yyyy-MM-dd hh:mm a')}">FECHA DE
-                        ENTRADA</td>
+                        th:text="${#temporals.format(T(java.time.LocalDateTime).parse(venta.fecha_entrada), 'dd-MM-yyyy hh:mm a')}">
+                        FECHA DE ENTRADA</td>
                     <td class="text-center"
-                        th:text="${#temporals.format(fechasSalida[venta.id_venta],'yyyy-MM-dd hh:mm a')}">FECHA DE
-                        SALIDA</td>
+                        th:text="${#temporals.format(T(java.time.LocalDateTime).parse(venta.fecha_salida), 'dd-MM-yyyy hh:mm a')}">
+                        FECHA
+                        DE SALIDA</td>
                     <td class="text-center" th:text="${venta.estado}">ESTADO</td>
                     <td th:text="${venta.usuario_responsable.nombres + ' ' + venta.usuario_responsable.apellidos}">
                         USUARIO RESPONSABLE</td>
 
-                    <td th:text="${#temporals.format(fechasCreacion[venta.id_venta],'yyyy-MM-dd hh:mm:ss a')}"
+                    <td th:text="${#temporals.format(T(java.time.LocalDateTime).parse(venta.fecha_creacion), 'dd-MM-yyyy hh:mm a')}"
                         class="text-center">FECHA DE CREACIÓN</td>
                 </tr>
             </tbody>

@@ -1,5 +1,7 @@
 package com.hotel.appHotel.controller;
 
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,7 +38,7 @@ public class VentasController {
 
     @GetMapping
     public String listarVentasPorPagina(@RequestParam Map<String, Object> params, Model model) {
-        int page = params.get("page") != null ? (Integer.parseInt(params.get("page").toString()) - 1)  : 0;
+        int page = params.get("page") != null ? (Integer.parseInt(params.get("page").toString()) - 1) : 0;
 
         PageRequest pageRequest = PageRequest.of(page, 20);
 
@@ -75,6 +77,48 @@ public class VentasController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=ventas.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
+    @GetMapping("/reporte-por-fecha-pdf")
+    public ResponseEntity<byte[]> exportarVentasSegunFechaPdf(
+            @RequestParam(value = "fecha", required = false) String fecha) {
+        LocalDate fechaFiltro;
+
+        if (fecha != null && !fecha.isBlank()) {
+            try {
+                fechaFiltro = LocalDate.parse(fecha);
+            } catch (Exception e) {
+                fechaFiltro = LocalDate.now(); // En caso de error de formato
+            }
+        } else {
+            fechaFiltro = LocalDate.now(); // Si no se envió parámetro
+        }
+
+        LocalDate finalFechaFiltro = fechaFiltro;
+
+        List<Ventas> ventasDelDia = servicio.getVentas()
+                .stream()
+                .filter(venta -> !venta.isEliminado())
+                .filter(venta -> {
+                    LocalDate entrada = LocalDate.parse(venta.getFecha_entrada().substring(0, 10));
+                    LocalDate salida = LocalDate.parse(venta.getFecha_salida().substring(0, 10));
+                    
+                    return (entrada.isEqual(finalFechaFiltro) || entrada.isBefore(finalFechaFiltro))
+                            && (salida.isEqual(finalFechaFiltro) || salida.isAfter(finalFechaFiltro));
+                })
+                .sorted(Comparator.comparing(Ventas::getId_venta).reversed())
+                .collect(Collectors.toList());
+
+        byte[] pdf = pdfService.generarPdfVentas(ventasDelDia);
+
+        if (pdf == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=reporte_" + finalFechaFiltro + ".pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
     }

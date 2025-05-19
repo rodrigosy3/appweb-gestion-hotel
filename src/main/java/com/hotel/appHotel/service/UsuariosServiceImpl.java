@@ -58,4 +58,9 @@ public class UsuariosServiceImpl implements UsuariosService {
     public Page<Usuarios> getUsuariosNoEliminados(Pageable pageable) {
         return repositorio.findByEliminadoFalseDesc(pageable);
     }
+
+    @Override
+    public Page<Usuarios> getUsuariosNoEliminadosAll(Pageable pageable) {
+        return repositorio.findByEliminadoFalseDescAll(pageable);
+    }
 }

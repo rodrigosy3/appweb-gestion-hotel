@@ -23,4 +23,6 @@ public interface UsuariosService {
     public Usuarios getUsuarioByDni(String dni);
 
     Page<Usuarios> getUsuariosNoEliminados(Pageable pageable);
+
+    Page<Usuarios> getUsuariosNoEliminadosAll(Pageable pageable);
 }

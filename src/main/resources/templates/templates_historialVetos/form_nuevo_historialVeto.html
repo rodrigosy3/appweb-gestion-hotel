@@ -58,59 +58,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="container">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h1 class="text-center">LISTA DE HISTORIAL DE VETOS</h1>
-                    </div>
-                    <div class="my-auto">
-                        <a class="btn btn-primary disabled-button"
-                            role="button">AGREGAR
-                            HISTORIAL VETO</a>
-                    </div>
-                </div>
-
-                <table class="table border table-hover shadow">
-                    <thead class="table-dark">
-                        <tr>
-                            <th class="text-center w-auto" colspan="2">ACCIONES</th>
-                            <th class="text-center">ID</th>
-                            <th>USUARIO RESPONSABLE</th>
-                            <th>USUARIO VETADO</th>
-                            <th>RAZÓN DEL VETO</th>
-
-                            <th class="text-center">FECHA DE CREACIÓN</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="historialVeto: ${historialVetos}">
-                            <td class="text-center" style="width: 12px;">
-                                <a class="btn btn-sm btn-primary disabled-button" role="button"
-                                    title="EDITAR HISTORIAL DE VETO">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                            </td>
-                            <td class="text-center border disabled-button" style="width: 12px;">
-                                <a class="btn btn-sm btn-danger" role="button" title="ELIMINAR HISTORIAL DE VETO"
-                                    onclick="return confirm('¿Estás seguro de que deseas eliminar este historial de veto?')">
-                                    <i class="bi bi-trash-fill"></i>
-                                </a>
-                            </td>
-                            <td th:text="${historialVeto.id_historial_veto}" class="text-center">ID</td>
-                            <td
-                                th:text="${historialVeto.usuario_responsable.nombres + ' ' + historialVeto.usuario_responsable.apellidos}">
-                                USUARIO RESPONSABLE</td>
-                            <td
-                                th:text="${historialVeto.usuario_vetado.nombres + ' ' + historialVeto.usuario_vetado.apellidos}">
-                                USUARIO VETADO</td>
-                            <td th:text="${historialVeto.razon}">RAZÓN DEL VETO</td>
-
-                            <td th:text="${#temporals.format(fechasCreacion[historialVeto.id_historial_veto],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 

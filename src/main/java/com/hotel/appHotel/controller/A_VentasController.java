@@ -3,11 +3,14 @@ package com.hotel.appHotel.controller;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,11 +18,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hotel.appHotel.model.Habitaciones;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.model.Ventas;
+import com.hotel.appHotel.repository.CredencialesRepository;
 import com.hotel.appHotel.repository.HabitacionesEstadoRepository;
 import com.hotel.appHotel.service.HabitacionesService;
 import com.hotel.appHotel.service.UsuariosService;
@@ -47,12 +52,31 @@ public class A_VentasController {
     @Autowired
     private HabitacionesEstadoRepository habitacionesEstadoRepository;
 
+    @Autowired
+    private CredencialesRepository repositorioCredenciales;
+
     @GetMapping
-    public String listarVentas(Model modelo) {
-        modelo.addAttribute("ventas", obtenerVentas());
-        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
-        modelo.addAttribute("fechasEntrada", obtenerFechasEntradaEnLocalDateTime());
-        modelo.addAttribute("fechasSalida", obtenerFechasSalidaEnLocalDateTime());
+    public String listarVentasPorPagina(@RequestParam Map<String, Object> params, Model model) {
+        int page = params.get("page") != null ? (Integer.parseInt(params.get("page").toString()) - 1) : 0;
+
+        PageRequest pageRequest = PageRequest.of(page, 20);
+
+        Page<Ventas> pageEntidad = servicio.getVentasNoEliminadas(pageRequest);
+
+        int totalPages = pageEntidad.getTotalPages();
+
+        if (totalPages > 0) {
+            List<Integer> pages = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pages", pages);
+        }
+
+        model.addAttribute("ventas", pageEntidad.getContent());
+        model.addAttribute("actualPage", page + 1);
+        model.addAttribute("nextPage", page + 2);
+        model.addAttribute("prevPage", page);
+        model.addAttribute("lastPage", totalPages);
 
         return VIEW_LISTAR;
     }
@@ -86,10 +110,6 @@ public class A_VentasController {
 
         modelo.addAttribute("habitaciones", habitaciones);
         modelo.addAttribute("usuarios", usuarios_responsables);
-        modelo.addAttribute("ventas", obtenerVentas());
-        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
-        modelo.addAttribute("fechasEntrada", obtenerFechasEntradaEnLocalDateTime());
-        modelo.addAttribute("fechasSalida", obtenerFechasSalidaEnLocalDateTime());
         modelo.addAttribute("venta", venta);
 
         return VIEW_NUEVO;
@@ -142,10 +162,6 @@ public class A_VentasController {
 
         modelo.addAttribute("habitaciones", habitaciones);
         modelo.addAttribute("usuarios", usuarios_responsables);
-        modelo.addAttribute("ventas", obtenerVentas());
-        modelo.addAttribute("fechasCreacion", obtenerFechasCreacionEnLocalDateTime());
-        modelo.addAttribute("fechasEntrada", obtenerFechasEntradaEnLocalDateTime());
-        modelo.addAttribute("fechasSalida", obtenerFechasSalidaEnLocalDateTime());
         modelo.addAttribute("venta", servicio.getVentaById(id));
 
         return VIEW_EDITAR;
@@ -155,8 +171,7 @@ public class A_VentasController {
     public String actualizarVenta(@PathVariable Long id,
             @ModelAttribute("venta") Ventas venta, Model modelo) {
         Ventas ventaExistente = servicio.getVentaById(id);
-
-        ventaExistente.setUsuario_responsable(venta.getUsuario_responsable());
+        
         ventaExistente.setFecha_entrada(venta.getFecha_entrada());
         ventaExistente.setFecha_salida(venta.getFecha_salida());
         ventaExistente.setDescuento(venta.getDescuento());
@@ -198,43 +213,5 @@ public class A_VentasController {
         servicio.updateVenta(ventaExistente);
 
         return REDIRECT_LISTAR;
-    }
-
-    private List<Ventas> obtenerVentas() {
-        return servicio.getVentas()
-                .stream()
-                .filter(venta -> !venta.isEliminado()) // Filtrar las que no estén eliminadas
-                .sorted(Comparator.comparing(Ventas::getId_venta).reversed()) // Ordenar en orden descendente
-                .collect(Collectors.toList());
-    }
-
-    private HashMap<Long, LocalDateTime> obtenerFechasCreacionEnLocalDateTime() {
-        HashMap<Long, LocalDateTime> fechasCreacion = new HashMap<>();
-
-        for (Ventas venta : obtenerVentas()) {
-            fechasCreacion.put(venta.getId_venta(), LocalDateTime.parse(venta.getFecha_creacion()));
-        }
-
-        return fechasCreacion;
-    }
-
-    private HashMap<Long, LocalDateTime> obtenerFechasEntradaEnLocalDateTime() {
-        HashMap<Long, LocalDateTime> fechasEntrada = new HashMap<>();
-
-        for (Ventas venta : obtenerVentas()) {
-            fechasEntrada.put(venta.getId_venta(), LocalDateTime.parse(venta.getFecha_entrada()));
-        }
-
-        return fechasEntrada;
-    }
-
-    private HashMap<Long, LocalDateTime> obtenerFechasSalidaEnLocalDateTime() {
-        HashMap<Long, LocalDateTime> fechasSalida = new HashMap<>();
-
-        for (Ventas venta : obtenerVentas()) {
-            fechasSalida.put(venta.getId_venta(), LocalDateTime.parse(venta.getFecha_salida()));
-        }
-
-        return fechasSalida;
     }
 }

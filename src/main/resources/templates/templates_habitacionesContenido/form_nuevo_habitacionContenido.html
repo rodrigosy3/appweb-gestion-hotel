@@ -72,65 +72,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="mx-5">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h1 class="text-center">LISTA DEL CONTENIDO DE LAS HABITACIONES</h1>
-                    </div>
-                    <div class="my-auto">
-                        <a class="btn btn-primary disabled-button" role="button">AGREGAR
-                            REGISTRO</a>
-                    </div>
-                </div>
-
-                <table class="table border table-hover shadow">
-                    <thead class="table-dark">
-                        <tr>
-                            <th class="text-center w-auto" colspan="2">ACCIONES</th>
-                            <th class="text-center">ID</th>
-                            <th class="text-center">HABITACIÓN</th>
-                            <th class="text-center">TIPO DE HABITACIÓN</th>
-                            <th class="text-center">CARACTERÍSTICA</th>
-                            <th class="text-center">PRECIO DE LA CARACTERÍSTICA</th>
-                            <th class="text-center">ESTADO DE LA CARACTERÍSTICA</th>
-                            <th class="text-center">RAZÓN DE SU ESTADO</th>
-
-                            <th class="text-center">FECHA DE CREACIÓN</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="habitacionContenido: ${habitacionesContenido}">
-                            <td class="text-center" style="width: 12px;">
-                                <a class="btn btn-sm btn-primary disabled-button" role="button" title="EDITAR">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                            </td>
-                            <td class="text-center border" style="width: 12px;">
-                                <a class="btn btn-sm btn-danger disabled-button" role="button" title="ELIMINAR">
-                                    <i class="bi bi-trash-fill"></i>
-                                </a>
-                            </td>
-                            <td th:text="${habitacionContenido.id_habitacion_contenido}" class="text-center">ID</td>
-                            <td class="text-center" th:text="${habitacionContenido.habitacion.numero}">HABITACIÓN</td>
-                            <td class="text-center"
-                                th:text="${'(' + habitacionContenido.habitacion.tipo.abreviacion_tipo + ')' + ' ' + habitacionContenido.habitacion.tipo.nombre_tipo}">
-                                TIPO DE HABITACIÓN</td>
-                            <td class="text-center" th:text="${habitacionContenido.caracteristica.nombre}">
-                                CARACTERÍSTICA</td>
-                            <td class="text-center" th:text="${habitacionContenido.caracteristica.precio}">PRECIO DE LA
-                                CARACTERÍSTICA</td>
-                            <td class="text-center" th:text="${habitacionContenido.estado_caracteristica}">ESTADO DE LA
-                                CARACTERÍSTICA</td>
-                            <td class="text-center" th:text="${habitacionContenido.razon_estado}">RAZÓN DE SU ESTADO
-                            </td>
-
-                            <td th:text="${#temporals.format(fechasCreacion[habitacionContenido.id_habitacion_contenido],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 

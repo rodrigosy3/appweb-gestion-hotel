@@ -84,63 +84,6 @@
                     </div>
                 </div>
             </div>
-
-            <div class="container">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h1 class="text-center">LISTA DE USUARIOS</h1>
-                    </div>
-                    <div class="my-auto">
-                        <a class="btn btn-primary disabled-button" th:href="@{/admin/usuarios/nuevo}"
-                            role="button">AGREGAR
-                            USUARIO</a>
-                    </div>
-                </div>
-
-                <table class="table border table-hover shadow">
-                    <thead class="table-dark">
-                        <tr>
-                            <th class="text-center w-auto" colspan="2" style="width: min-content;">ACCIONES</th>
-                            <th class="text-center">ID</th>
-                            <th>NOMBRES</th>
-                            <th>APELLIDOS</th>
-                            <th>DNI</th>
-                            <th>CELULAR</th>
-                            <th>EDAD</th>
-                            <th class="text-center">ESTADO DE VETO</th>
-                            <th>RAZÓN DE VETO</th>
-                            <th>ROL</th>
-                            <th class="text-center">FECHA DE CREACIÓN</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="usuario: ${usuarios}">
-                            <td class="text-center" style="width: 12px;">
-                                <a class="btn btn-sm btn-primary disabled-button" role="button" title="EDITAR USUARIO">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-                            </td>
-                            <td class="text-center border" style="width: 12px;">
-                                <a class="btn btn-sm btn-danger disabled-button" role="button" title="ELIMINAR USUARIO">
-                                    <i class="bi bi-trash-fill"></i>
-                                </a>
-                            </td>
-                            <td th:text="${usuario.id_usuario}" class="text-center">ID</td>
-                            <td th:text="${usuario.nombres}">NOMBRES</td>
-                            <td th:text="${usuario.apellidos}">APELLIDOS</td>
-                            <td th:text="${usuario.dni}">DNI</td>
-                            <td th:text="${usuario.celular}">CELULAR</td>
-                            <td th:text="${usuario.edad}">EDAD</td>
-                            <td th:text="${usuario.estado_vetado? 'VETADO' : 'NO VETADO'}"
-                                th:class="${usuario.estado_vetado? 'bg-danger text-light text-center' : 'bg-success text-light text-center'}">
-                                ESTADO DE VETO</td>
-                            <td th:text="${usuario.razon_vetado}">RAZÓN DE VETO</td>
-                            <td th:text="${usuario.rol.nombre}">ROL</td>
-                            <td th:text="${#temporals.format(fechasCreacion[usuario.id_usuario],'yyyy-MM-dd hh:mm:ss a')}" class="text-center">FECHA DE CREACIÓN</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
     </div>
 

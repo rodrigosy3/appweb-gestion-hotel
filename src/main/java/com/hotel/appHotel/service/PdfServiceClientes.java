@@ -1,15 +1,23 @@
 package com.hotel.appHotel.service;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.hotel.appHotel.model.Usuarios;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.*;
 
 @Service
 public class PdfServiceClientes {
@@ -85,7 +93,11 @@ public class PdfServiceClientes {
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 table.addCell(cell);
 
-                cell = new PdfPCell(new Phrase(cliente.getFecha_creacion(), fontDatos));
+                // cell = new PdfPCell(new Phrase(cliente.getFecha_creacion(), fontDatos));
+                // cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                // table.addCell(cell);
+
+                cell = new PdfPCell(new Phrase(formatearFecha(cliente.getFecha_creacion()), fontDatos));
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 table.addCell(cell);
             }
@@ -99,4 +111,15 @@ public class PdfServiceClientes {
             return null;
         }
     }
+
+        private String formatearFecha(String fechaIso) {
+        try {
+            DateTimeFormatter inputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm a");
+            return LocalDateTime.parse(fechaIso, inputFormat).format(outputFormat);
+        } catch (Exception e) {
+            return fechaIso; // Devuelve sin formato si falla el parseo
+        }
+    }
+
 }

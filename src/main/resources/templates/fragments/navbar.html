@@ -53,7 +53,15 @@
                             <hr class="dropdown-divider">
                         </li>
 
-                        <a class="dropdown-item" th:href="@{/reporte-del-dia}">Reporte del día</a>
+                        <!-- <a class="dropdown-item" th:href="@{/ventas/reporte-del-dia-pdf}">Reporte del día</a> -->
+                        <li>
+                            <a class="dropdown-item" th:href="@{/ventas/reporte-por-fecha-pdf(fecha=${fechaFiltro})}"
+                                th:unless="${fechaFiltro == null}" target="_blank">Reporte del día segun fecha</a>
+
+                            <a class="dropdown-item" th:href="@{/ventas/reporte-por-fecha-pdf}"
+                                th:if="${fechaFiltro == null}" target="_blank">Reporte del día</a>
+                        </li>
+
 
                         <li>
                             <hr class="dropdown-divider">
