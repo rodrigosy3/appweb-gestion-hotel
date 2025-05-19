@@ -1,7 +1,10 @@
 package com.hotel.appHotel;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -49,18 +52,18 @@ public class AppHotelApplication {
 	HabitacionesCaracteristicasRepository repoHabitacionesCaracteristicas;
 
 	public static void main(String[] args) {		
-		// int puerto = 3000;
+		int puerto = 3000;
 		crearCarpetaBD();
 
-		// if (isServerRunning(puerto)) {
-		// 	System.out.println("El servidor ya está en ejecución. Abriendo el navegador...");
-		// 	abrirNavegador("http://localhost:" + puerto);
-		// 	return;
-		// }
+		if (isServerRunning(puerto)) {
+			System.out.println("El servidor ya está en ejecución. Abriendo el navegador...");
+			abrirNavegador("http://localhost:" + puerto);
+			return;
+		}
 
 		// Si el servidor no está en ejecución, lo inicia y abre el navegador
 		SpringApplication.run(AppHotelApplication.class, args);
-		// abrirNavegador("http://localhost:" + puerto);
+		abrirNavegador("http://localhost:" + puerto);
 	}
 
 	private static void crearCarpetaBD() {
@@ -78,31 +81,31 @@ public class AppHotelApplication {
     }
 
 	// Verifica si el servidor ya está en ejecución
-	// private static boolean isServerRunning(int port) {
-	// 	try (ServerSocket socket = new ServerSocket(port)) {
-	// 		return false; // Puerto libre - El servidor NO está en ejecución
-	// 	} catch (IOException e) {
-	// 		return true; // Puerto en uso - El servidor YA está en ejecución
-	// 	}
-	// }
+	private static boolean isServerRunning(int port) {
+		try (ServerSocket socket = new ServerSocket(port)) {
+			return false; // Puerto libre - El servidor NO está en ejecución
+		} catch (IOException e) {
+			return true; // Puerto en uso - El servidor YA está en ejecución
+		}
+	}
 
 	// Abre el navegador en la URL de la aplicación
-	// private static void abrirNavegador(String url) {
-	// 	String os = System.getProperty("os.name").toLowerCase();
-	// 	try {
-	// 		if (os.contains("win")) {
-	// 			Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
-	// 		} else if (os.contains("mac")) {
-	// 			Runtime.getRuntime().exec("open " + url);
-	// 		} else if (os.contains("nix") || os.contains("nux")) {
-	// 			Runtime.getRuntime().exec("xdg-open " + url);
-	// 		} else {
-	// 			System.out.println("No se pudo detectar el sistema operativo para abrir el navegador.");
-	// 		}
-	// 	} catch (IOException e) {
-	// 		e.printStackTrace();
-	// 	}
-	// }
+	private static void abrirNavegador(String url) {
+		String os = System.getProperty("os.name").toLowerCase();
+		try {
+			if (os.contains("win")) {
+				Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+			} else if (os.contains("mac")) {
+				Runtime.getRuntime().exec("open " + url);
+			} else if (os.contains("nix") || os.contains("nux")) {
+				Runtime.getRuntime().exec("xdg-open " + url);
+			} else {
+				System.out.println("No se pudo detectar el sistema operativo para abrir el navegador.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	@Bean
 	@Transactional
@@ -111,7 +114,7 @@ public class AppHotelApplication {
 			List<Roles> roles = repoRoles.findAll();
 			List<HabitacionesEstado> habitacionesEstado = repoHabitacionesEstado.findAll();
 			List<HabitacionesTipos> habitacionesTipos = repoHabitacionesTipos.findAll();
-			List<Usuarios> usuarios = repoUsuarios.findAll();
+			Optional<Usuarios> usuarios = repoUsuarios.findById(1L);
 			List<Habitaciones> habitaciones = repoHabitaciones.findAll();
 			List<HabitacionesCaracteristicas> habitacionesCaracteristicas = repoHabitacionesCaracteristicas.findAll();
 
@@ -219,9 +222,9 @@ public class AppHotelApplication {
 			if (usuarios.isEmpty()) {
 				Usuarios usuario = new Usuarios();
 
-				usuario.setDni("74663928");
-				usuario.setNombres("Rodrigo".toUpperCase());
-				usuario.setApellidos("Sihues Yanqui".toUpperCase());
+				usuario.setDni("12345678");
+				usuario.setNombres("admin".toUpperCase());
+				usuario.setApellidos("admin admin".toUpperCase());
 				usuario.setRol(repoRoles.findByNombre("ADMINISTRADOR"));
 
 				repoUsuarios.save(usuario);
