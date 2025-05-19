@@ -1,11 +1,18 @@
 package com.hotel.appHotel.service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import java.io.*;
-import java.nio.file.*;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 @Service
 public class BackupService {
@@ -14,7 +21,7 @@ public class BackupService {
     private static final String BACKUP_FOLDER = "Documents/AppHotelDatos/MiHotelBackups"; // Carpeta en Documentos
     private static final int MAX_BACKUPS = 12; // Cantidad máxima de backups a conservar
 
-    @Scheduled(fixedRate = 21600000) // Ejecuta cada 24 horas
+    @Scheduled(fixedRate = 21600000) // Ejecuta cada 6 horas
     public void generarBackup() {
         try {
             // Obtener la carpeta de Documentos del usuario actual

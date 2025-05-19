@@ -14,12 +14,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hotel.appHotel.model.Credenciales;
 import com.hotel.appHotel.model.Habitaciones;
 import com.hotel.appHotel.model.HabitacionesCaracteristicas;
 import com.hotel.appHotel.model.HabitacionesEstado;
 import com.hotel.appHotel.model.HabitacionesTipos;
 import com.hotel.appHotel.model.Roles;
 import com.hotel.appHotel.model.Usuarios;
+import com.hotel.appHotel.repository.CredencialesRepository;
 import com.hotel.appHotel.repository.HabitacionesCaracteristicasRepository;
 import com.hotel.appHotel.repository.HabitacionesEstadoRepository;
 import com.hotel.appHotel.repository.HabitacionesRepository;
@@ -44,6 +46,9 @@ public class AppHotelApplication {
 
 	@Autowired
 	UsuariosRepository repoUsuarios;
+
+	@Autowired
+	CredencialesRepository repoCredenciales;
 
 	@Autowired
 	HabitacionesRepository repoHabitaciones;
@@ -227,7 +232,13 @@ public class AppHotelApplication {
 				usuario.setApellidos("admin admin".toUpperCase());
 				usuario.setRol(repoRoles.findByNombre("ADMINISTRADOR"));
 
-				repoUsuarios.save(usuario);
+				Usuarios usuario_admin = repoUsuarios.save(usuario);
+
+				Credenciales credencial_nueva = new Credenciales();
+				credencial_nueva.setUsuario(usuario_admin);
+				credencial_nueva.setContrasena("12345678");
+
+				repoCredenciales.save(credencial_nueva);
 			}
 
 			if (habitacionesCaracteristicas.isEmpty()) {

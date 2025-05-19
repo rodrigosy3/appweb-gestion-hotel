@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio</title>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <style>
+        :root {
+            --primary: #e63946;
+            --secondary: #457b9d;
+            --background: #f8f9fa;
+            --card: #ffffff;
+            --text: #1d3557;
+            --muted: #a8a9aa;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--background) 0%, #e9ecef 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', 'Calibri', 'Arial', sans-serif;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        .shutdown-wrapper {
+            position: relative;
+            width: 400px;
+            perspective: 1000px;
+        }
+
+        .shutdown-container {
+            background: var(--card);
+            padding: 3rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transform-style: preserve-3d;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotateX(0deg);
+            }
+
+            50% {
+                transform: translateY(-10px) rotateX(2deg);
+            }
+        }
+
+        /* Líneas elegantes */
+        .elegant-line {
+            position: absolute;
+            background: linear-gradient(to bottom, transparent, var(--primary), transparent);
+            width: 2px;
+            opacity: 0.8;
+            z-index: 0;
+        }
+
+        .line-1 {
+            left: 15%;
+            height: 60%;
+            top: 20%;
+            animation: linePulse 3s infinite;
+        }
+
+        .line-2 {
+            left: 85%;
+            height: 60%;
+            top: 20%;
+            animation: linePulse 3s infinite 1.5s;
+        }
+
+        .line-3 {
+            left: 30%;
+            height: 40%;
+            top: 30%;
+            animation: linePulse 4s infinite 0.5s;
+        }
+
+        .line-4 {
+            left: 70%;
+            height: 40%;
+            top: 30%;
+            animation: linePulse 4s infinite 2s;
+        }
+
+        @keyframes linePulse {
+
+            0%,
+            100% {
+                transform: scaleY(0.3);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scaleY(1);
+                opacity: 0.8;
+            }
+        }
+
+        /* Partículas minimalistas */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            opacity: 0.3;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            font-size: 1.8rem;
+        }
+
+        .countdown-wrapper {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        #countdown {
+            font-size: 5rem;
+            font-weight: 300;
+            color: var(--primary);
+            margin: 0;
+            line-height: 1;
+            position: relative;
+            display: inline-block;
+        }
+
+        #countdown::after {
+            content: '';
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            top: -10%;
+            left: -10%;
+            border: 2px solid rgba(230, 57, 70, 0.1);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.8;
+            }
+
+            70% {
+                transform: scale(1.1);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+        }
+
+        p {
+            color: var(--text);
+            font-weight: 400;
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+        }
+
+        .footer {
+            margin-top: 2.5rem;
+            font-size: 0.8rem;
+            color: var(--muted);
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        @keyframes progress {
+            0% {
+                transform: scaleX(0);
+            }
+
+            100% {
+                transform: scaleX(1);
+            }
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background-color: rgba(230, 57, 70, 0.1);
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            color: var(--primary);
+            margin-top: 1rem;
+        }
+
+        .status::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shutdown-wrapper">
+        <div class="elegant-line line-1"></div>
+        <div class="elegant-line line-2"></div>
+        <div class="elegant-line line-3"></div>
+        <div class="elegant-line line-4"></div>
+        <div class="particles" id="particles"></div>
+
+        <div class="shutdown-container">
+            <h2>Apagando Sistema</h2>
+            <p>El sistema se cerrará automáticamente en:</p>
+
+            <div class="countdown-wrapper">
+                <div id="countdown">10</div>
+            </div>
+
+            <div class="status">Cerrando procesos</div>
+
+            <p class="mt-4">Gracias por utilizar nuestros servicios.</p>
+            <div class="footer">HOTEL APP © 2025</div>
+        </div>
+    </div>
+
+    <script>
+        // Contador regresivo
+        let seconds = 10;
+        const countdown = document.getElementById("countdown");
+        const status = document.querySelector(".status");
+        const statusTexts = [
+            "Cerrando procesos",
+            "Guardando datos",
+            "Apagando servicios"
+        ];
+
+        const timer = setInterval(() => {
+            seconds--;
+            countdown.textContent = seconds;
+
+            // Cambiar el texto de estado aleatoriamente
+            if (seconds % 3 === 0) {
+                const randomIndex = Math.floor(Math.random() * statusTexts.length);
+                status.textContent = statusTexts[randomIndex];
+            }
+
+            if (seconds <= 0) {
+                clearInterval(timer);
+                window.location.href = "/";
+            }
+        }, 1000);
+
+        // Crear partículas minimalistas
+        const particlesContainer = document.getElementById("particles");
+        const particleCount = 15;
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement("div");
+            particle.classList.add("particle");
+
+            // Posición aleatoria
+            const posX = Math.random() * 100;
+            const posY = Math.random() * 100;
+            particle.style.left = `${posX}%`;
+            particle.style.top = `${posY}%`;
+
+            // Tamaño aleatorio
+            const size = Math.random() * 4 + 2;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+
+            // Animación aleatoria
+            const duration = Math.random() * 20 + 10;
+            particle.style.animation = `float ${duration}s ease-in-out infinite`;
+            particle.style.animationDelay = `${Math.random() * 5}s`;
+
+            particlesContainer.appendChild(particle);
+        }
+    </script>
+</body>
+
+</html>

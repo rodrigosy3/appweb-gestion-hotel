@@ -20,7 +20,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                 // permitimos CSS, JS y la página de login
-                .requestMatchers("/css/**", "/js/**", "/login", "/shutdown").permitAll()
+                .requestMatchers("/css/**", "/js/**", "/login", "/shutdown", "/apagando").permitAll()
                 // solo roles OWNER (nivel 1) y ADMINISTRADOR (nivel 2) acceden a /admin/**
                 .requestMatchers("/admin/**").hasAnyRole("OWNER", "ADMINISTRADOR")
                 // cualquier otra URL requiere autenticación
