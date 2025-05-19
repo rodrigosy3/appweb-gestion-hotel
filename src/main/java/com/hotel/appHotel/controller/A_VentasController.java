@@ -24,7 +24,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.hotel.appHotel.model.Habitaciones;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.model.Ventas;
-import com.hotel.appHotel.repository.CredencialesRepository;
 import com.hotel.appHotel.repository.HabitacionesEstadoRepository;
 import com.hotel.appHotel.service.HabitacionesService;
 import com.hotel.appHotel.service.UsuariosService;
@@ -51,9 +50,6 @@ public class A_VentasController {
 
     @Autowired
     private HabitacionesEstadoRepository habitacionesEstadoRepository;
-
-    @Autowired
-    private CredencialesRepository repositorioCredenciales;
 
     @GetMapping
     public String listarVentasPorPagina(@RequestParam Map<String, Object> params, Model model) {
