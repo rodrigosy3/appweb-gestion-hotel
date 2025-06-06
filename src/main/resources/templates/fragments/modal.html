@@ -1,16 +1,30 @@
 <div class="modal modal-sm fade px-auto" id="cancelModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true"
     th:fragment="modal(urlRedireccion)">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-danger text-bg-danger">
-            <div class="modal-body text-center">
-                Los datos ingresados se perderán. <br> ¿Quieres continuar?
+        <div class="modal-content hotel-modal-cancel">
+            <div class="modal-header hotel-modal-cancel-header">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Confirmar Acción
+                </h5>
             </div>
-            <div class="modal-footer justify-content-center border-danger">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No, regresar</button>
-                <button type="button" class="btn btn-light border-light" 
+            <div class="modal-body text-center hotel-modal-cancel-body">
+                <div class="mb-3">
+                    <i class="bi bi-question-circle hotel-modal-icon"></i>
+                </div>
+                <p class="hotel-text-dark mb-2 fw-medium">Si ingreso datos, estos se perderán.</p>
+                <p class="hotel-text-secondary">¿Estás seguro de que quieres continuar?</p>
+            </div>
+            <div class="modal-footer justify-content-center hotel-modal-cancel-footer">
+                <button type="button" class="btn hotel-btn-secondary me-2" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>
+                    No, seguir editando
+                </button>
+                <button type="button" class="btn hotel-btn-danger" 
                         th:data-url-redireccion="${urlRedireccion}" 
                         onclick="redireccionar(this)">
-                    Sí, cancelar
+                    <i class="bi bi-house me-1"></i>
+                    Sí, volver al inicio
                 </button>
             </div>
         </div>

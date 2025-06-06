@@ -72,6 +72,6 @@ if (btnTicketCaja) {
     fetch(url)
       .then(response => response.text())
       .then(msg => alert(msg))
-      .catch(err => alert("❌ Error inesperado"));
+      .catch(err => alert("❌ La venta no tiene un ticket habilitado."));
   });
 }

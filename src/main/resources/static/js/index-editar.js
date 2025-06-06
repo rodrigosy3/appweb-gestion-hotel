@@ -1,38 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
 
-    // // Referencias a elementos clave
-    // const btnMostrarModal = document.getElementById('btnGuardar');
-    // const formVenta = document.getElementById('formVentaHabitacion');
-    // const inputOpcionImpresion = document.getElementById('opcionImpresion');
-
-    // // Botones del modal
-    // const btnSiImprimir = document.getElementById('btnSiImprimir');
-    // const btnGuardarSinImprimir = document.getElementById('btnGuardarSinImprimir');
-    // // El botón “Cancelar” ya tiene data-bs-dismiss="modal", así que no necesitamos capturarlo
-
-    // // Al hacer clic en “Guardar Venta”, abrimos el modal de confirmación
-    // btnMostrarModal.addEventListener('click', function () {
-    //     // Limpiamos cualquier valor previo
-    //     inputOpcionImpresion.value = '';
-    //     // Mostramos el modal de Bootstrap
-    //     const modal = new bootstrap.Modal(document.getElementById('confirmacionModal'));
-    //     modal.show();
-    // });
-
-    // // Si el usuario elige “Sí, guardar e imprimir”
-    // btnSiImprimir.addEventListener('click', function () {
-    //     inputOpcionImpresion.value = 'SI_IMPRIMIR';
-    //     formVenta.submit();
-    // });
-
-    // // Si el usuario elige “Guardar sin imprimir”
-    // btnGuardarSinImprimir.addEventListener('click', function () {
-    //     inputOpcionImpresion.value = 'GUARDAR_SIN_IMPRIMIR';
-    //     formVenta.submit();
-    // });
-
-
-
     const inputDNI = document.getElementById("inputDNI");
     const inputNombres = document.getElementById("inputNombres");
     const inputApellidos = document.getElementById("inputApellidos");
@@ -146,15 +113,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function guardarVenta(event) {
         event.preventDefault(); // Evitar envío normal del formulario
+        const estado = resumenSelectEstado.value; // Referencia al select
 
         // Abrir el modal de Bootstrap
         const modalElement = document.getElementById("confirmacionModal");
         const modalBootstrap = new bootstrap.Modal(modalElement);
-        modalBootstrap.show();
 
         // Referencias para los botones dentro del modal
         const btnSiImprimir = document.getElementById("btnSiImprimir");
         const btnGuardarSinImprimir = document.getElementById("btnGuardarSinImprimir");
+
+        // === COMPORTAMIENTO DINÁMICO SEGÚN ESTADO ===
+        if (estado === "POR COBRAR") {
+            btnSiImprimir.style.display = "none"; // Ocultar botón imprimir
+            btnGuardarSinImprimir.textContent = "Guardar"; // Cambiar texto
+        } else {
+            btnSiImprimir.style.display = "inline-block"; // Mostrar botón imprimir
+            btnGuardarSinImprimir.textContent = "Guardar sin imprimir";
+        }
+        modalBootstrap.show();
+
         const inputOpcionImpresion = document.getElementById("opcionImpresion");
         const formVenta = document.getElementById("formVentaHabitacion");
 
@@ -298,17 +276,30 @@ document.addEventListener("DOMContentLoaded", function () {
             let fechaSalida = calcularFechaSalida(fechaBase, servicio, fechaEntradaValor);
 
             nuevaFila.innerHTML = `
-                            <td class="align-middle text-center">
-                                <span class="bg-success-subtle rounded-4 p-2">${fechaParseStringDiaHora(fechaBase)}</span>
-                            </td>
-                            <td class="align-middle text-center">
-                                <span class="bg-secondary-subtle rounded-4 p-2">
-                                    ${servicio === "COMPLETO" ? "COMPLETO" : "MEDIO DÍA"}
-                                </span>
-                            </td>
-                            <td class="align-middle text-center"><span class="bg-danger-subtle rounded-4 p-2">${fechaParseStringDiaHora(fechaSalida)}</span></td>
-                            <td class="align-middle text-center"><span class="mx-3">${'S/. ' + calcularImporteEnFilas(servicio, precioInput)}</span></td>
-                        `;
+                <td class="align-middle text-center py-2">
+                    <span class="hotel-date-badge hotel-date-entrada">
+                        <i class="bi bi-calendar-check me-1"></i>
+                        ${fechaParseStringDiaHora(fechaBase)}
+                    </span>
+                </td>
+                <td class="align-middle text-center py-2">
+                    <span class="hotel-service-badge ${servicio === "COMPLETO" ? "hotel-service-completo" : "hotel-service-medio"}">
+                        <i class="bi bi-clock me-1"></i>
+                        ${servicio === "COMPLETO" ? "COMPLETO" : "MEDIO DÍA"}
+                    </span>
+                </td>
+                <td class="align-middle text-center py-2">
+                    <span class="hotel-date-badge hotel-date-salida">
+                        <i class="bi bi-calendar-x me-1"></i>
+                        ${fechaParseStringDiaHora(fechaSalida)}
+                    </span>
+                </td>
+                <td class="align-middle text-center py-2">
+                    <span class="hotel-price-badge">
+                        ${'S/. ' + calcularImporteEnFilas(servicio, precioInput)}
+                    </span>
+                </td>
+            `;
 
             tablaFechasBody.appendChild(nuevaFila);
 
@@ -549,18 +540,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function reservaguardarReserva(event) {
         event.preventDefault(); // Evita el envío normal del formulario
+        const estado = reservaResumenSelectEstado.value; // Referencia al select
 
         // Abrir el modal de Bootstrap
         const modalElement = document.getElementById("confirmacionModal");
         const modalBootstrap = new bootstrap.Modal(modalElement);
-        modalBootstrap.show();
 
         // Referencias para los botones dentro del modal
         const btnSiImprimir = document.getElementById("btnSiImprimir");
         const btnGuardarSinImprimir = document.getElementById("btnGuardarSinImprimir");
-        const inputOpcionImpresion = document.getElementById("reservaOpcionImpresion");
 
-        // Obtener el formulario
+        // === COMPORTAMIENTO DINÁMICO SEGÚN ESTADO ===
+        if (estado === "POR COBRAR") {
+            btnSiImprimir.style.display = "none"; // Ocultar botón imprimir
+            btnGuardarSinImprimir.textContent = "Guardar"; // Cambiar texto
+        } else {
+            btnSiImprimir.style.display = "inline-block"; // Mostrar botón imprimir
+            btnGuardarSinImprimir.textContent = "Guardar sin imprimir";
+        }
+        modalBootstrap.show();
+
+        const inputOpcionImpresion = document.getElementById("reservaOpcionImpresion");
         let form = document.getElementById("reservaformVentaHabitacion");
 
         function reservaEnviarFormConOpcion(opcion) {
@@ -729,16 +729,29 @@ document.addEventListener("DOMContentLoaded", function () {
             let fechaSalida = calcularFechaSalida(fechaBase, servicio, reservaFechaEntradaValor);
 
             nuevaFila.innerHTML = `
-                            <td class="align-middle text-center">
-                                <span class="bg-success-subtle rounded-4 p-2">${fechaParseStringDiaHora(fechaBase)}</span>
-                            </td>
-                            <td class="align-middle text-center">
-                                <span class="bg-secondary-subtle rounded-4 p-2">
-                                ${servicio === "COMPLETO" ? "COMPLETO" : "MEDIO DÍA"}
+                            <td class="align-middle text-center py-2">
+                                <span class="hotel-date-badge hotel-date-entrada">
+                                    <i class="bi bi-calendar-check me-1"></i>
+                                    ${fechaParseStringDiaHora(fechaBase)}
                                 </span>
                             </td>
-                            <td class="align-middle text-center"><span class="bg-danger-subtle rounded-4 p-2">${fechaParseStringDiaHora(fechaSalida)}</span></td>
-                            <td class="align-middle text-center"><span class="mx-3">${'S/. ' + calcularImporteEnFilas(servicio, reservaPrecioInput)}</span></td>
+                            <td class="align-middle text-center py-2">
+                                <span class="hotel-service-badge ${servicio === "COMPLETO" ? "hotel-service-completo" : "hotel-service-medio"}">
+                                    <i class="bi bi-clock me-1"></i>
+                                    ${servicio === "COMPLETO" ? "COMPLETO" : "MEDIO DÍA"}
+                                </span>
+                            </td>
+                            <td class="align-middle text-center py-2">
+                                <span class="hotel-date-badge hotel-date-salida">
+                                    <i class="bi bi-calendar-x me-1"></i>
+                                    ${fechaParseStringDiaHora(fechaSalida)}
+                                </span>
+                            </td>
+                            <td class="align-middle text-center py-2">
+                                <span class="hotel-price-badge">
+                                ${'S/. ' + calcularImporteEnFilas(servicio, reservaPrecioInput)}
+                                </span>
+                            </td>
                         `;
 
             reservaTablaFechasBody.appendChild(nuevaFila);
