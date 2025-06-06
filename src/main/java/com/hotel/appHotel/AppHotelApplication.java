@@ -56,7 +56,7 @@ public class AppHotelApplication {
 	@Autowired
 	HabitacionesCaracteristicasRepository repoHabitacionesCaracteristicas;
 
-	public static void main(String[] args) {		
+	public static void main(String[] args) {
 		int puerto = 3000;
 		crearCarpetaBD();
 
@@ -72,22 +72,23 @@ public class AppHotelApplication {
 	}
 
 	private static void crearCarpetaBD() {
-        String ruta = System.getProperty("user.home") + "/Documents/AppHotelDatos";
-        File carpeta = new File(ruta);
+		String ruta = System.getProperty("user.home") + "/Documents/AppHotelDatos";
+		File carpeta = new File(ruta);
 
-        if (!carpeta.exists()) {
-            boolean creada = carpeta.mkdirs();
-            if (creada) {
-                System.out.println("📂 Carpeta creada en: " + ruta);
-            } else {
-                System.err.println("❌ No se pudo crear la carpeta");
-            }
-        }
-    }
+		if (!carpeta.exists()) {
+			boolean creada = carpeta.mkdirs();
+			if (creada) {
+				System.out.println("📂 Carpeta creada en: " + ruta);
+			} else {
+				System.err.println("❌ No se pudo crear la carpeta");
+			}
+		}
+	}
 
 	// Verifica si el servidor ya está en ejecución
 	private static boolean isServerRunning(int port) {
-		try (ServerSocket socket = new ServerSocket(port)) {
+		try (@SuppressWarnings("unused")
+		ServerSocket socket = new ServerSocket(port)) {
 			return false; // Puerto libre - El servidor NO está en ejecución
 		} catch (IOException e) {
 			return true; // Puerto en uso - El servidor YA está en ejecución
@@ -108,12 +109,13 @@ public class AppHotelApplication {
 				System.out.println("No se pudo detectar el sistema operativo para abrir el navegador.");
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Error al intentar abrir el navegador: " + e.getMessage());
 		}
 	}
 
 	@Bean
 	@Transactional
+	@SuppressWarnings("unused")
 	CommandLineRunner init() {
 		return args -> {
 			List<Roles> roles = repoRoles.findAll();
@@ -130,7 +132,7 @@ public class AppHotelApplication {
 				repoRoles.save(rol_1);
 
 				Roles rol_2 = new Roles();
-				rol_2.setNombre("owner".toUpperCase());
+				rol_2.setNombre("dueño".toUpperCase());
 				rol_2.setNivel(1);
 				repoRoles.save(rol_2);
 
@@ -243,10 +245,10 @@ public class AppHotelApplication {
 
 			if (habitacionesCaracteristicas.isEmpty()) {
 				HabitacionesCaracteristicas hCaracteristica_1 = new HabitacionesCaracteristicas();
-                hCaracteristica_1.setNombre(("Televisión 50" + '"').toUpperCase());
+				hCaracteristica_1.setNombre(("Televisión 50" + '"').toUpperCase());
 				hCaracteristica_1.setMarca("Samsung".toUpperCase());
 				hCaracteristica_1.setPrecio(5D);
-                
+
 				repoHabitacionesCaracteristicas.save(hCaracteristica_1);
 
 				HabitacionesCaracteristicas hCaracteristica_2 = new HabitacionesCaracteristicas();
@@ -254,7 +256,7 @@ public class AppHotelApplication {
 				hCaracteristica_2.setMarca("Trebol".toUpperCase());
 				hCaracteristica_2.setDescripcion("Contiene lavamanos, taza, espejo, ducha y cortinas.");
 				hCaracteristica_2.setPrecio(10D);
-                
+
 				repoHabitacionesCaracteristicas.save(hCaracteristica_2);
 
 				HabitacionesCaracteristicas hCaracteristica_3 = new HabitacionesCaracteristicas();
@@ -262,14 +264,14 @@ public class AppHotelApplication {
 				hCaracteristica_3.setMarca("Cisne".toUpperCase());
 				hCaracteristica_3.setDescripcion("Contiene 2 almohadas, 1 juego de sábanas y 1 edredon");
 				hCaracteristica_3.setPrecio(0D);
-                
+
 				repoHabitacionesCaracteristicas.save(hCaracteristica_3);
 
 				HabitacionesCaracteristicas hCaracteristica_4 = new HabitacionesCaracteristicas();
 				hCaracteristica_4.setNombre("Velador".toUpperCase());
 				hCaracteristica_4.setMarca("".toUpperCase());
 				hCaracteristica_4.setPrecio(0D);
-				
+
 				repoHabitacionesCaracteristicas.save(hCaracteristica_4);
 			}
 		};

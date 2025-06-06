@@ -1,20 +1,99 @@
-/* ===== PALETA DE COLORES AZUL CORPORATIVO PARA HOTEL ===== */
 :root {
-    --primary: #2c5aa0;      /* Azul corporativo */
-    --secondary: #4a90a4;    /* Azul grisáceo */
-    --accent: #87ceeb;       /* Azul claro */
-    --background: #f8fafc;   /* Gris muy claro */
-    --card: #ffffff;         /* Blanco puro */
-    --text: #1e293b;         /* Gris oscuro */
-    --muted: #64748b;        /* Gris medio */
-    --success: #059669;      /* Verde para confirmaciones */
-    --warning: #d97706;      /* Naranja para alertas */
-    --danger: #dc2626;       /* Rojo para errores */
+  /* === COLORES PRINCIPALES === */
+  --primary: #1e4080;
+  /* Azul principal para botones (el que te gustó) */
+  --primary-dark: #0f2040;
+  /* Azul muy oscuro para navbar */
+  --primary-light: #3d5aa0;
+  /* Azul claro para hover */
+  --secondary: #6c757d;
+  /* Gris neutro para elementos secundarios */
+  --accent: #4a90e2;
+  /* Azul medio para acentos */
+
+  /* === COLORES PRINCIPALES OPACOS === */
+  --secondary-subtle: rgb(108, 117, 125, 7);
+  --primary-light-subtle: rgb(61, 90, 160, 0.7);
+
+  /* === FONDOS === */
+  --background: #f8fafc;
+  /* Fondo general (mantienes el tuyo) */
+  --card: #ffffff;
+  /* Tarjetas blancas */
+  --navbar-bg: #0f2040;
+  /* Navbar azul oscuro */
+
+  /* === TEXTOS === */
+  --text-primary: #1e293b;
+  /* Texto principal */
+  --text-secondary: #64748b;
+  /* Texto secundario */
+  --text-muted: #94a3b8;
+  /* Texto deshabilitado */
+  --text-white: #ffffff;
+  /* Texto blanco para navbar */
+
+  /* === ESTADOS DE HABITACIONES (según cliente) === */
+  --room-maintenance: #fbbf24;
+  /* Amarillo para mantenimiento */
+  --room-maintenance-bg: #fef3c7;
+  /* Fondo amarillo claro */
+  --room-occupied: #1e4080;
+  /* Azul para ocupado */
+  --room-occupied-bg: #dbeafe;
+  /* Fondo azul claro */
+  --room-reserved: #3b82f6;
+  /* Azul más claro para reservado */
+  --room-reserved-bg: #eff6ff;
+  /* Fondo azul muy claro */
+  --room-cleaning: #059669;
+  /* Verde para limpieza */
+  --room-cleaning-bg: #d1fae5;
+  /* Fondo verde claro */
+  --room-available: #10b981;
+  --room-no-available: #252525;
+  /* Verde para disponible */
+  --room-available-bg: #ecfdf5;
+  --room-no-available-bg: #aaaaaa;
+  /* Fondo verde muy claro */
+
+  /* === SISTEMA DE ALERTAS === */
+  --success: #059669;
+  /* Verde para éxito */
+  --success-bg: #d1fae5;
+  /* Fondo verde claro */
+  --warning: #d97706;
+  /* Naranja para advertencias */
+  --warning-bg: #fed7aa;
+  /* Fondo naranja claro */
+  --error: #dc2626;
+  /* Rojo para errores */
+  --error-bg: #fecaca;
+  /* Fondo rojo claro */
+  --info: #0ea5e9;
+  /* Azul para información */
+  --info-bg: #e0f2fe;
+  /* Fondo azul claro */
+
+  /* === BORDES Y SOMBRAS === */
+  --border-light: #e2e8f0;
+  /* Bordes suaves */
+  --border-medium: #cbd5e1;
+  /* Bordes normales */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+/* === RESET Y BASE === */
+* {
+  box-sizing: border-box;
 }
 
 body {
   background-color: var(--background);
-  color: var(--text);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .disabled-button {
@@ -28,7 +107,8 @@ body {
   font-family: 'Roboto Mono', monospace;
   letter-spacing: 1px;
   position: absolute;
-  top: 35px; /* Bajamos un poco el reloj para que la fecha quede arriba */
+  top: 35px;
+  /* Bajamos un poco el reloj para que la fecha quede arriba */
   left: 50%;
   transform: translateX(-50%);
   font-size: 3rem;
@@ -42,7 +122,8 @@ body {
   font-family: 'Roboto Mono', monospace;
   font-size: 1.3rem;
   position: absolute;
-  top: 10px; /* Posicionar encima del reloj */
+  top: 10px;
+  /* Posicionar encima del reloj */
   left: 50%;
   transform: translateX(-50%);
 }
@@ -50,8 +131,10 @@ body {
 /* FLECHAS DE VISTA ADMIN */
 .arrow-horizontal-derecha {
   position: relative;
-  height: 4px; /* Grosor de la línea */
-  background-color: gray; /* Color de la línea */
+  height: 4px;
+  /* Grosor de la línea */
+  background-color: gray;
+  /* Color de la línea */
   display: block;
 }
 
@@ -61,15 +144,18 @@ body {
   top: 50%;
   right: -0.7rem;
   transform: translateY(-50%);
-  border-width: 10px; /* Tamaño de la flecha */
+  border-width: 10px;
+  /* Tamaño de la flecha */
   border-style: solid;
   border-color: transparent transparent transparent gray;
 }
 
 .arrow-horizontal-izquierda {
   position: relative;
-  height: 4px; /* Grosor de la línea */
-  background-color: gray; /* Color de la línea */
+  height: 4px;
+  /* Grosor de la línea */
+  background-color: gray;
+  /* Color de la línea */
   display: block;
   /* width: 100%; */
 }
@@ -80,7 +166,8 @@ body {
   top: 50%;
   left: -0.7rem;
   transform: translateY(-50%);
-  border-width: 10px; /* Tamaño de la flecha */
+  border-width: 10px;
+  /* Tamaño de la flecha */
   border-style: solid;
   border-color: transparent gray transparent transparent;
   /* width: 100%; */
@@ -88,20 +175,27 @@ body {
 
 .arrow-vertical-abajo {
   position: relative;
-  width: 4px; /* Grosor de la línea */
-  top: -0.15rem;;
-  height: calc(95%); /* Altura ajustada dinámicamente */
-  background-color: gray; /* Color de la línea */
-  margin: 0 auto; /* Centrar horizontalmente */
+  width: 4px;
+  /* Grosor de la línea */
+  top: -0.15rem;
+  ;
+  height: calc(95%);
+  /* Altura ajustada dinámicamente */
+  background-color: gray;
+  /* Color de la línea */
+  margin: 0 auto;
+  /* Centrar horizontalmente */
 }
 
 .arrow-vertical-abajo::after {
   content: '';
   position: absolute;
-  bottom: -0.9rem; /* Ajustar para tocar el borde */
+  bottom: -0.9rem;
+  /* Ajustar para tocar el borde */
   left: 50%;
   transform: translateX(-50%);
-  border-width: 10px; /* Tamaño de la flecha */
+  border-width: 10px;
+  /* Tamaño de la flecha */
   border-style: solid;
   border-color: gray transparent transparent transparent;
 }
@@ -109,19 +203,25 @@ body {
 .arrow-vertical-arriba {
   position: relative;
   bottom: -0.15rem;
-  width: 4px; /* Grosor de la línea */
-  height: calc(95%); /* Altura ajustada dinámicamente */
-  background-color: gray; /* Color de la línea */
-  margin: 0 auto; /* Centrar horizontalmente */
+  width: 4px;
+  /* Grosor de la línea */
+  height: calc(95%);
+  /* Altura ajustada dinámicamente */
+  background-color: gray;
+  /* Color de la línea */
+  margin: 0 auto;
+  /* Centrar horizontalmente */
 }
 
 .arrow-vertical-arriba::after {
   content: '';
   position: absolute;
-  top: -0.9rem; /* Ajustar para tocar el borde */
+  top: -0.9rem;
+  /* Ajustar para tocar el borde */
   left: 50%;
   transform: translateX(-50%);
-  border-width: 10px; /* Tamaño de la flecha */
+  border-width: 10px;
+  /* Tamaño de la flecha */
   border-style: solid;
   border-color: transparent transparent gray transparent;
 }
@@ -132,203 +232,557 @@ body {
   height: 5rem;
 }
 
-/* ===== BOTONES ===== */
-.btn-primary {
-    background-color: var(--primary);
-    border-color: var(--primary);
-    color: white;
+
+/* === NAVBAR PERSONALIZADA === */
+.hotel-brand {
+  color: var(--text-white) !important;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.hotel-nav-link {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.hotel-nav-link:hover {
+  color: var(--text-white) !important;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.hotel-nav-link.active {
+  color: var(--text-white) !important;
+  background-color: var(--primary);
+  border-radius: 4px;
 }
 
 
-.btn-primary:hover {
-    background-color: #1e4080;
-    border-color: #1e4080;
+/* === DROPDOWN PERSONALIZADO === */
+.dropdown-toggle.hotel-user-toggle {
+  position: relative;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
 }
 
-#btn-hoy {
-    background-color: var(--primary);
-    border-color: var(--primary);
+.dropdown-toggle.hotel-user-toggle:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
 }
 
-/* ===== PAGINACIÓN ===== */
-.pagination .page-link {
-    color: var(--primary);
-    border-color: #dee2e6;
+.dropdown-toggle.hotel-user-toggle::after {
+  display: none;
+  /* Ocultar la flecha por defecto */
 }
 
-.pagination .page-link:hover {
-    color: #1e4080;
-    background-color: var(--accent);
-    border-color: var(--secondary);
+/* === DROPDOWN MENU === */
+.dropdown-menu.hotel-dropdown {
+  background-color: var(--card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  padding: 0;
+  min-width: 280px;
+  margin-top: 0.5rem;
+  overflow: hidden;
 }
 
-.pagination .page-item.active .page-link {
-    background-color: var(--primary);
-    border-color: var(--primary);
+/* Header del usuario */
+.hotel-user-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: var(--text-white);
+  padding: 1rem;
+  text-align: center;
+  position: relative;
 }
 
-/* ===== ALERTAS ===== */
-.alert-danger {
-    background-color: #fef2f2;
-    border-color: #fecaca;
-    color: var(--danger);
+.hotel-user-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>'); */
+  opacity: 0.3;
 }
 
-.alert-success {
-    background-color: #f0fdf4;
-    border-color: #bbf7d0;
-    color: var(--success);
+.hotel-user-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0;
+  position: relative;
+  z-index: 1;
 }
 
-/* ===== TABLAS - ENCABEZADOS ===== */
-.table-secondary {
-    background-color: var(--secondary);
-    color: white;
+.hotel-user-role {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  margin: 0;
+  margin-top: .2rem;
+  position: relative;
+  z-index: 1;
 }
 
-.table-primary {
-    background-color: var(--primary);
-    color: white;
+/* Separadores */
+.dropdown-divider.hotel-divider {
+  margin: 0;
+  border-top: 1px solid var(--border-light);
 }
 
-/* ===== ESTADOS DE HABITACIONES - FILAS ===== */
-/* Habitación Reservada */
-.table-primary td {
-    background-color: rgba(44, 90, 160, 0.1);
-    border-color: rgba(44, 90, 160, 0.2);
+/* Items del dropdown */
+.dropdown-item.hotel-dropdown-item {
+  padding: 0.75rem 1.25rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  transition: all 0.3s ease;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-/* Habitación en Limpieza */
-.table-success td {
-    background-color: rgba(5, 150, 105, 0.1);
-    border-color: rgba(5, 150, 105, 0.2);
+.dropdown-item.hotel-dropdown-item:hover {
+  background-color: var(--background);
+  color: var(--primary);
+  transform: translateX(4px);
 }
 
-/* Por Cobrar / Tiempo Excedido */
-.table-danger td {
-    background-color: rgba(220, 38, 38, 0.1);
-    border-color: rgba(220, 38, 38, 0.2);
+.dropdown-item.hotel-dropdown-item:focus {
+  background-color: var(--background);
+  color: var(--primary);
 }
 
-/* Mantenimiento / Alertas de Tiempo */
-.table-warning td {
-    background-color: rgba(217, 119, 6, 0.1);
-    border-color: rgba(217, 119, 6, 0.2);
+/* Iconos para los items */
+.dropdown-item.hotel-dropdown-item i {
+  width: 18px;
+  text-align: center;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
 }
 
-/* No Disponible */
-.table-secondary td {
-    background-color: rgba(100, 116, 139, 0.1);
-    border-color: rgba(100, 116, 139, 0.2);
+.dropdown-item.hotel-dropdown-item:hover i {
+  color: var(--primary);
 }
 
-/* ===== CELDAS DE NÚMERO DE HABITACIÓN ===== */
-.bg-secondary-subtle {
-    background-color: rgba(74, 144, 164, 0.15) !important;
-    color: var(--secondary);
+/* Botón de cerrar sesión */
+.dropdown-item.hotel-logout {
+  color: var(--error) !important;
+  font-weight: 600;
+  border-top: 1px solid var(--border-light);
+  margin-top: 0.5rem;
 }
 
-.bg-primary-subtle {
-    background-color: rgba(44, 90, 160, 0.15) !important;
-    color: var(--primary);
+.dropdown-item.hotel-logout:hover {
+  background-color: rgba(220, 38, 38, 0.1) !important;
+  color: var(--error) !important;
+  transform: translateX(4px);
 }
 
-/* ===== ESTADOS DE TEXTO ===== */
-/* Habitación Reservada */
-.bg-primary-subtle.text-primary {
-    background-color: rgba(44, 90, 160, 0.1) !important;
-    color: var(--primary) !important;
+.dropdown-item.hotel-logout i {
+  color: var(--error) !important;
 }
 
-/* Habitación en Limpieza */
-.bg-success-subtle.text-success {
-    background-color: rgba(5, 150, 105, 0.1) !important;
-    color: var(--success) !important;
+/* Sección de reportes */
+.hotel-reports-section {
+  padding: 0.5rem 0;
 }
 
-/* Por Cobrar */
-.bg-danger-subtle.text-danger {
-    background-color: rgba(220, 38, 38, 0.1) !important;
-    color: var(--danger) !important;
+/* Animación de entrada */
+.dropdown-menu.hotel-dropdown.show {
+  animation: slideDown 0.3s ease-out;
 }
 
-/* Mantenimiento */
-.bg-warning-subtle.text-warning {
-    background-color: rgba(217, 119, 6, 0.1) !important;
-    color: var(--warning) !important;
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* No Disponible */
-.bg-dark-subtle.text-dark {
-    background-color: rgba(100, 116, 139, 0.1) !important;
-    color: var(--muted) !important;
+
+
+/* Estilos adicionales específicos para el index */
+.hotel-pagination .page-link {
+  color: var(--primary);
+  border-color: var(--border-light);
+  transition: all 0.3s ease;
 }
 
-/* ===== ALERTAS DE TIEMPO ===== */
-.bg-warning.text-light {
-    background-color: var(--warning) !important;
-    color: white !important;
+.hotel-pagination .page-link:hover {
+  background-color: var(--primary);
+  color: var(--text-white);
+  border-color: var(--primary);
 }
 
-.bg-danger.text-light {
-    background-color: var(--danger) !important;
-    color: white !important;
+.hotel-pagination .page-item.active .page-link {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--text-white);
 }
 
-/* ===== TEXTO DE ESTADOS ===== */
-.text-danger {
-    color: var(--danger) !important;
+.hotel-total-box {
+  background: linear-gradient(135deg, var(--card) 0%, var(--background) 100%);
+  border-top: 3px solid var(--primary);
+  box-shadow: var(--shadow-md);
+  padding: 0 1rem;
 }
 
-.text-success {
-    color: var(--success) !important;
+/* Modal mejorado */
+.modal-content.hotel-modal {
+  border: none;
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
 }
 
-.text-primary {
-    color: var(--primary) !important;
+.modal-header.hotel-modal-header {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: var(--text-white);
+  border-radius: 12px 12px 0 0;
 }
 
-.text-warning {
-    color: var(--warning) !important;
+/* === TABLAS PERSONALIZADAS === */
+/* ANTIGUAS */
+.table.hotel-table-antiguas {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
-/* ===== TÍTULO DE MES Y AÑO ===== */
-#mes-anio {
-    color: var(--text);
-    font-weight: 600;
+.table.hotel-table-antiguas thead th {
+  background-color: var(--secondary);
+  color: var(--text-white);
+  border: none;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  padding: 1rem;
 }
 
-/* ===== HOVER EFFECTS PARA TABLAS ===== */
-.table-hover tbody tr:hover td {
-    background-color: rgba(44, 90, 160, 0.05);
+.table.hotel-table-antiguas tbody td {
+  padding: 0.6rem .5rem;
+  border-top: 1px solid var(--border-light);
+  vertical-align: middle;
 }
 
-/* ===== BORDES ===== */
-.border-light {
-    border-color: rgba(44, 90, 160, 0.1) !important;
+.hotel-room-number-antigua {
+  /* background-color: rgba(108, 117, 125, 0.1) !important; */
+  background-color: var(--secondary-subtle) !important;
+  border-left: 4px solid var(--primary-dark) !important;
+  color: var(--text-white) !important;
 }
 
-/* ===== BOTONES DE EDITAR ===== */
-#btn-editar-1, #btn-editar-2 {
-    background-color: var(--primary);
-    border-color: var(--primary);
-    color: white;
-    font-size: 0.875rem;
+/* MODERNAS */
+.table.hotel-table-modernas {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
-#btn-editar-1:hover, #btn-editar-2:hover {
-    background-color: #1e4080;
-    border-color: #1e4080;
+.table.hotel-table-modernas thead th {
+  background-color: var(--primary-light);
+  color: var(--text-white);
+  border: none;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+  padding: 1rem;
 }
 
-/* ===== RESPONSIVE ADJUSTMENTS ===== */
+.table.hotel-table-modernas tbody td {
+  padding: 0.6rem .5rem;
+  border-top: 1px solid var(--border-light);
+  vertical-align: middle;
+}
+
+.hotel-room-number-moderna {
+  background-color: var(--primary-light-subtle) !important;
+  border-left: 4px solid var(--primary-dark) !important;
+  color: var(--text-white) !important;
+}
+
+/* === ESTADOS DE HABITACIONES === */
+.hotel-room-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  min-width: 100px;
+}
+
+.hotel-room-maintenance {
+  background-color: var(--room-maintenance-bg);
+  color: #92400e;
+  border: 1px solid var(--room-maintenance);
+}
+
+.hotel-room-reserved {
+  background-color: var(--room-reserved-bg);
+  color: var(--room-reserved);
+  border: 1px solid var(--room-reserved);
+}
+
+.hotel-room-cleaning {
+  background-color: var(--room-cleaning-bg);
+  color: #065f46;
+  border: 1px solid var(--room-cleaning);
+}
+
+.hotel-room-no-available {
+  background-color: var(--room-no-available-bg);
+  color: #000000;
+  border: 1px solid var(--room-no-available);
+}
+
+
+
+
+
+
+
+/* === BOTONES PERSONALIZADOS === */
+.btn.hotel-btn-primary {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--text-white);
+  font-weight: 600;
+  padding: 0.3rem .5rem;
+  border-radius: 6px;
+  /* transition: all 0.3s ease; */
+}
+.btn.hotel-btn-primary:hover {
+  background-color: var(--primary-light);
+  border-color: var(--primary-light);
+  color: var(--text-white);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn.hotel-btn-secondary {
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+  color: var(--text-white);
+  font-weight: 600;
+}
+.btn.hotel-btn-secondary:hover {
+  background-color: #5a6268;
+  border-color: #5a6268;
+  color: var(--text-white);
+}
+
+.btn.hotel-btn-success {
+  background-color: var(--success);
+  border-color: var(--success);
+  color: var(--text-white);
+}
+.btn.hotel-btn-success:hover {
+  background-color: #047857;
+  border-color: #047857;
+  color: var(--text-white);
+}
+
+.btn.hotel-btn-warning {
+  background-color: var(--warning);
+  border-color: var(--warning);
+  color: var(--text-white);
+}
+.btn.hotel-btn-warning:hover {
+  background-color: #b45309;
+  border-color: #b45309;
+  color: var(--text-white);
+}
+
+.btn.hotel-btn-danger {
+  background-color: var(--error);
+  border-color: var(--error);
+  color: var(--text-white);
+}
+.btn.hotel-btn-danger:hover {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+  color: var(--text-white);
+}
+
+/* === CARDS PERSONALIZADAS === */
+.card.hotel-card {
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  background-color: var(--card);
+}
+
+.card.hotel-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.card-header.hotel-card-header {
+  background-color: var(--background);
+  border-bottom: 2px solid var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.card-title.hotel-card-title {
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+/* === FORMULARIOS === */
+.form-control.hotel-form-control {
+  border: 2px solid var(--border-light);
+  border-radius: 6px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-control.hotel-form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 0.2rem rgba(30, 64, 128, 0.25);
+}
+
+.form-label.hotel-form-label {
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* === ALERTAS === */
+.alert.hotel-alert-success {
+  background-color: var(--success-bg);
+  border-color: var(--success);
+  color: #065f46;
+}
+
+.alert.hotel-alert-warning {
+  background-color: var(--warning-bg);
+  border-color: var(--warning);
+  color: #92400e;
+}
+
+.alert.hotel-alert-danger {
+  background-color: var(--error-bg);
+  border-color: var(--error);
+  color: #991b1b;
+}
+
+.alert.hotel-alert-info {
+  background-color: var(--info-bg);
+  border-color: var(--info);
+  color: #0c4a6e;
+}
+
+/* === BADGES === */
+.badge.hotel-badge-primary {
+  background-color: var(--primary);
+  color: var(--text-white);
+}
+
+.badge.hotel-badge-success {
+  background-color: var(--success);
+  color: var(--text-white);
+}
+
+.badge.hotel-badge-warning {
+  background-color: var(--warning);
+  color: var(--text-white);
+}
+
+.badge.hotel-badge-danger {
+  background-color: var(--error);
+  color: var(--text-white);
+}
+
+/* === UTILIDADES === */
+.hotel-bg-primary {
+  background-color: var(--primary) !important;
+}
+
+.hotel-bg-light {
+  background-color: var(--background) !important;
+}
+
+.hotel-bg-white {
+  background-color: var(--card) !important;
+}
+
+.hotel-text-primary {
+  color: var(--primary) !important;
+}
+
+.hotel-text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.hotel-text-muted {
+  color: var(--text-muted) !important;
+}
+
+.hotel-border {
+  border: 1px solid var(--border-light) !important;
+}
+
+.hotel-border-primary {
+  border-color: var(--primary) !important;
+}
+
+.hotel-shadow-sm {
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.hotel-shadow-md {
+  box-shadow: var(--shadow-md) !important;
+}
+
+.hotel-shadow-lg {
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.hotel-rounded {
+  border-radius: 8px !important;
+}
+
+/* === CATEGORÍAS DE HABITACIONES === */
+.hotel-room-category-standard {
+  border-left: 4px solid var(--primary);
+}
+
+.hotel-room-category-premium {
+  border-left: 4px solid var(--room-maintenance);
+}
+
+/* === RESPONSIVE === */
 @media (max-width: 768px) {
-    .container-fluid {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-    }
-    
-    .table {
-        font-size: 0.875rem;
-    }
+  .hotel-room-status {
+    font-size: 0.75rem;
+    min-width: 80px;
+    padding: 0.2rem 0.5rem;
+  }
+
+  .dropdown-menu.hotel-dropdown {
+    min-width: 250px;
+  }
+
+  .btn-sm {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
 }

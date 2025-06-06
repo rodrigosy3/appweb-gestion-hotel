@@ -61,4 +61,20 @@ public class AppUserDetails implements UserDetails {
         return user.getNombres();
     }
 
+    public String getApellidos() {
+        return user.getApellidos();
+    }
+
+    public String getDni() {
+        return user.getDni();
+    }
+
+    public String getNombreCompleto() {
+        return user.getNombres() + " " + user.getApellidos();
+    }
+
+    public String getRol() {
+        return user.getRol().getNombre();
+    }
+
 }

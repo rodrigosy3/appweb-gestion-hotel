@@ -1,8 +1,8 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow" style="margin-bottom: 4rem;" th:fragment="navbar">
+<nav class="navbar navbar-expand-lg shadow bg-dark" style="margin-bottom: 4rem;" th:fragment="navbar">
     <div class="container-fluid mx-3">
-        <div class="navbar-nav text-light align-content-center align-items-center">
+        <div class="navbar-nav align-content-center align-items-center">
             <li class="nav-item">
-                <a class="nav-link fs-4 active" aria-current="page" th:href="@{/}">INICIO</a>
+                <a class="nav-link fs-4 active hotel-brand" aria-current="page" th:href="@{/}">INICIO</a>
             </li>
 
             <li class="nav-item">
@@ -10,8 +10,8 @@
             </li>
 
             <li class="nav-item ms-4">
-                <a class="nav-link" th:href="@{/admin}"
-                    sec:authorize="hasAnyRole('OWNER', 'ADMINISTRADOR')">ADMINISTRAR</a>
+                <a class="nav-link hotel-nav-link" th:href="@{/admin}"
+                    sec:authorize="hasAnyRole('DUEÑO', 'ADMINISTRADOR')">ADMINISTRAR</a>
             </li>
         </div>
 
@@ -22,72 +22,86 @@
         </div>
 
         <div class="navbar-nav">
-            <ul class="navbar-nav align-items-center">
+            <ul class="navbar-nav align-items-center hotel-dropdown">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" th:href="@{/clientes}">CLIENTES</a>
+                    <a class="nav-link hotel-nav-link" aria-current="page" th:href="@{/clientes}">CLIENTES</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link mx-2" th:href="@{/ventas}">VENTAS</a>
+                    <a class="nav-link hotel-nav-link mx-2" th:href="@{/ventas}">VENTAS</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link mx-2" th:href="@{/cajas}">CAJAS</a>
+                    <a class="nav-link hotel-nav-link mx-2" th:href="@{/cajas}">CAJAS</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link mx-2" th:href="@{/habitaciones}">HABITACIONES</a>
+                    <a class="nav-link hotel-nav-link mx-2" th:href="@{/habitaciones}">HABITACIONES</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" th:href="@{/historialVetos}">HISTORIAL DE VETOS</a>
+                    <a class="nav-link hotel-nav-link" th:href="@{/historialVetos}">HISTORIAL DE VETOS</a>
                 </li>
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link fs-2 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                        aria-expanded="false">
+                    <a class="nav-link fs-2 dropdown-toggle ms-3 hotel-nav-link hotel-user-toggle" href="#"
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="bi bi-person-fill"></i>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li class="text-center">
-                            <span class="fw-bold" sec:authentication="principal.nombres"></span>
+
+                    <ul class="dropdown-menu dropdown-menu-end hotel-dropdown">
+                        <!-- Header del usuario -->
+                        <li class="text-center hotel-user-header">
+                            <span class="hotel-user-name" sec:authentication="principal.nombreCompleto"></span>
+                            <p class="hotel-user-role" sec:authentication="principal.rol">Recepcionista</p>
                         </li>
 
                         <li>
-                            <hr class="dropdown-divider">
+                            <hr class="dropdown-divider hotel-divider">
                         </li>
 
-                        <!-- <a class="dropdown-item" th:href="@{/ventas/reporte-del-dia-pdf}">Reporte del día</a> -->
-                        <li>
+                        <!-- Reportes -->
+                        <li class="hotel-reports-section">
                             <!-- VENTAS -->
-                            <a class="dropdown-item" th:href="@{/ventas/reporte-por-fecha-pdf(fecha=${fechaFiltro})}"
-                                th:unless="${fechaFiltro == null}">REPORTE: Ventas del día segun
+                            <a class="dropdown-item hotel-dropdown-item"
+                                th:href="@{/ventas/reporte-por-fecha-pdf(fecha=${fechaFiltro})}"
+                                th:unless="${fechaFiltro == null}"><i class="bi bi-graph-up"></i> REPORTE: Ventas del
+                                día segun
                                 fecha</a>
-                            <a class="dropdown-item" th:href="@{/ventas/reporte-por-fecha-pdf}"
-                                th:if="${fechaFiltro == null}">REPORTE: Ventas del día</a>
+                            <a class="dropdown-item hotel-dropdown-item" th:href="@{/ventas/reporte-por-fecha-pdf}"
+                                th:if="${fechaFiltro == null}"><i class="bi bi-graph-up"></i> REPORTE: Ventas del
+                                día</a>
 
                             <!-- CAJAS -->
-                            <a class="dropdown-item" th:href="@{/cajas/reporte-por-fecha-pdf(fecha=${fechaFiltro})}"
-                                th:unless="${fechaFiltro == null}">REPORTE: Cajas del día segun
+                            <a class="dropdown-item hotel-dropdown-item"
+                                th:href="@{/cajas/reporte-por-fecha-pdf(fecha=${fechaFiltro})}"
+                                th:unless="${fechaFiltro == null}"><i class="bi bi-graph-up-arrow"></i> REPORTE: Cajas
+                                del día segun
                                 fecha</a>
-                            <a class="dropdown-item" th:href="@{/cajas/reporte-por-fecha-pdf}"
-                                th:if="${fechaFiltro == null}">REPORTE: Cajas del día</a>
+                            <a class="dropdown-item hotel-dropdown-item" th:href="@{/cajas/reporte-por-fecha-pdf}"
+                                th:if="${fechaFiltro == null}"><i class="bi bi-graph-up-arrow"></i> REPORTE: Cajas del
+                                día</a>
 
                             <!-- TICKET DE CAJA -->
-                            <a class="dropdown-item" href="" id="btnTicketCaja"
-                                th:unless="${fechaFiltro == null}">TICKETS: Caja del día segun
+                            <a class="dropdown-item hotel-dropdown-item" href="" id="btnTicketCaja"
+                                th:unless="${fechaFiltro == null}"><i class="bi bi-cash-stack"></i> TICKETS: Caja del
+                                día
+                                segun
                                 fecha</a>
-                            <a class="dropdown-item" href="" id="btnTicketCaja"
-                                th:if="${fechaFiltro == null}">TICKET: Caja del día</a>
+                            <a class="dropdown-item hotel-dropdown-item" href="" id="btnTicketCaja"
+                                th:if="${fechaFiltro == null}"><i class="bi bi-cash-stack"></i>TICKET: Caja del día</a>
                         </li>
 
                         <li>
-                            <hr class="dropdown-divider">
+                            <hr class="dropdown-divider hotel-divider">
                         </li>
 
                         <li class="text-center">
                             <form th:action="@{/logout}" method="post">
-                                <button type="submit" class="dropdown-item text-danger">Cerrar sesión</button>
+                                <button type="submit" class="dropdown-item hotel-dropdown-item hotel-logout"><i
+                                        class="bi bi-box-arrow-right"></i>
+                                    <span>Cerrar sesión</span>
+                                </button>
                             </form>
                         </li>
                     </ul>

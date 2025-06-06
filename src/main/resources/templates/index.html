@@ -17,48 +17,50 @@
 
     <!-- Título con Mes y Año -->
     <div class="d-flex justify-content-center align-items-start">
-        <h5 class="mt-2" id="mes-anio"></h5>
+        <h5 class="mt-2 fw-bold hotel-text-primary" id="mes-anio"></h5>
 
         <!-- Barra de Fechas -->
         <nav class="mx-3" aria-label="Navegación de fechas">
-            <ul class="pagination" id="barra-fechas">
+            <ul class="pagination hotel-pagination" id="barra-fechas">
                 <li class="page-item" id="prev">
-                    <a class="page-link" onclick="cambiarRango(-1)">«</a>
+                    <a class="page-link" onclick="cambiarRango(-1)"><i class="bi bi-chevron-left"></i></a>
                 </li>
 
                 <!-- Fechas dinámicas generadas con JS -->
 
                 <li class="page-item" id="next">
-                    <a class="page-link" onclick="cambiarRango(1)">»</a>
+                    <a class="page-link" onclick="cambiarRango(1)"><i class="bi bi-chevron-right"></i></a>
                 </li>
             </ul>
         </nav>
 
-        <a type="button" class="btn btn-primary" id="btn-hoy" th:href="@{/}">Hoy</a>
+        <a type="button" class="btn hotel-btn-primary hotel-shadow-sm" id="btn-hoy" th:href="@{/}">Hoy</a>
 
         <input type="hidden" id="filtroFecha" name="fechaFiltro" />
     </div>
 
     <!-- ALERTAS -->
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center me-5" role="alert">
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center me-5 hotel-alert-danger"
+        role="alert">
         <span th:text="${error}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div th:if="${mensaje}" class="alert alert-danger alert-dismissible fade show text-center me-5" role="alert">
+    <div th:if="${mensaje}" class="alert alert-danger alert-dismissible fade show text-center me-5 hotel-alert-info"
+        role="alert">
         <span th:text="${mensaje}"></span>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
     <!-- HABITACIONES Y VENTAS -->
     <div class="container-fluid py-3">
-        <div class="row">
+        <div class="row g-4">
             <!-- Primera tabla: lado izquierdo -->
             <div class="col-12 col-lg-6 justify-content-center">
-                <table class="table table-hover" th:if="${hab_antiguas != null}">
-                    <thead class="table-secondary border-light">
+                <table class="table table-hover hotel-table-antiguas hotel-shadow-sm" th:if="${hab_antiguas != null}">
+                    <thead class="border-light">
                         <tr>
                             <th class="text-center">N°</th>
-                            <th class="text-center">HORARIO</th>
+                            <th>HORARIO</th>
                             <th>NOMBRES Y APELLIDOS</th>
                             <th class="text-center px-0">EDAD</th>
                             <th class="text-center px-0">D.N.I.</th>
@@ -70,7 +72,7 @@
                         <tr th:each="hab : ${hab_antiguas}"
                             th:classappend="${hab.estado.estado == 'RESERVADA' && ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ventasVencidas[hab.id_habitacion] != null ? 'table-danger' : mapAlertaSalida[hab.id_habitacion] != null ? 'table-warning' : ''}">
 
-                            <td class="text-center fw-bold border-light bg-secondary-subtle align-middle"
+                            <td class="text-center fw-bold border-light bg-secondary-subtle align-middle hotel-room-number-antigua"
                                 th:text="${hab.numero}"
                                 th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' + hab.tipo.nombre_tipo}">
                                 N°
@@ -79,10 +81,10 @@
                             <!-- #################### EVALUANDO FECHA DE ENTRADA A USAR SEGUN CONDICIONES DE VENTA #################### -->
                             <td class="text-start px-0 ps-2">
                                 <span th:if="${ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null}">
-                                    <span
+                                    <span class="hotel-text-primary fw-bold"
                                         th:text="${'E: ' + #temporals.format(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}">
                                     </span><br>
-                                    <span
+                                    <span class="hotel-text-secondary fw-bold"
                                         th:text="${'S: ' + #temporals.format(ultimaVentaPorHabitacionFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}">
                                     </span>
                                 </span>
@@ -103,22 +105,22 @@
                                 <!-- ######## CONDICIONES DE LAS HABITACIONES ######## -->
                                 <span
                                     th:if="${hab.estado.estado == 'RESERVADA' && ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null}"
-                                    class="bg-primary-subtle fw-bold text-primary">
+                                    class="hotel-room-status hotel-room-reserved fw-bold">
                                     HABITACIÓN RESERVADA <br>
                                 </span>
 
                                 <span th:if="${hab.estado.estado == 'LIMPIEZA'}"
-                                    class="bg-success-subtle fw-bold text-success">
+                                    class="hotel-room-status hotel-room-cleaning fw-bold">
                                     HABITACIÓN EN LIMPIEZA <br>
                                 </span>
 
                                 <span th:if="${hab.estado.estado == 'MANTENIMIENTO'}"
-                                    class="bg-warning-subtle fw-bold text-warning">
+                                    class="hotel-room-status hotel-room-maintenance fw-bold">
                                     HABITACIÓN EN MANTENIMIENTO <br>
                                 </span>
 
                                 <span th:if="${hab.estado.estado == 'NO DISPONIBLE'}"
-                                    class="bg-dark-subtle fw-semibold text-dark">
+                                    class="hotel-room-status hotel-room-no-available fw-bold">
                                     HABITACIÓN NO DISPONIBLE PARA VENTAS
                                     <br>
                                 </span>
@@ -127,7 +129,7 @@
                                 <!-- ################################ CONDICIONES DE LAS VENTAS ################################ -->
                                 <span
                                     th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO' || ventasVencidas[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}"
-                                    class="bg-primary-subtle fw-bold text-primary">
+                                    class="hotel-room-status hotel-room-reserved fw-bold">
                                     MEDIO DÍA - SALIDA 6:00 PM <br>
                                 </span>
                                 <!-- ########################################################################################### -->
@@ -144,7 +146,7 @@
                                     </span>
                                     <span
                                         th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                        <span
+                                        <span class="hotel-text-dark fw-medium"
                                             th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
                                             NOMBRES Y APELLIDOS
                                         </span>
@@ -160,7 +162,7 @@
 
                                 <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ventasVencidas[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                    <span class="text-danger fw-semibold"
+                                    <span class="text-danger fw-medium"
                                         th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
                                         NOMBRES Y APELLIDOS
                                     </span>
@@ -174,7 +176,7 @@
                             <td class="text-center">
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                    <span th:text="${cliente.usuario_alojado.edad}"></span><br>
+                                    <span class="hotel-text-dark" th:text="${cliente.usuario_alojado.edad}"></span><br>
                                 </span>
 
                                 <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
@@ -189,7 +191,7 @@
                             <td class="text-center">
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                    <span th:text="${cliente.usuario_alojado.dni}"></span><br>
+                                    <span class="hotel-text-dark" th:text="${cliente.usuario_alojado.dni}"></span><br>
                                 </span>
 
                                 <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
@@ -219,7 +221,7 @@
                                     <!-- Mostrar solo si hay una venta -->
                                     <button type="button"
                                         th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null or ventasVencidas[hab.id_habitacion] != null}"
-                                        class="btn btn-sm btn-secondary"
+                                        class="btn btn-sm hotel-btn-secondary"
                                         th:attr="data-venta-id=${ultimaVentaPorHabitacion[hab.id_habitacion]?.id_venta != null ? ultimaVentaPorHabitacion[hab.id_habitacion].id_venta : ventasVencidas[hab.id_habitacion]?.id_venta}"
                                         onclick="imprimirCopiaTicket(this)">
                                         Ticket
@@ -233,7 +235,7 @@
                                             th:if="${ventasVencidas[hab.id_habitacion] != null}"
                                             th:value="${ventasVencidas[hab.id_habitacion].id_venta}" />
 
-                                        <button type="submit" class="btn btn-sm btn-primary" id="btn-editar-1"
+                                        <button type="submit" class="btn btn-sm hotel-btn-primary" id="btn-editar-1"
                                             th:with="ventaID=${ultimaVentaPorHabitacion[hab.id_habitacion] != null ? ultimaVentaPorHabitacion[hab.id_habitacion].id_venta : ventasVencidas[hab.id_habitacion]?.id_venta}"
                                             th:title="'Venta: ' + ${ventaID}">
                                             Editar
@@ -245,19 +247,20 @@
                     </tbody>
                 </table>
 
-                <div class="position-sticky bottom-0 w-100 bg-white border-top py-2" style="z-index: 1;">
+                <div class="position-sticky bottom-0 w-100 bg-white border-top py-2 hotel-total-box"
+                    style="z-index: 1;">
                     <div class="d-flex justify-content-start pe-3">
-                        <span class="fw-bold">Total caja (Habitaciones Antiguas):</span>
+                        <span class="fw-bold hotel-text-primary">Total caja (Habitaciones Antiguas):</span>
                         <span class="fw-bold text-success ps-2"
-                            th:text="${#numbers.formatDecimal(ventaTotalHbAntiguas, 1, 2)}">0.00</span>
+                            th:text="'S/. ' + ${#numbers.formatDecimal(ventaTotalHbAntiguas, 1, 2)}">0.00</span>
                     </div>
                 </div>
             </div>
 
             <!-- Segunda tabla: lado derecho -->
             <div class="col-12 col-lg-6 justify-content-center">
-                <table class="table table-hover" th:if="${hab_modernas != null}">
-                    <thead class="table-primary border-light">
+                <table class="table table-hover hotel-table-modernas hotel-shadow-sm" th:if="${hab_modernas != null}">
+                    <thead class="border-light">
                         <tr>
                             <th class="text-center">N°</th>
                             <th class="text-center">HORARIO</th>
@@ -272,7 +275,7 @@
                         <tr th:each="hab : ${hab_modernas}"
                             th:classappend="${hab.estado.estado == 'RESERVADA' && ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null ? 'table-primary' : hab.estado.estado == 'LIMPIEZA' ? 'table-success' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' ? 'table-danger' : hab.estado.estado == 'MANTENIMIENTO' ? 'table-warning' : hab.estado.estado == 'NO DISPONIBLE' ? 'table-secondary' : ventasVencidas[hab.id_habitacion] != null ? 'table-danger' : mapAlertaSalida[hab.id_habitacion] != null ? 'table-warning' : ''}">
 
-                            <td class="text-center fw-bold border-light bg-primary-subtle align-middle"
+                            <td class="text-center fw-bold border-light align-middle hotel-room-number-moderna"
                                 th:text="${hab.numero}"
                                 th:title="${'(' + hab.tipo.abreviacion_tipo + ') ' + hab.tipo.nombre_tipo}">
                                 N°
@@ -281,10 +284,10 @@
                             <!-- #################### EVALUANDO FECHA DE ENTRADA A USAR SEGUN CONDICIONES DE VENTA #################### -->
                             <td class="text-start px-0 ps-2">
                                 <span th:if="${ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null}">
-                                    <span
+                                    <span class="hotel-text-primary fw-bold"
                                         th:text="${'E: ' + #temporals.format(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}">
                                     </span><br>
-                                    <span
+                                    <span class="hotel-text-secondary fw-bold"
                                         th:text="${'S: ' + #temporals.format(ultimaVentaPorHabitacionFechaSalida[hab.id_habitacion], 'dd'', ''hh:mm a')}">
                                     </span>
                                 </span>
@@ -305,22 +308,22 @@
                                 <!-- ######## CONDICIONES DE LAS HABITACIONES ######## -->
                                 <span
                                     th:if="${hab.estado.estado == 'RESERVADA' && ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null}"
-                                    class="bg-primary-subtle fw-bold text-primary">
+                                    class="hotel-room-status hotel-room-reserved fw-bold">
                                     HABITACIÓN RESERVADA <br>
                                 </span>
 
                                 <span th:if="${hab.estado.estado == 'LIMPIEZA'}"
-                                    class="bg-success-subtle fw-bold text-success">
+                                    class="hotel-room-status hotel-room-cleaning fw-bold">
                                     HABITACIÓN EN LIMPIEZA <br>
                                 </span>
 
                                 <span th:if="${hab.estado.estado == 'MANTENIMIENTO'}"
-                                    class="bg-warning-subtle fw-bold text-warning">
+                                    class="hotel-room-status hotel-room-maintenance fw-bold">
                                     HABITACIÓN EN MANTENIMIENTO <br>
                                 </span>
 
                                 <span th:if="${hab.estado.estado == 'NO DISPONIBLE'}"
-                                    class="bg-dark-subtle fw-semibold text-dark">
+                                    class="hotel-room-status hotel-room-no-available fw-bold">
                                     HABITACIÓN NO DISPONIBLE PARA VENTAS
                                     <br>
                                 </span>
@@ -328,14 +331,8 @@
 
                                 <!-- ################################ CONDICIONES DE LAS VENTAS ################################ -->
                                 <span
-                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' || ventasVencidas[hab.id_habitacion]?.estado == 'POR COBRAR'}"
-                                    class="bg-danger-subtle fw-bold text-danger">
-                                    HABITACIÓN NO PAGADA <br>
-                                </span>
-
-                                <span
                                     th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO' || ventasVencidas[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}"
-                                    class="bg-primary-subtle fw-bold text-primary">
+                                    class="hotel-room-status hotel-room-reserved fw-bold">
                                     MEDIO DÍA - SALIDA 6:00 PM <br>
                                 </span>
                                 <!-- ########################################################################################### -->
@@ -352,7 +349,7 @@
                                     </span>
                                     <span
                                         th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                        <span
+                                        <span class="hotel-text-dark fw-medium"
                                             th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
                                             NOMBRES Y APELLIDOS
                                         </span>
@@ -366,9 +363,10 @@
                                     TIEMPO EXCEDIDO, AVISAR A LOS CLIENTES
                                     <br>
                                 </span>
+
                                 <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ventasVencidas[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                    <span class="text-danger fw-semibold"
+                                    <span class="text-danger fw-medium"
                                         th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
                                         NOMBRES Y APELLIDOS
                                     </span>
@@ -382,7 +380,7 @@
                             <td class="text-center">
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion].tipo_venta != 'RESERVA'}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                    <span th:text="${cliente.usuario_alojado.edad}"></span><br>
+                                    <span class="hotel-text-dark" th:text="${cliente.usuario_alojado.edad}"></span><br>
                                 </span>
 
                                 <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
@@ -397,7 +395,7 @@
                             <td class="text-center">
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
-                                    <span th:text="${cliente.usuario_alojado.dni}"></span><br>
+                                    <span class="hotel-text-dark" th:text="${cliente.usuario_alojado.dni}"></span><br>
                                 </span>
 
                                 <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
@@ -411,34 +409,23 @@
                             <!-- ####################################### PRECIO TOTAL DE LA VENTA ######################################## -->
                             <td class="text-center">
                                 <span
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR' || ventasVencidas[hab.id_habitacion]?.estado == 'POR COBRAR'}"
+                                    class="bg-danger-subtle fw-bold text-danger">
+                                    POR COBRAR <br>
+                                </span>
+                                <span
                                     th:text="${(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : (ventasVencidas[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ventasVencidas[hab.id_habitacion]?.monto_total, 1, 2) : ''}"
-                                    th:classappend="${ventasVencidas[hab.id_habitacion] != null ? 'text-danger fw-bold' : ''}">
+                                    th:classappend="${ventasVencidas[hab.id_habitacion] != null ? 'text-danger fw-bold' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR'? 'text-danger fw-bold' : 'text-success'}">
                                 </span>
                             </td>
                             <!-- ######################################################################################################### -->
-                            <!-- 
-                            <td class="text-center align-middle">
-                                <form th:action="@{/editar/{idHabitacion}(idHabitacion=${hab.id_habitacion})}">
-                                    <input th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}" type="hidden"
-                                        name="idVenta"
-                                        th:value="${ultimaVentaPorHabitacion[hab.id_habitacion]?.id_venta}">
 
-                                    <input th:if="${ventasVencidas[hab.id_habitacion] != null}" type="hidden"
-                                        name="idVenta" th:value="${ventasVencidas[hab.id_habitacion]?.id_venta}">
-
-                                    <button type="submit" class="btn btn-sm btn-primary" id="btn-editar-2"
-                                        th:with="ventaID=${ultimaVentaPorHabitacion[hab.id_habitacion] != null ? ultimaVentaPorHabitacion[hab.id_habitacion].id_venta : 
-                                        ventasVencidas[hab.id_habitacion] != null ? ventasVencidas[hab.id_habitacion].id_venta : ''}" th:title="'Venta: ' + ${ventaID}">
-                                        Editar
-                                    </button>
-                                </form>
-                            </td> -->
                             <td class="text-center align-middle">
                                 <div class="d-flex flex-column flex-md-row gap-2 justify-content-center">
                                     <!-- Mostrar solo si hay una venta -->
                                     <button type="button"
                                         th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null or ventasVencidas[hab.id_habitacion] != null}"
-                                        class="btn btn-sm btn-secondary"
+                                        class="btn btn-sm hotel-btn-secondary"
                                         th:attr="data-venta-id=${ultimaVentaPorHabitacion[hab.id_habitacion]?.id_venta != null ? ultimaVentaPorHabitacion[hab.id_habitacion].id_venta : ventasVencidas[hab.id_habitacion]?.id_venta}"
                                         onclick="imprimirCopiaTicket(this)">
                                         Ticket
@@ -452,7 +439,7 @@
                                             th:if="${ventasVencidas[hab.id_habitacion] != null}"
                                             th:value="${ventasVencidas[hab.id_habitacion].id_venta}" />
 
-                                        <button type="submit" class="btn btn-sm btn-primary" id="btn-editar-2"
+                                        <button type="submit" class="btn btn-sm hotel-btn-primary" id="btn-editar-1"
                                             th:with="ventaID=${ultimaVentaPorHabitacion[hab.id_habitacion] != null ? ultimaVentaPorHabitacion[hab.id_habitacion].id_venta : ventasVencidas[hab.id_habitacion]?.id_venta}"
                                             th:title="'Venta: ' + ${ventaID}">
                                             Editar
@@ -464,11 +451,11 @@
                     </tbody>
                 </table>
 
-                <div class="position-sticky bottom-0 w-100 bg-white border-top py-2" style="z-index: 1;">
+                <div class="position-sticky bottom-0 w-100 bg-white border-top py-2 hotel-total-box" style="z-index: 1;">
                     <div class="d-flex justify-content-end pe-3">
-                        <span class="fw-bold">Total caja (Habitaciones Modernas):</span>
+                        <span class="fw-bold hotel-text-primary">Total caja (Habitaciones Modernas):</span>
                         <span class="fw-bold text-success ps-2"
-                            th:text="${#numbers.formatDecimal(ventaTotalHbModernas, 1, 2)}">0.00</span>
+                            th:text="${'S/. ' + #numbers.formatDecimal(ventaTotalHbModernas, 1, 2)}">0.00</span>
                     </div>
                 </div>
             </div>
@@ -478,17 +465,17 @@
         <div class="modal fade" id="modalConfirmarImpresion" tabindex="-1" aria-labelledby="modalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border border-primary shadow">
-                    <div class="modal-header bg-primary text-light">
+                <div class="modal-content shadow hotel-modal hotel-shadow-lg">
+                    <div class="modal-header hotel-modal-header">
                         <h5 class="modal-title" id="modalLabel">Confirmar impresión</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
-                    <div class="modal-body text-center">
+                    <div class="modal-body text-center hotel-text-primary">
                         ¿Está seguro de que desea imprimir una <strong>copia del ticket</strong>?
                     </div>
                     <div class="modal-footer justify-content-center">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-success" id="btnConfirmarImpresion">Sí, imprimir</button>
+                        <button type="button" class="btn hotel-btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn hotel-btn-success" id="btnConfirmarImpresion">Sí, imprimir</button>
                     </div>
                 </div>
             </div>
