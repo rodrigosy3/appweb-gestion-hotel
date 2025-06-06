@@ -1,5 +1,20 @@
+/* ===== PALETA DE COLORES AZUL CORPORATIVO PARA HOTEL ===== */
+:root {
+    --primary: #2c5aa0;      /* Azul corporativo */
+    --secondary: #4a90a4;    /* Azul grisáceo */
+    --accent: #87ceeb;       /* Azul claro */
+    --background: #f8fafc;   /* Gris muy claro */
+    --card: #ffffff;         /* Blanco puro */
+    --text: #1e293b;         /* Gris oscuro */
+    --muted: #64748b;        /* Gris medio */
+    --success: #059669;      /* Verde para confirmaciones */
+    --warning: #d97706;      /* Naranja para alertas */
+    --danger: #dc2626;       /* Rojo para errores */
+}
+
 body {
-  background-color: #f8f9fa;
+  background-color: var(--background);
+  color: var(--text);
 }
 
 .disabled-button {
@@ -115,4 +130,205 @@ body {
   font-family: 'Roboto Mono', monospace;
   width: 12rem;
   height: 5rem;
+}
+
+/* ===== BOTONES ===== */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+
+.btn-primary:hover {
+    background-color: #1e4080;
+    border-color: #1e4080;
+}
+
+#btn-hoy {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* ===== PAGINACIÓN ===== */
+.pagination .page-link {
+    color: var(--primary);
+    border-color: #dee2e6;
+}
+
+.pagination .page-link:hover {
+    color: #1e4080;
+    background-color: var(--accent);
+    border-color: var(--secondary);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* ===== ALERTAS ===== */
+.alert-danger {
+    background-color: #fef2f2;
+    border-color: #fecaca;
+    color: var(--danger);
+}
+
+.alert-success {
+    background-color: #f0fdf4;
+    border-color: #bbf7d0;
+    color: var(--success);
+}
+
+/* ===== TABLAS - ENCABEZADOS ===== */
+.table-secondary {
+    background-color: var(--secondary);
+    color: white;
+}
+
+.table-primary {
+    background-color: var(--primary);
+    color: white;
+}
+
+/* ===== ESTADOS DE HABITACIONES - FILAS ===== */
+/* Habitación Reservada */
+.table-primary td {
+    background-color: rgba(44, 90, 160, 0.1);
+    border-color: rgba(44, 90, 160, 0.2);
+}
+
+/* Habitación en Limpieza */
+.table-success td {
+    background-color: rgba(5, 150, 105, 0.1);
+    border-color: rgba(5, 150, 105, 0.2);
+}
+
+/* Por Cobrar / Tiempo Excedido */
+.table-danger td {
+    background-color: rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.2);
+}
+
+/* Mantenimiento / Alertas de Tiempo */
+.table-warning td {
+    background-color: rgba(217, 119, 6, 0.1);
+    border-color: rgba(217, 119, 6, 0.2);
+}
+
+/* No Disponible */
+.table-secondary td {
+    background-color: rgba(100, 116, 139, 0.1);
+    border-color: rgba(100, 116, 139, 0.2);
+}
+
+/* ===== CELDAS DE NÚMERO DE HABITACIÓN ===== */
+.bg-secondary-subtle {
+    background-color: rgba(74, 144, 164, 0.15) !important;
+    color: var(--secondary);
+}
+
+.bg-primary-subtle {
+    background-color: rgba(44, 90, 160, 0.15) !important;
+    color: var(--primary);
+}
+
+/* ===== ESTADOS DE TEXTO ===== */
+/* Habitación Reservada */
+.bg-primary-subtle.text-primary {
+    background-color: rgba(44, 90, 160, 0.1) !important;
+    color: var(--primary) !important;
+}
+
+/* Habitación en Limpieza */
+.bg-success-subtle.text-success {
+    background-color: rgba(5, 150, 105, 0.1) !important;
+    color: var(--success) !important;
+}
+
+/* Por Cobrar */
+.bg-danger-subtle.text-danger {
+    background-color: rgba(220, 38, 38, 0.1) !important;
+    color: var(--danger) !important;
+}
+
+/* Mantenimiento */
+.bg-warning-subtle.text-warning {
+    background-color: rgba(217, 119, 6, 0.1) !important;
+    color: var(--warning) !important;
+}
+
+/* No Disponible */
+.bg-dark-subtle.text-dark {
+    background-color: rgba(100, 116, 139, 0.1) !important;
+    color: var(--muted) !important;
+}
+
+/* ===== ALERTAS DE TIEMPO ===== */
+.bg-warning.text-light {
+    background-color: var(--warning) !important;
+    color: white !important;
+}
+
+.bg-danger.text-light {
+    background-color: var(--danger) !important;
+    color: white !important;
+}
+
+/* ===== TEXTO DE ESTADOS ===== */
+.text-danger {
+    color: var(--danger) !important;
+}
+
+.text-success {
+    color: var(--success) !important;
+}
+
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-warning {
+    color: var(--warning) !important;
+}
+
+/* ===== TÍTULO DE MES Y AÑO ===== */
+#mes-anio {
+    color: var(--text);
+    font-weight: 600;
+}
+
+/* ===== HOVER EFFECTS PARA TABLAS ===== */
+.table-hover tbody tr:hover td {
+    background-color: rgba(44, 90, 160, 0.05);
+}
+
+/* ===== BORDES ===== */
+.border-light {
+    border-color: rgba(44, 90, 160, 0.1) !important;
+}
+
+/* ===== BOTONES DE EDITAR ===== */
+#btn-editar-1, #btn-editar-2 {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    font-size: 0.875rem;
+}
+
+#btn-editar-1:hover, #btn-editar-2:hover {
+    background-color: #1e4080;
+    border-color: #1e4080;
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+    
+    .table {
+        font-size: 0.875rem;
+    }
 }

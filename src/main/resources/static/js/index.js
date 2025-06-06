@@ -46,11 +46,32 @@ const btn_editar_2 = document.getElementById("btn-editar-2");
 const params_2 = new URLSearchParams(window.location.search);
 const fechaURL_2 = params_2.get("fechaFiltro");
 
-// Si hay una fecha en la URL, calcular cuántos días se ha desplazado desde hoy
-if (fechaURL_2) {
-  btn_editar_1.setAttribute("disabled", "true");
-  btn_editar_2.setAttribute("disabled", "true");
-} else {
-  btn_editar_1.removeAttribute("disabled");
-  btn_editar_2.removeAttribute("disabled");
+if (btn_editar_1 && btn_editar_2) {
+  // Si hay una fecha en la URL, calcular cuántos días se ha desplazado desde hoy
+  if (fechaURL_2) {
+    btn_editar_1.setAttribute("disabled", "true");
+    btn_editar_2.setAttribute("disabled", "true");
+  } else {
+    btn_editar_1.removeAttribute("disabled");
+    btn_editar_2.removeAttribute("disabled");
+  }
+}
+
+
+const btnTicketCaja = document.getElementById("btnTicketCaja");
+
+if (btnTicketCaja) {
+  btnTicketCaja.addEventListener("click", function (e) {
+    e.preventDefault(); // Evita redirección
+
+    let url = "/cajas/ticket-caja-por-fecha";
+    if (fechaURL_2) {
+      url += "?fecha=" + encodeURIComponent(fechaURL_2);
+    }
+
+    fetch(url)
+      .then(response => response.text())
+      .then(msg => alert(msg))
+      .catch(err => alert("❌ Error inesperado"));
+  });
 }

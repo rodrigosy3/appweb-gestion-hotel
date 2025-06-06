@@ -1,4 +1,38 @@
 document.addEventListener("DOMContentLoaded", function () {
+
+    // // Referencias a elementos clave
+    // const btnMostrarModal = document.getElementById('btnGuardar');
+    // const formVenta = document.getElementById('formVentaHabitacion');
+    // const inputOpcionImpresion = document.getElementById('opcionImpresion');
+
+    // // Botones del modal
+    // const btnSiImprimir = document.getElementById('btnSiImprimir');
+    // const btnGuardarSinImprimir = document.getElementById('btnGuardarSinImprimir');
+    // // El botón “Cancelar” ya tiene data-bs-dismiss="modal", así que no necesitamos capturarlo
+
+    // // Al hacer clic en “Guardar Venta”, abrimos el modal de confirmación
+    // btnMostrarModal.addEventListener('click', function () {
+    //     // Limpiamos cualquier valor previo
+    //     inputOpcionImpresion.value = '';
+    //     // Mostramos el modal de Bootstrap
+    //     const modal = new bootstrap.Modal(document.getElementById('confirmacionModal'));
+    //     modal.show();
+    // });
+
+    // // Si el usuario elige “Sí, guardar e imprimir”
+    // btnSiImprimir.addEventListener('click', function () {
+    //     inputOpcionImpresion.value = 'SI_IMPRIMIR';
+    //     formVenta.submit();
+    // });
+
+    // // Si el usuario elige “Guardar sin imprimir”
+    // btnGuardarSinImprimir.addEventListener('click', function () {
+    //     inputOpcionImpresion.value = 'GUARDAR_SIN_IMPRIMIR';
+    //     formVenta.submit();
+    // });
+
+
+
     const inputDNI = document.getElementById("inputDNI");
     const inputNombres = document.getElementById("inputNombres");
     const inputApellidos = document.getElementById("inputApellidos");
@@ -19,18 +53,17 @@ document.addEventListener("DOMContentLoaded", function () {
             let celular = row.cells[4].innerText;
             clientesTemporales.push({ dni, nombres, apellidos, edad, celular, eliminado: false });
         });
-
-        bloquearBtnGuardarRegistro(clientesTemporales, "btnGuardar")
     }
 
+    bloquearBtnGuardarRegistro(clientesTemporales, "btnGuardar")
 
     // Función para agregar un cliente temporalmente
     function agregarCliente() {
         const dni = inputDNI.value.trim();
         const nombres = inputNombres.value.trim().toUpperCase();
         const apellidos = inputApellidos.value.trim().toUpperCase();
-        const edad = inputEdad.value.trim();
-        const celular = inputCelular.value.trim();
+        let edad = inputEdad.value.trim();
+        let celular = inputCelular.value.trim();
 
         if (!dni || !nombres || !apellidos) {
             alert("Por favor, completa todos los campos del cliente.");
@@ -43,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (!edad) edad = 0;
-        if (!celular) celular = "999999999";
+        if (!celular) celular = "000000000";
 
         let clienteExistente = clientesTemporales.find(cliente => cliente.dni === dni);
 
@@ -114,26 +147,52 @@ document.addEventListener("DOMContentLoaded", function () {
     function guardarVenta(event) {
         event.preventDefault(); // Evitar envío normal del formulario
 
-        // Obtener el formulario
-        let form = document.getElementById("formVentaHabitacion");
+        // Abrir el modal de Bootstrap
+        const modalElement = document.getElementById("confirmacionModal");
+        const modalBootstrap = new bootstrap.Modal(modalElement);
+        modalBootstrap.show();
 
-        // Objeto FormData con los datos del formulario
-        let formData = new FormData(form);
+        // Referencias para los botones dentro del modal
+        const btnSiImprimir = document.getElementById("btnSiImprimir");
+        const btnGuardarSinImprimir = document.getElementById("btnGuardarSinImprimir");
+        const inputOpcionImpresion = document.getElementById("opcionImpresion");
+        const formVenta = document.getElementById("formVentaHabitacion");
 
-        // Convertir clientesTemporales a JSON y agregarlo al formData
-        formData.append("clientesTemporales", JSON.stringify(clientesTemporales));
+        // Función “handler” que hará el envío por fetch:
+        function enviarFormConOpcion(opcion) {
+            // Opción elegida
+            inputOpcionImpresion.value = opcion; // "SI_IMPRIMIR" o "GUARDAR_SIN_IMPRIMIR"
 
-        // Enviar los datos al backend
-        fetch(form.action, {
-            method: "POST",
-            body: formData
-        }).then(response => {
-            if (!response.ok) {
-                console.log("Error al guardar la venta");
-            }
+            // FormData (incluyendo clientesTemporales)
+            let formData = new FormData(formVenta);
+            formData.append("clientesTemporales", JSON.stringify(clientesTemporales));
 
-            window.location.href = "/"; // Redirigir a la página principal después de guardar
-        }).catch(error => console.error("Error:", error));
+            // fetch al action del form
+            fetch(formVenta.action, {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                if (!response.ok) {
+                    alert("Error al guardar la venta");
+                    // Podrías mostrar alerta o mensaje aquí
+                }
+
+                window.location.href = "/"; // Redirigir a la página principal
+            }).catch(error => console.error("Error:", error));
+        }
+
+        // Manejadores a los botones del modal **sólo una vez**:
+        //     — Si el usuario hace clic en “Sí, guardar e imprimir”:
+        btnSiImprimir.onclick = function () {
+            modalBootstrap.hide();                // Cerrar el modal
+            enviarFormConOpcion("SI_IMPRIMIR");   // Enviamos con esa opción
+        };
+        //     — Si el usuario hace clic en “Guardar sin imprimir”:
+        btnGuardarSinImprimir.onclick = function () {
+            modalBootstrap.hide();
+            enviarFormConOpcion("NO_IMPRIMIR");
+        };
+        //     — Si cierra con “Cancelar” (data-bs-dismiss), no hace nada más.
     };
 
     function retirarCliente() {
@@ -141,6 +200,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!idVenta) {
             alert("No se puede actualizar el estado sin una venta registrada.");
+            return;
+        }
+
+        const confirmacion = confirm("¿Estás seguro de que deseas finalizar esta venta?");
+
+        if (!confirmacion) {
             return;
         }
 
@@ -178,8 +243,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const resumenDescuento = document.getElementById("descuentoResumen");
     const resumenMontoAdelanto = document.getElementById("montoAdelantoResumen");
+
     const resumenMontoTotal = document.getElementById("montoTotalResumen");
     const resumenMontoTotalValor = document.getElementById("montoTotalResumenValor");
+
+    const resumenPorCobrar = document.getElementById("montoPorCobrarResumen");
+    const resumenVuelto = document.getElementById("montoVueltoResumen");
 
     const precioInput = document.getElementById("habitacionPrecio");
     const tablaFechasBody = document.getElementById("tableBodyFechasAlojamiento");
@@ -187,7 +256,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const fechaActual = new Date();
     let fechaEntradaValor;
 
-    // **(1) La fecha de entrada vacía tomará la del resumen o la actual**
+    // La fecha de entrada vacía tomará la del resumen o la actual
     if (idVentaInput) {
         if (idVentaInput.value !== null && idVentaInput.value.trim() !== "") {
             fechaEntradaValor = new Date(resumenFechaEntradaValor.value);
@@ -202,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
         manejarBloqueoServicio();
     }
 
-    // **(5) Bloquear servicio si hay más de un día**
+    // Bloquear servicio si hay más de un día
     function manejarBloqueoServicio() {
         if (parseInt(resumenDiasAlojamiento.value) < 2) {
             resumenSelectServicio.value = "COMPLETO";
@@ -214,7 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
         actualizarFilas();
     }
 
-    // **(2) Manejar el cambio de días de alojamiento**
+    // Manejar el cambio de días de alojamiento
     function actualizarFilas() {
         const dias = parseInt(resumenDiasAlojamiento.value) || 1;
         tablaFechasBody.innerHTML = ""; // Limpiar la tabla antes de reconstruirla
@@ -275,19 +344,69 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         resumenFechaSalida.value = fechaSalida;
-        resumenMontoTotal.value = calcularMontoTotal(resumenSelectServicio, resumenDiasAlojamiento, resumenDescuento, resumenMontoAdelanto, precioInput);
-        resumenMontoTotalValor.value = calcularMontoTotal(resumenSelectServicio, resumenDiasAlojamiento, resumenDescuento, 0, precioInput);
+        resumenMontoTotal.value = calcularMontoTotal(resumenSelectServicio, resumenDiasAlojamiento, 0, 0, precioInput);
+        resumenMontoTotalValor.value = calcularMontoTotal(resumenSelectServicio, resumenDiasAlojamiento, 0, 0, precioInput);
 
-        if (parseFloat(resumenMontoTotal.value) <= 0.0) {
+        let montoTotal = parseFloat(resumenMontoTotal.value) || 0;
+        let adelanto = parseFloat(resumenMontoAdelanto.value) || 0;
+        let descuento = parseFloat(resumenDescuento.value) || 0;
+
+        resumenDescuento.value = descuento == 0 ? 0 : descuento;
+        resumenMontoAdelanto.value = adelanto == 0 ? 0 : adelanto;
+
+        if (montoTotal > (adelanto + descuento)) {
+            // Hay un monto pendiente de cobro
+            resumenPorCobrar.value = (montoTotal - adelanto - descuento).toFixed(2);
+            resumenVuelto.value = 0.0;
+
+            // Estilos
+            resumenPorCobrar.classList.add("bg-danger-subtle");
+            resumenPorCobrar.classList.remove("bg-success-subtle");
+
+            resumenVuelto.classList.remove("bg-success-subtle", "bg-danger-subtle");
+        } else {
+            // Hay vuelto
+            resumenPorCobrar.value = 0.0;
+            resumenVuelto.value = (adelanto - montoTotal - descuento).toFixed(2);
+
+            // Estilos
+            resumenPorCobrar.classList.remove("bg-danger-subtle");
+            resumenPorCobrar.classList.add("bg-success-subtle");
+
+            resumenVuelto.classList.add("bg-success-subtle");
+            resumenVuelto.classList.remove("bg-danger-subtle");
+        }
+
+
+        if (resumenVuelto.value >= 0 && resumenPorCobrar.value == 0) {
             resumenSelectEstado.value = "PAGADO";
-            resumenSelectEstado.setAttribute("disabled", true);
+            // resumenSelectEstado.setAttribute("disabled", true);
+            resumenSelectEstado.style.backgroundColor = "#d4edda"; // verde claro
         } else {
             resumenSelectEstado.value = "POR COBRAR";
-            resumenSelectEstado.removeAttribute("disabled");
+            // resumenSelectEstado.removeAttribute("disabled");
+            resumenSelectEstado.style.backgroundColor = "#f8d7da"; // rojo claro
         }
     }
 
     // **Eventos**
+    function actualizarSelect() {
+        let montoTotal = parseFloat(resumenMontoTotal.value) || 0;
+        let descuento = parseFloat(resumenDescuento.value) || 0;
+
+        if (this.value === "PAGADO") {
+            resumenDescuento.value = 0; // Resetea el descuento al pagar
+            resumenMontoAdelanto.value = (montoTotal - descuento).toFixed(2);
+            this.style.backgroundColor = "#d4edda"; // verde claro
+        } else {
+            resumenDescuento.value = 0; // Resetea el descuento al pagar
+            resumenMontoAdelanto.value = 0;
+            this.style.backgroundColor = "#f8d7da"; // rojo claro
+        }
+
+        actualizarResumen();
+    }
+
     if (resumenFechaEntrada) {
         resumenFechaEntrada.addEventListener("change", actualizarFilas);
     }
@@ -302,6 +421,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (resumenMontoAdelanto) {
         resumenMontoAdelanto.addEventListener("input", actualizarResumen);
+    }
+    if (resumenSelectEstado) {
+        resumenSelectEstado.addEventListener("change", actualizarSelect);
     }
 
     function cambiarTabEstado(estado) {
@@ -371,6 +493,9 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        if (!edad) edad.value = 0;
+        if (!celular) celular.value = "999999999";
+
         let ClienteExistente = reservaclientesTemporales.find(cliente => cliente.dni === dni);
 
         if (ClienteExistente) {
@@ -425,26 +550,53 @@ document.addEventListener("DOMContentLoaded", function () {
     function reservaguardarReserva(event) {
         event.preventDefault(); // Evita el envío normal del formulario
 
+        // Abrir el modal de Bootstrap
+        const modalElement = document.getElementById("confirmacionModal");
+        const modalBootstrap = new bootstrap.Modal(modalElement);
+        modalBootstrap.show();
+
+        // Referencias para los botones dentro del modal
+        const btnSiImprimir = document.getElementById("btnSiImprimir");
+        const btnGuardarSinImprimir = document.getElementById("btnGuardarSinImprimir");
+        const inputOpcionImpresion = document.getElementById("reservaOpcionImpresion");
+
         // Obtener el formulario
         let form = document.getElementById("reservaformVentaHabitacion");
 
-        // Crear objeto FormData con los datos del formulario
-        let formData = new FormData(form);
+        function reservaEnviarFormConOpcion(opcion) {
+            // Opción elegida
+            inputOpcionImpresion.value = opcion; // "SI_IMPRIMIR" o "NO_IMPRIMIR"
 
-        // Convertir reservaclientesTemporales a JSON y agregarlo al formData
-        formData.append("reservaclientesTemporales", JSON.stringify(reservaclientesTemporales));
+            // FormData (incluyendo reservaclientesTemporales)
+            let formData = new FormData(form);
+            formData.append("reservaclientesTemporales", JSON.stringify(reservaclientesTemporales));
 
-        // Enviar los datos al backend
-        fetch(form.action, {
-            method: "POST",
-            body: formData
-        }).then(response => {
-            if (response.ok) {
-                window.location.href = "/"; // Redirigir a la página principal después de guardar
-            } else {
-                alert("Error al guardar la reserva");
-            }
-        }).catch(error => console.error("Error:", error));
+            // fetch al action del form
+            fetch(form.action, {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                if (!response.ok) {
+                    alert("Error al guardar la reserva");
+                    // Podrías mostrar alerta o mensaje aquí
+                }
+
+                window.location.href = "/"; // Redirigir a la página principal
+            }).catch(error => console.error("Error:", error));
+        }
+
+        // Manejadores a los botones del modal **sólo una vez**:
+        //     — Si el usuario hace clic en “Sí, guardar e imprimir”:
+        btnSiImprimir.onclick = function () {
+            modalBootstrap.hide();                // Cerrar el modal
+            reservaEnviarFormConOpcion("SI_IMPRIMIR");   // Enviamos con esa opción
+        };
+        //     — Si el usuario hace clic en “Guardar sin imprimir”:
+        btnGuardarSinImprimir.onclick = function () {
+            modalBootstrap.hide();
+            reservaEnviarFormConOpcion("NO_IMPRIMIR");
+        };
+        //     — Si cierra con “Cancelar” (data-bs-dismiss), no hace nada más.
     };
 
     function reservaEliminarReserva() {
@@ -452,6 +604,12 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(idVentaReservada);
         if (!idVentaReservada) {
             console.log("No se puede cancelar una reserva no registrada.");
+            return;
+        }
+
+        const confirmacion = confirm("¿Estás seguro de que deseas cancelar esta reserva?");
+
+        if (!confirmacion) {
             return;
         }
 
@@ -477,6 +635,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (!idVenta) {
             console.log("No se puede finalizar reserva no registrada.");
+            return;
+        }
+
+        const confirmacion = confirm("¿Estás seguro de que deseas habilitar esta reserva?");
+        if (!confirmacion) {
             return;
         }
 
@@ -515,13 +678,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const reservaResumenMontoTotal = document.getElementById("reservamontoTotalResumen");
     const reservaResumenMontoTotalValor = document.getElementById("reservamontoTotalResumenValor");
 
+    const reservaResumenPorCobrar = document.getElementById("reservamontoPorCobrarResumen");
+    const reservaResumenVuelto = document.getElementById("reservamontoVueltoResumen");
+
     const reservaPrecioInput = document.getElementById("habitacionPrecio");
     const reservaTablaFechasBody = document.getElementById("reservatableBodyFechasAlojamiento");
 
     let reservafechaActual = new Date();
     let reservaFechaEntradaValor;
 
-    // **(1) La fecha de entrada vacía tomará la del resumen o la actual**
+    // La fecha de entrada vacía tomará la del resumen o la actual
     if (reservaidVentaInput) {
         if (reservainputDNI.value !== null && reservainputDNI.value.trim() !== "") {
             reservaFechaEntradaValor = fechaJavaToJsToDatetimelocal(new Date(reservaResumenFechaEntradaValor.value));
@@ -536,7 +702,7 @@ document.addEventListener("DOMContentLoaded", function () {
         reservamanejarBloqueoServicio();
     }
 
-    // **(5) Bloquear servicio si hay más de un día**
+    // Bloquear servicio si hay más de un día
     function reservamanejarBloqueoServicio() {
         if (parseInt(reservaResumenDiasAlojamiento.value) < 2) {
             reservaResumenSelectServicio.value = "COMPLETO";
@@ -548,7 +714,7 @@ document.addEventListener("DOMContentLoaded", function () {
         reservaactualizarFilas();
     }
 
-    // **(2) Manejar el cambio de días de alojamiento**
+    // Manejar el cambio de días de alojamiento
     function reservaactualizarFilas() {
         const dias = parseInt(reservaResumenDiasAlojamiento.value) || 1;
         reservaTablaFechasBody.innerHTML = ""; // Limpiar la tabla antes de reconstruirla
@@ -614,19 +780,66 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         reservaResumenFechaSalida.value = fechaSalida;
-        reservaResumenMontoTotal.value = calcularMontoTotal(reservaResumenSelectServicio, reservaResumenDiasAlojamiento, reservaResumenDescuento, reservaResumenMontoAdelanto, reservaPrecioInput);
-        reservaResumenMontoTotalValor.value = calcularMontoTotal(reservaResumenSelectServicio, reservaResumenDiasAlojamiento, reservaResumenDescuento, 0, reservaPrecioInput);
+        reservaResumenMontoTotal.value = calcularMontoTotal(reservaResumenSelectServicio, reservaResumenDiasAlojamiento, 0, 0, reservaPrecioInput);
+        reservaResumenMontoTotalValor.value = calcularMontoTotal(reservaResumenSelectServicio, reservaResumenDiasAlojamiento, 0, 0, reservaPrecioInput);
 
-        if (parseFloat(reservaResumenMontoTotal.value) <= 0.0) {
+        let montoTotal = parseFloat(reservaResumenMontoTotal.value) || 0;
+        let adelanto = parseFloat(reservaResumenMontoAdelanto.value) || 0;
+        let descuento = parseFloat(reservaResumenDescuento.value) || 0;
+        reservaResumenDescuento.value = descuento == 0 ? 0 : descuento;
+        reservaResumenMontoAdelanto.value = adelanto == 0 ? 0 : adelanto;
+
+        if (montoTotal > (adelanto + descuento)) {
+            // Hay un monto pendiente de cobro
+            reservaResumenPorCobrar.value = (adelanto - montoTotal - descuento).toFixed(2);
+            reservaResumenVuelto.value = 0.0;
+
+            // Estilos
+            reservaResumenPorCobrar.classList.add("bg-danger-subtle");
+            reservaResumenPorCobrar.classList.remove("bg-success-subtle");
+
+            reservaResumenVuelto.classList.remove("bg-success-subtle", "bg-danger-subtle");
+        } else {
+            // Hay vuelto
+            reservaResumenPorCobrar.value = 0.0;
+            reservaResumenVuelto.value = (adelanto - montoTotal - descuento).toFixed(2);
+
+            // Estilos
+            reservaResumenPorCobrar.classList.remove("bg-danger-subtle");
+            reservaResumenPorCobrar.classList.add("bg-success-subtle");
+
+            reservaResumenVuelto.classList.add("bg-success-subtle");
+            reservaResumenVuelto.classList.remove("bg-danger-subtle");
+        }
+
+
+        if (reservaResumenVuelto.value >= 0 && reservaResumenPorCobrar.value == 0) {
             reservaResumenSelectEstado.value = "PAGADO";
-            reservaResumenSelectEstado.setAttribute("disabled", true);
+            // reservaResumenSelectEstado.setAttribute("disabled", true);
+            reservaResumenSelectEstado.style.backgroundColor = "#d4edda"; // verde claro
         } else {
             reservaResumenSelectEstado.value = "POR COBRAR";
-            reservaResumenSelectEstado.removeAttribute("disabled");
+            // reservaResumenSelectEstado.removeAttribute("disabled");
+            reservaResumenSelectEstado.style.backgroundColor = "#f8d7da"; // rojo claro
         }
     }
 
-    // **Eventos**
+    // Eventos
+    function reservaActualizarSelect() {
+        let montoTotal = parseFloat(reservaResumenMontoTotal.value) || 0;
+        let descuento = parseFloat(reservaResumenDescuento.value) || 0;
+
+        if (this.value === "PAGADO") {
+            reservaResumenMontoAdelanto.value = (montoTotal - descuento).toFixed(2);
+            this.style.backgroundColor = "#d4edda"; // verde claro
+        } else {
+            reservaResumenMontoAdelanto.value = 0;
+            this.style.backgroundColor = "#f8d7da"; // rojo claro
+        }
+
+        reservaactualizarResumen();
+    };
+
     if (reservaResumenFechaEntrada) {
         reservaResumenFechaEntrada.addEventListener("change", reservaactualizarFilas);
     }
@@ -641,6 +854,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (reservaResumenMontoAdelanto) {
         reservaResumenMontoAdelanto.addEventListener("input", reservaactualizarResumen);
+    }
+    if (reservaResumenSelectEstado) {
+        reservaResumenSelectEstado.addEventListener("change", reservaActualizarSelect);
     }
 
 
@@ -729,8 +945,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     return response.json();
                 }).then(data => {
                     if (data.numeroDocumento) {
-                        document.getElementById("inputNombres").value = data.nombres || "";
-                        document.getElementById("inputApellidos").value = `${data.apellidoPaterno || ""
+                        nombres.value = data.nombres || "";
+                        apellidos.value = `${data.apellidoPaterno || ""
                             } ${data.apellidoMaterno || ""}`.trim();
                     } else {
                         alert("No se encontró información para este DNI. Agregar manualmente");
@@ -842,6 +1058,9 @@ document.addEventListener("DOMContentLoaded", function () {
         if (event.target.id === "btnGuardar") {
             guardarVenta(event);
         }
+        if (event.target.id === "btnContinuarAlojamiento") {
+            continuarAlojamiento();
+        }
 
         // Cambio de targets
         if (event.target.id === "btnVerDetallesMantenimiento") {
@@ -873,4 +1092,38 @@ document.addEventListener("DOMContentLoaded", function () {
             reservaguardarReserva(event);
         }
     });
+
+    function continuarAlojamiento() {
+        const confirmacion = confirm("¿Deseas extender 1 día más la estadía del cliente?");
+        if (!confirmacion) return;
+
+        const diasInput = document.getElementById("diasAlojamientoResumen");
+        let diasActuales = parseInt(diasInput.value) || 1;
+        diasInput.value = diasActuales + 1;
+
+        actualizarResumen(); // Actualiza los cálculos
+
+        // Cambiar botón de guardar/editar venta
+        const btnEditarVenta = document.getElementById("btnGuardar"); // Asegúrate que este ID existe
+        if (btnEditarVenta) {
+            btnEditarVenta.classList.remove("btn-warning");
+            btnEditarVenta.classList.add("btn-success");
+            btnEditarVenta.innerText = "CONFIRMAR EXTENSIÓN DE ESTADÍA POR 1 DÍA";
+        }
+
+        // Mensaje visual temporal
+        const mensajeExt = document.getElementById("mensajeExtension");
+        if (mensajeExt) {
+            confirm("Se ha extendido 1 día más la estadía del cliente. Revisa los siguientes cambios en el RESUMEN");
+            mensajeExt.innerText = "✔️ ¡Se ha extendido 1 día más la estadía del cliente!, Revisa la informacion importante y confirma la extensión del servicio de alojamiento".toUpperCase();
+            mensajeExt.classList.add("text-success", "fw-bold");
+            mensajeExt.style.display = "block";
+
+            // Ocultar después de 4 segundos
+            setTimeout(() => {
+                mensajeExt.style.display = "none";
+            }, 20000);
+        }
+    }
+
 });

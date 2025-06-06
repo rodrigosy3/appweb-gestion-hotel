@@ -1,7 +1,6 @@
 package com.hotel.appHotel.controller;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,7 +18,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.hotel.appHotel.model.Cajas;
 import com.hotel.appHotel.model.Ventas;
+import com.hotel.appHotel.repository.CajasRepository;
+import com.hotel.appHotel.repository.VentasRepository;
 import com.hotel.appHotel.service.PdfServiceVentas;
 import com.hotel.appHotel.service.VentasService;
 
@@ -34,7 +36,13 @@ public class VentasController {
     private VentasService servicio;
 
     @Autowired
+    private VentasRepository repositorio;
+
+    @Autowired
     private PdfServiceVentas pdfService;
+
+    @Autowired
+    private CajasRepository repositorioCaja;
 
     @GetMapping
     public String listarVentasPorPagina(@RequestParam Map<String, Object> params, Model model) {
@@ -97,21 +105,12 @@ public class VentasController {
         }
 
         LocalDate finalFechaFiltro = fechaFiltro;
+        String fechaFormateada = fechaFiltro.toString(); // yyyy-MM-dd
+        
+        List<Ventas> ventasDelDia = repositorio.findVentasActivasPorFecha(fechaFormateada);
+        List<Cajas> cajasDelDia = repositorioCaja.obtenerCajasDelDia(String.valueOf(fechaFiltro));
 
-        List<Ventas> ventasDelDia = servicio.getVentas()
-                .stream()
-                .filter(venta -> !venta.isEliminado())
-                .filter(venta -> {
-                    LocalDate entrada = LocalDate.parse(venta.getFecha_entrada().substring(0, 10));
-                    LocalDate salida = LocalDate.parse(venta.getFecha_salida().substring(0, 10));
-                    
-                    return (entrada.isEqual(finalFechaFiltro) || entrada.isBefore(finalFechaFiltro))
-                            && (salida.isEqual(finalFechaFiltro) || salida.isAfter(finalFechaFiltro));
-                })
-                .sorted(Comparator.comparing(Ventas::getId_venta).reversed())
-                .collect(Collectors.toList());
-
-        byte[] pdf = pdfService.generarPdfVentas(ventasDelDia);
+        byte[] pdf = pdfService.generarPdfVentasConCaja(ventasDelDia, cajasDelDia);
 
         if (pdf == null) {
             return ResponseEntity.badRequest().build();

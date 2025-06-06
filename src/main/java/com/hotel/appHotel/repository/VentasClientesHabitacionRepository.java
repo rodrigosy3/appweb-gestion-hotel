@@ -1,5 +1,7 @@
 package com.hotel.appHotel.repository;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,4 +28,7 @@ public interface VentasClientesHabitacionRepository extends JpaRepository<Ventas
 
     @Query("SELECT vch FROM VentasClientesHabitacion vch WHERE vch.eliminado = false ORDER BY vch.id_venta_cliente_habitacion DESC")
     Page<VentasClientesHabitacion> findByEliminadoFalseDesc(Pageable pageable);
+
+    @Query("SELECT vch FROM VentasClientesHabitacion vch WHERE vch.venta.id_venta = :ventaId")
+    List<VentasClientesHabitacion> findByVentaId(@Param("ventaId") Long ventaId);
 }

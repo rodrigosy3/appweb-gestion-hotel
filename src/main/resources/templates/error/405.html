@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>405 - Método no permitido</title>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .error-container {
+            margin-top: 10%;
+        }
+
+        .display-error {
+            font-size: 7rem;
+            font-weight: 700;
+            color: #dc3545;
+        }
+
+        .btn-home {
+            background-color: var(--primary, #2c5aa0);
+            border: none;
+        }
+
+        .btn-home:hover {
+            background-color: var(--secondary, #4a90a4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container text-center error-container">
+        <div class="display-error">405</div>
+        <p class="lead text-muted">El método HTTP utilizado no está permitido para esta URL.</p>
+        <a th:href="@{/}" class="btn btn-home text-white mt-3">Volver al inicio</a>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de ventas</title>
+    <!-- Cambia 'static' a '/css/' para Thymeleaf -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/bootstrap-icons/font/bootstrap-icons.css}">
+</head>
+
+<body>
+    <div th:insert="~{fragments/navbar :: navbar}"></div>
+
+    <div class="mx-5">
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <div>
+                <h1 class="text-center">LISTA DE CAJAS</h1>
+            </div>
+
+            <div>
+                <nav aria-label="pagination-ventas">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item" th:classappend="${prevPage == 0 ? 'disabled' : ''}">
+                            <a th:href="@{|/cajas?page=${prevPage}|}" class="page-link">Anterior</a>
+                        </li>
+                        <li class="page-item" th:each="page : ${pages}"
+                            th:classappend="${actualPage == page ? 'active' : ''}">
+                            <a class="page-link" th:href="@{|/cajas?page=${page}|}" th:text="${page}"></a>
+                        </li>
+                        <li class="page-item" th:classappend="${actualPage == lastPage ? 'disabled' : ''}">
+                            <a th:href="@{|/cajas?page=${nextPage}|}" class="page-link">Siguiente</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="my-auto">
+                <a class="btn btn-primary" th:href="@{/cajas/exportar-pdf(page=${actualPage})}" target="_blank">
+                    <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+                </a>
+            </div>
+        </div>
+
+        <table class="table table-sm table-hover border shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center align-middle">ID</th>
+                    <th class="text-center align-middle">Venta ID</th>
+                    <th class="text-center align-middle">HABITACIÓN</th>
+                    <th class="text-center align-middle">CLIENTES</th>
+                    <th class="text-center align-middle">TIPO DE VENTA</th>
+                    <th class="text-center align-middle">MONTO (S/.)</th>
+                    <th class="text-center align-middle">FECHA REGISTRO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="caja : ${cajas}" th:classappend="${caja.monto &lt; 0 ? 'table-warning' : 'table-success'}">
+                    <!-- ID del movimiento -->
+                    <td class="text-center align-middle" th:text="${caja.idCaja}">ID</td>
+
+                    <!-- ID de la venta asociada -->
+                    <td class="text-center align-middle" th:text="${caja.venta != null ? caja.venta.id_venta : '-'}">
+                        Venta ID
+                    </td>
+
+                    <!-- Número y tipo de habitación -->
+                    <td class="text-center align-middle" th:text="${caja.venta != null 
+                          ? '[' + caja.venta.habitacion.numero + ']' 
+                            + ' (' + caja.venta.habitacion.tipo.abreviacion_tipo + ') ' 
+                            + caja.venta.habitacion.tipo.nombre_tipo 
+                          : '-'}">
+                        HABITACIÓN
+                    </td>
+
+                    <!-- Nombres y apellidos de los clientes de esa venta -->
+                    <td class="align-middle">
+                        <span th:if="${caja.venta != null}">
+                            <span th:each="vc : ${caja.venta.ventasClientesHabitacion}">
+                                <span
+                                    th:text="${vc.usuario_alojado.nombres + ' ' + vc.usuario_alojado.apellidos}"></span><br />
+                            </span>
+                        </span>
+                        <span th:if="${caja.venta == null}">-</span>
+                    </td>
+
+                    <!-- Tipo de servicio -->
+                    <td class="text-center align-middle"
+                        th:text="${caja.venta != null ? caja.venta.tipo_venta : '-'}">
+                        TIPO DE VENTA
+                    </td>
+
+                    <!-- Monto del movimiento (positivo o negativo) -->
+                    <td class="text-center align-middle" th:text="${ caja.monto}">
+                        MONTO
+                    </td>
+
+                    <!-- Fecha de registro formateada -->
+                    <td class="text-center align-middle" th:text="${#temporals.format(
+                    T(java.time.LocalDateTime).parse(caja.fechaRegistro),
+                    'dd-MM-yyyy hh:mm a')}">
+                        FECHA REGISTRO
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script th:src="@{/js/index.js}"></script>
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

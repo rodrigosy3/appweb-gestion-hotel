@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+    xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 
 <head>
     <meta charset="UTF-8">
@@ -249,7 +250,8 @@
                                                 </div>
                                                 <div class="w-50 pe-0">
                                                     <input type="text" id="inputCelular" maxlength="9" minlength="9"
-                                                        min="900000000" class="form-control">
+                                                        min="900000000" class="form-control"
+                                                        placeholder="Ejemplo: 987654321">
                                                 </div>
                                             </div>
                                         </div>
@@ -261,7 +263,7 @@
                                                 </div>
                                                 <div class="w-50 pe-0">
                                                     <input type="number" id="inputEdad" maxlength="3" minlength="1"
-                                                        min="0" class="form-control">
+                                                        min="0" class="form-control" placeholder="Ejemplo: 22">
                                                 </div>
                                             </div>
                                         </div>
@@ -335,6 +337,11 @@
                                 </div>
 
                                 <div class="col mb-3">
+                                    <p id="mensajeExtension" class="alert alert-success fw-bold text-center"
+                                        style="display: none;">
+                                        ✔️ ¡Se ha extendido 1 día más la estadía del cliente!
+                                    </p>
+
                                     <div class="row m-2 shadow rounded-4 align-items-center justify-content-center">
                                         <div class="row mb-3 bg-primary text-light fs-5 fw-bold align-content-center justify-content-center rounded-top-4"
                                             style="height: 2.2rem;">RESUMEN DE LA VENTA</div>
@@ -391,9 +398,10 @@
                                             <div class="col align-content-center bg-primary-subtle fw-bold rounded-2">
                                                 DESCUENTO: </div>
                                             <div class="col">
-                                                <input type="number" class="text-center form-control" placeholder="0.00"
-                                                    th:field="*{descuento}" id="descuentoResumen" min="0" step="0.01"
-                                                    readonly>
+                                                <input type="number"
+                                                    class="text-center form-control bg-secondary-subtle"
+                                                    placeholder="0.00" th:field="*{descuento}" id="descuentoResumen"
+                                                    min="0" step="0.01" readonly>
                                             </div>
                                         </div>
                                         <div class="row row-cols-2 mb-2">
@@ -417,16 +425,37 @@
                                                     id="montoTotalResumenValor">
                                             </div>
                                         </div>
+
+                                        <div class="row row-cols-2 mb-2">
+                                            <div class="col align-content-center bg-primary-subtle fw-bold rounded-2">
+                                                POR COBRAR: </div>
+                                            <div class="col">
+                                                <input type="number"
+                                                    class="text-center form-control bg-secondary-subtle"
+                                                    id="montoPorCobrarResumen" min="0" step="0.01" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="row row-cols-2 mb-4">
+                                            <div class="col align-content-center bg-primary-subtle fw-bold rounded-2">
+                                                VUELTO:
+                                            </div>
+                                            <div class="col">
+                                                <input type="number"
+                                                    class="text-center form-control bg-secondary-subtle"
+                                                    id="montoVueltoResumen" min="0" step="0.01" readonly>
+                                            </div>
+                                        </div>
+
                                         <div class="row row-cols-2 mb-4">
                                             <div class="col align-content-center bg-primary-subtle fw-bold rounded-2">
                                                 ESTADO
                                                 DE LA VENTA:</div>
                                             <div class="col">
-                                                <select class="form-select text-center" th:field="*{estado}"
+                                                <select class="form-select text-center fw-bold" th:field="*{estado}"
                                                     id="selectEstadoResumen">
-                                                    <option th:value="${'POR COBRAR'}" data-tipo="POR COBRAR">POR COBRAR
+                                                    <option th:value="'POR COBRAR'">POR COBRAR
                                                     </option>
-                                                    <option th:value="${'PAGADO'}" data-tipo="PAGADO"> PAGADO
+                                                    <option th:value="PAGADO"> PAGADO
                                                     </option>
                                                 </select>
                                             </div>
@@ -436,6 +465,8 @@
                                         <input type="hidden" th:field="*{tipo_venta}" id="tipoVenta"
                                             th:value="${'ALQUILER'}">
                                         <input type="hidden" th:field="*{id_venta}" id="idVenta">
+                                        <!-- Campo que indica la opción elegida: "SI_IMPRIMIR", "GUARDAR_SIN_IMPRIMIR" o "CANCELAR" -->
+                                        <input type="hidden" name="opcionImpresion" id="opcionImpresion" value="">
 
                                         <div class="row mb-4">
                                             <div class="col text-center">
@@ -450,13 +481,19 @@
 
                         <div class="row my-3">
                             <div class="col text-center">
-                                <button type="button" class="btn btn-success w-75 fw-bold" id="btnRetirarCliente"
+                                <button type="button" class="btn btn-danger w-50 fw-bold" id="btnRetirarCliente"
                                     th:if="${ventaHabitacion.id_venta}">
                                     FINALIZAR VENTA
                                 </button>
                             </div>
-                            <div class="col col-3 text-end">
-                                <button type="button" class="btn btn-danger fw-bold" data-bs-toggle="modal"
+                            <div class="col text-center">
+                                <button type="button" class="btn btn-success fw-bold" id="btnContinuarAlojamiento"
+                                    th:if="${ventaHabitacion.id_venta}">
+                                    CONTINUAR 1 DÍA MÁS DE ALOJAMIENTO
+                                </button>
+                            </div>
+                            <div class="col text-center">
+                                <button type="button" class="btn btn-danger w-50 fw-bold" data-bs-toggle="modal"
                                     data-bs-target="#cancelModal">CANCELAR Y VOLVER</button>
                             </div>
                         </div>
@@ -776,16 +813,37 @@
                                                     id="reservamontoTotalResumenValor">
                                             </div>
                                         </div>
+
+                                        <div class="row row-cols-2 mb-2">
+                                            <div class="col align-content-center bg-primary-subtle fw-bold rounded-2">
+                                                POR COBRAR: </div>
+                                            <div class="col">
+                                                <input type="number"
+                                                    class="text-center form-control bg-secondary-subtle"
+                                                    id="reservamontoPorCobrarResumen" min="0" step="0.01" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="row row-cols-2 mb-4">
+                                            <div class="col align-content-center bg-primary-subtle fw-bold rounded-2">
+                                                VUELTO:
+                                            </div>
+                                            <div class="col">
+                                                <input type="number"
+                                                    class="text-center form-control bg-secondary-subtle"
+                                                    id="reservamontoVueltoResumen" min="0" step="0.01" readonly>
+                                            </div>
+                                        </div>
+
                                         <div class="row row-cols-2 mb-4">
                                             <div class="col align-content-center bg-primary-subtle fw-bold rounded-2">
                                                 ESTADO
                                                 DE LA VENTA:</div>
                                             <div class="col">
-                                                <select class="form-select text-center" th:field="*{estado}"
+                                                <select class="form-select text-center fw-bold" th:field="*{estado}"
                                                     id="reservaselectEstadoResumen">
-                                                    <option th:value="${'POR COBRAR'}" data-tipo="POR COBRAR">POR COBRAR
+                                                    <option th:value="'POR COBRAR'">POR COBRAR
                                                     </option>
-                                                    <option th:value="${'PAGADO'}" data-tipo="PAGADO" selected> PAGADO
+                                                    <option th:value="PAGADO"> PAGADO
                                                     </option>
                                                 </select>
                                             </div>
@@ -794,6 +852,8 @@
                                         <input type="hidden" th:field="*{estado_estadia}" id="reservaestadoEstadia">
                                         <input type="hidden" name="tipo_venta" id="reservatipoVenta" value="RESERVA">
                                         <input type="hidden" th:field="*{id_venta}" id="reservaidVenta">
+                                        <!-- Campo que indica la opción elegida: "SI_IMPRIMIR", "GUARDAR_SIN_IMPRIMIR" o "CANCELAR" -->
+                                        <input type="hidden" name="opcionImpresion" id="reservaOpcionImpresion" value="">
 
                                         <div class="row mb-4">
                                             <div class="col text-center">
@@ -1061,6 +1121,39 @@
         </div>
     </div>
     <div th:insert="~{fragments/modal :: modal('/')}"></div>
+
+    <!-- ========== MODAL DE CONFIRMACIÓN ========== -->
+    <div class="modal fade" id="confirmacionModal" tabindex="-1" aria-labelledby="confirmacionModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmacionModalLabel">
+                        ¿Deseas guardar la venta e imprimir ticket?
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    Selecciona una opción:
+                </div>
+                <div class="modal-footer">
+                    <!-- 1) Sí, guardar e imprimir -->
+                    <button type="button" class="btn btn-success" id="btnSiImprimir">
+                        Sí, guardar e imprimir
+                    </button>
+                    <!-- 2) Guardar sin imprimir -->
+                    <button type="button" class="btn btn-secondary" id="btnGuardarSinImprimir">
+                        Guardar sin imprimir
+                    </button>
+                    <!-- 3) Cancelar (no guardar) -->
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="btnCancelar">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ============================================ -->
 
     <script th:src="@{/js/index-editar.js}"></script>
     <script th:src="@{/js/index.js}"></script>

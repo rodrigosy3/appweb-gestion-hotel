@@ -27,11 +27,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hotel.appHotel.config.TicketPrinter;
+import com.hotel.appHotel.model.Cajas;
 import com.hotel.appHotel.model.ClienteDTO;
 import com.hotel.appHotel.model.Credenciales;
 import com.hotel.appHotel.model.Habitaciones;
 import com.hotel.appHotel.model.HabitacionesContenido;
 import com.hotel.appHotel.model.HabitacionesEstado;
+import com.hotel.appHotel.model.Tickets;
 import com.hotel.appHotel.model.Usuarios;
 import com.hotel.appHotel.model.Ventas;
 import com.hotel.appHotel.model.VentasClientesHabitacion;
@@ -40,12 +43,16 @@ import com.hotel.appHotel.service.HabitacionesContenidoService;
 import com.hotel.appHotel.service.HabitacionesEstadoService;
 import com.hotel.appHotel.service.HabitacionesService;
 import com.hotel.appHotel.service.RolesService;
+import com.hotel.appHotel.service.TicketsService;
 import com.hotel.appHotel.service.UsuariosService;
 import com.hotel.appHotel.service.VentasClientesHabitacionService;
 import com.hotel.appHotel.service.VentasService;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import com.hotel.appHotel.repository.VentasClientesHabitacionRepository;
+import com.hotel.appHotel.service.CajasService;
 
 @Controller
 public class IndexController {
@@ -65,7 +72,13 @@ public class IndexController {
     VentasService servicioVentas;
 
     @Autowired
+    CajasService servicioCajas;
+
+    @Autowired
     VentasClientesHabitacionService servicioVentasClientesHabitacion;
+
+    @Autowired
+    VentasClientesHabitacionRepository repositorioVentasClientesHabitacion;
 
     @Autowired
     RolesService servicioRoles;
@@ -75,6 +88,9 @@ public class IndexController {
 
     @Autowired
     HabitacionesContenidoService servicioHabitacionesContenido;
+
+    @Autowired
+    TicketsService servicioTickets;
 
     @Autowired
     CredencialesRepository repositorioCredenciales;
@@ -175,6 +191,25 @@ public class IndexController {
             }
         }
 
+        double ventaTotalHbAntiguas = 0;
+        double ventaTotalHbModernas = 0;
+        List<Cajas> cajas = servicioCajas.getCajasDelDia();
+
+        if (!cajas.isEmpty()) {
+            ventaTotalHbAntiguas = cajas.stream()
+                    .filter(caja -> caja.getVenta().getHabitacion().getCategoria().equals("ANTIGUO"))
+                    .mapToDouble(Cajas::getMonto)
+                    .sum();
+
+            ventaTotalHbModernas = cajas.stream()
+                    .filter(caja -> caja.getVenta().getHabitacion().getCategoria().equals("MODERNO"))
+                    .mapToDouble(Cajas::getMonto)
+                    .sum();
+        }
+
+        modelo.addAttribute("ventaTotalHbAntiguas", ventaTotalHbAntiguas);
+        modelo.addAttribute("ventaTotalHbModernas", ventaTotalHbModernas);
+
         modelo.addAttribute("hab_antiguas", obtenerHabitacionesAntiguas());
         modelo.addAttribute("hab_modernas", obtenerHabitacionesModernas());
 
@@ -269,7 +304,7 @@ public class IndexController {
         modelo.addAttribute("ventasVencidas", ventasVencidas);
         modelo.addAttribute("ventasVencidasFechaEntrada", ventasVencidasFechaEntrada);
         modelo.addAttribute("ventasVencidasFechaSalida", ventasVencidasFechaSalida);
-        // 
+        //
         //
         //
         // EDITAR VENTA O CREAR NUEVA VENTA
@@ -292,10 +327,17 @@ public class IndexController {
     }
 
     @PostMapping("/{idHabitacion}")
-    public String actualizarVenta(@PathVariable Long idHabitacion, @ModelAttribute("ventaHabitacion") Ventas ventaHabitacion,
+    public String actualizarVenta(@PathVariable Long idHabitacion,
+            @ModelAttribute("ventaHabitacion") Ventas ventaHabitacion,
             @RequestParam(value = "clientesTemporales", required = false) String clientesJson,
+            @RequestParam(value = "opcionImpresion", required = false) String opcionImpresion,
             RedirectAttributes redirectAttributes) {
         Ventas ventaGuardada;
+        Boolean huboCambios;
+        // Logica para asignar el usuario responsable del cambio de la venta
+        String dni = SecurityContextHolder.getContext().getAuthentication().getName();
+        Optional<Credenciales> credencialOpt = repositorioCredenciales.buscarPorDni(dni);
+        Usuarios usuario_responsable = credencialOpt.get().getUsuario();
 
         // Guardar la venta
         if (ventaHabitacion.getId_venta() == null) {
@@ -307,20 +349,20 @@ public class IndexController {
 
             ventaHabitacion.setHabitacion(habitacion);
 
-            // Logica para asignar el usuario responsable del cambio de la venta
-            // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
-            //         : servicio.getUsuarioById(1L);
-            String dni = SecurityContextHolder.getContext().getAuthentication().getName();
-
-            Optional<Credenciales> credencialOpt = repositorioCredenciales.buscarPorDni(dni);
-            Usuarios usuario_responsable = credencialOpt.get().getUsuario();
-
             ventaHabitacion.setUsuario_responsable(usuario_responsable);
             /////////////////////////////////////////////////////////////////////
 
+            huboCambios = false;
             ventaGuardada = servicioVentas.createVenta(ventaHabitacion);
         } else {
             Ventas ventaExistente = servicioVentas.getVentaById(ventaHabitacion.getId_venta());
+
+            huboCambios = !ventaExistente.getTiempo_estadia().equals(ventaHabitacion.getTiempo_estadia())
+                    || !ventaExistente.getEstado().equals(ventaHabitacion.getEstado())
+                    || !ventaExistente.getDescuento().equals(ventaHabitacion.getDescuento())
+                    || !ventaExistente.getMonto_total().equals(ventaHabitacion.getMonto_total())
+                    || !ventaExistente.getMonto_adelanto().equals(ventaHabitacion.getMonto_adelanto())
+                    || !ventaExistente.getTipo_servicio().equals(ventaHabitacion.getTipo_servicio());
 
             // Copiar los datos de la venta a la venta existente
             ventaExistente.setFecha_entrada(ventaHabitacion.getFecha_entrada());
@@ -333,11 +375,53 @@ public class IndexController {
             ventaExistente.setMonto_adelanto(ventaHabitacion.getMonto_adelanto());
             ventaExistente.setTipo_servicio(ventaHabitacion.getTipo_servicio());
             ventaExistente.setTipo_venta(ventaHabitacion.getTipo_venta());
-            // BeanUtils.copyProperties(ventaHabitacion, ventaExistente, "habitacion", "usuario_responsable",
-            //         "fecha_creacion");
+            // BeanUtils.copyProperties(ventaHabitacion, ventaExistente, "habitacion",
+            // "usuario_responsable",
+            // "fecha_creacion");
             servicioVentas.updateVenta(ventaExistente);
 
             ventaGuardada = servicioVentas.getVentaById(ventaExistente.getId_venta());
+        }
+
+        double montoPorRegistrar = 0;
+        List<Cajas> cajasExistentes = servicioCajas.getCajasPorVenta(ventaGuardada.getId_venta());
+
+        if (huboCambios) {
+            // Sumamos todo lo que ya se guardó en Cajas para esta venta
+            double totalRegistrado = cajasExistentes.stream()
+                    .mapToDouble(Cajas::getMonto)
+                    .sum();
+
+            // Calculamos “nuevoTotal” que representa la cantidad que debería estar en caja
+            // según el estado actual de la venta:
+            double nuevoTotal;
+
+            if ("PAGADO".equals(ventaGuardada.getEstado())) {
+                // Si está en PAGADO, consideramos el total menos descuento
+                nuevoTotal = ventaGuardada.getMonto_total() - ventaGuardada.getDescuento();
+            } else {
+                // Si no está aún PAGADO (POR COBRAR), solo tomamos el adelanto menos descuento
+                nuevoTotal = ventaGuardada.getMonto_adelanto() - ventaGuardada.getDescuento();
+            }
+
+            // La diferencia entre lo que “debería” y lo que YA existe en Cajas
+            montoPorRegistrar = nuevoTotal - totalRegistrado;
+        } else if (!huboCambios && cajasExistentes.isEmpty()) {
+            if ("PAGADO".equals(ventaGuardada.getEstado())) {
+                montoPorRegistrar = ventaGuardada.getMonto_total() - ventaGuardada.getDescuento();
+            } else {
+                montoPorRegistrar = ventaGuardada.getMonto_adelanto() - ventaGuardada.getDescuento();
+            }
+        }
+
+        if (montoPorRegistrar != 0) {
+            Cajas caja = new Cajas();
+
+            caja.setMonto(montoPorRegistrar);
+            caja.setFechaRegistro(LocalDateTime.now().toString());
+            caja.setVenta(ventaGuardada);
+
+            servicioCajas.createCaja(caja);
         }
 
         // FUNCIONES PARA CLIENTES POR HABITACIÓN
@@ -354,9 +438,6 @@ public class IndexController {
 
         // Procesar clientes
         for (ClienteDTO cliente : clientes) {
-            System.out.println("Cliente: " + cliente.getNombres() + " " + cliente.getApellidos() + " - DNI: "
-                    + cliente.getDni() + " - Celular: " + cliente.getCelular());
-
             Usuarios usuario = servicioUsuarios.getUsuarioByDni(cliente.getDni());
 
             if (usuario == null) {
@@ -389,6 +470,16 @@ public class IndexController {
         }
 
         redirectAttributes.addFlashAttribute("mensaje", "Venta guardada correctamente");
+        List<VentasClientesHabitacion> listaClientes = repositorioVentasClientesHabitacion
+                .findByVentaId(ventaGuardada.getId_venta());
+
+        if ("SI_IMPRIMIR".equals(opcionImpresion)) {
+            Tickets ticket = servicioTickets.createTicket(ventaGuardada);
+            TicketPrinter.imprimirTicketVentaRealizada(ventaGuardada, ticket, usuario_responsable,
+                    listaClientes, true);
+        } else if ("NO_IMPRIMIR".equals(opcionImpresion)) {
+            redirectAttributes.addFlashAttribute("mensaje", "Venta guardada correctamente");
+        }
 
         return REDIRECT_INICIO;
     }
@@ -397,16 +488,15 @@ public class IndexController {
     public String actualizarVentaReservada(@PathVariable Long id,
             @ModelAttribute("ventaParaReserva") Ventas ventaParaReserva,
             @RequestParam("reservaclientesTemporales") String clientesJson,
+            @RequestParam(value = "opcionImpresion", required = false) String opcionImpresion,
             RedirectAttributes redirectAttributes) {
         Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
 
         Ventas ventaReservada;
+        Boolean huboCambios;
 
         // Logica para asignar el usuario responsable del cambio de la venta
-        // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
-        //         : servicio.getUsuarioById(1L);
         String dni = SecurityContextHolder.getContext().getAuthentication().getName();
-
         Optional<Credenciales> credencialOpt = repositorioCredenciales.buscarPorDni(dni);
         Usuarios usuario_responsable = credencialOpt.get().getUsuario();
         /////////////////////////////////////////////////////////////////////
@@ -419,9 +509,18 @@ public class IndexController {
 
             ventaParaReserva.setUsuario_responsable(usuario_responsable);
 
+            huboCambios = false;
             ventaReservada = servicioVentas.createVenta(ventaParaReserva);
         } else {
             Ventas ventaReservadaExistente = servicioVentas.getVentaById(ventaParaReserva.getId_venta());
+
+            huboCambios = !ventaReservadaExistente.getTiempo_estadia()
+                    .equals(ventaParaReserva.getTiempo_estadia())
+                    || !ventaReservadaExistente.getEstado().equals(ventaParaReserva.getEstado())
+                    || !ventaReservadaExistente.getDescuento().equals(ventaParaReserva.getDescuento())
+                    || !ventaReservadaExistente.getMonto_total().equals(ventaParaReserva.getMonto_total())
+                    || !ventaReservadaExistente.getMonto_adelanto().equals(ventaParaReserva.getMonto_adelanto())
+                    || !ventaReservadaExistente.getTipo_servicio().equals(ventaParaReserva.getTipo_servicio());
 
             // Copiar los datos de la venta a la venta existente
             ventaReservadaExistente.setFecha_entrada(ventaParaReserva.getFecha_entrada());
@@ -435,8 +534,9 @@ public class IndexController {
             ventaReservadaExistente.setTipo_servicio(ventaParaReserva.getTipo_servicio());
             ventaReservadaExistente.setTipo_venta(ventaParaReserva.getTipo_venta());
             ventaReservadaExistente.setUsuario_responsable(usuario_responsable);
-            // BeanUtils.copyProperties(ventaParaReserva, ventaReservadaExistente, "habitacion", "usuario_responsable",
-            //         "fecha_creacion");
+            // BeanUtils.copyProperties(ventaParaReserva, ventaReservadaExistente,
+            // "habitacion", "usuario_responsable",
+            // "fecha_creacion");
             servicioVentas.updateVenta(ventaReservadaExistente);
 
             ventaReservada = servicioVentas.getVentaById(ventaReservadaExistente.getId_venta());
@@ -454,6 +554,47 @@ public class IndexController {
             habitacion.setRazon_estado("Habitación libre para alquilar");
 
             servicioHabitaciones.updateHabitacion(habitacion);
+        }
+
+        double montoPorRegistrar = 0;
+        List<Cajas> cajasExistentes = servicioCajas.getCajasPorVenta(ventaReservada.getId_venta());
+
+        if (huboCambios) {
+            // Sumamos todo lo que ya se guardó en Cajas para esta venta
+            double totalRegistrado = cajasExistentes.stream()
+                    .mapToDouble(Cajas::getMonto)
+                    .sum();
+
+            // Calculamos “nuevoTotal” que representa la cantidad que debería estar en caja
+            // según el estado actual de la venta:
+            double nuevoTotal;
+
+            if ("PAGADO".equals(ventaReservada.getEstado())) {
+                // Si está en PAGADO, consideramos el total menos descuento
+                nuevoTotal = ventaReservada.getMonto_total() - ventaReservada.getDescuento();
+            } else {
+                // Si no está aún PAGADO (POR COBRAR), solo tomamos el adelanto menos descuento
+                nuevoTotal = ventaReservada.getMonto_adelanto() - ventaReservada.getDescuento();
+            }
+
+            // La diferencia entre lo que “debería” y lo que YA existe en Cajas
+            montoPorRegistrar = nuevoTotal - totalRegistrado;
+        } else if (!huboCambios && cajasExistentes.isEmpty()) {
+            if ("PAGADO".equals(ventaReservada.getEstado())) {
+                montoPorRegistrar = ventaReservada.getMonto_total() - ventaReservada.getDescuento();
+            } else {
+                montoPorRegistrar = ventaReservada.getMonto_adelanto() - ventaReservada.getDescuento();
+            }
+        }
+
+        if (montoPorRegistrar != 0) {
+            Cajas caja = new Cajas();
+
+            caja.setMonto(montoPorRegistrar);
+            caja.setFechaRegistro(LocalDateTime.now().toString());
+            caja.setVenta(ventaReservada);
+
+            servicioCajas.createCaja(caja);
         }
 
         // FUNCIONES PARA CLIENTES POR HABITACIÓN
@@ -502,6 +643,15 @@ public class IndexController {
         }
 
         redirectAttributes.addFlashAttribute("mensaje", "Venta guardada correctamente");
+        List<VentasClientesHabitacion> listaClientes = repositorioVentasClientesHabitacion
+                .findByVentaId(ventaReservada.getId_venta());
+
+        if ("SI_IMPRIMIR".equals(opcionImpresion)) {
+            Tickets ticket = servicioTickets.createTicket(ventaReservada);
+            TicketPrinter.imprimirTicketVentaRealizada(ventaReservada, ticket, usuario_responsable, listaClientes, true);
+        } else if ("NO_IMPRIMIR".equals(opcionImpresion)) {
+            redirectAttributes.addFlashAttribute("mensaje", "Venta guardada correctamente");
+        }
 
         return REDIRECT_INICIO;
     }
@@ -551,14 +701,15 @@ public class IndexController {
         HabitacionesEstado estadoDisponible = servicioHabitacionesEstado.getByEstado("DISPONIBLE");
 
         // Logica para asignar el usuario responsable del cambio de la venta
-        // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
-        //         : servicio.getUsuarioById(1L);
+        // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ?
+        // servicio.getUsuarioById(2L)
+        // : servicio.getUsuarioById(1L);
         String dni = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Optional<Credenciales> credencialOpt = repositorioCredenciales.buscarPorDni(dni);
         Usuarios usuario_responsable = credencialOpt.get().getUsuario();
         /////////////////////////////////////////////////////////////////////
-        
+
         venta.setUsuario_responsable(usuario_responsable);
         venta.setTipo_venta("RESERVA CANCELADA");
         servicioVentas.updateVenta(venta);
@@ -574,14 +725,15 @@ public class IndexController {
         Ventas venta = servicioVentas.getVentaById(id);
 
         // Logica para asignar el usuario responsable del cambio de la venta
-        // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ? servicio.getUsuarioById(2L)
-        //         : servicio.getUsuarioById(1L);
+        // Usuarios usuario_admin = servicio.getUsuarioById(2L) != null ?
+        // servicio.getUsuarioById(2L)
+        // : servicio.getUsuarioById(1L);
         String dni = SecurityContextHolder.getContext().getAuthentication().getName();
 
         Optional<Credenciales> credencialOpt = repositorioCredenciales.buscarPorDni(dni);
         Usuarios usuario_responsable = credencialOpt.get().getUsuario();
         /////////////////////////////////////////////////////////////////////
-        
+
         venta.setUsuario_responsable(usuario_responsable);
         venta.setTipo_venta("ALQUILER");
         servicioVentas.updateVenta(venta);
@@ -646,6 +798,43 @@ public class IndexController {
         return ResponseEntity.ok("Estado actualizado correctamente.");
     }
 
+    @GetMapping("/ventas/imprimir-ticket-copia")
+    @ResponseBody
+    public String imprimirTicketCopiaVenta(@RequestParam("idVenta") Long idVenta) {
+        try {
+            // Buscar la venta
+            Ventas venta = servicioVentas.getVentaById(idVenta);
+            if (venta == null) {
+                return "❌ Venta no encontrada.";
+            }
+
+            // Obtener usuario logueado (si aplica)
+            String dni = SecurityContextHolder.getContext().getAuthentication().getName();
+            Usuarios encargado = repositorioCredenciales.buscarPorDni(dni).map(c -> c.getUsuario()).orElse(null);
+
+            // Buscar último ticket asociado a esa venta
+            Tickets ticketOpt = servicioTickets.getUltimoByVentaId(idVenta);
+            if (ticketOpt == null) {
+                return "❌ No existe ticket asociado a esta venta.";
+            }
+
+            Tickets ticket = ticketOpt;
+
+            // Obtener los clientes
+            List<VentasClientesHabitacion> listaClientes = repositorioVentasClientesHabitacion
+                    .findByVentaId(venta.getId_venta());
+
+            // Imprimir el ticket
+            TicketPrinter.imprimirTicketVentaRealizada(venta, ticket, encargado, listaClientes, false);
+
+            return "✅ Copia de ticket impresa correctamente.";
+
+        } catch (Exception e) {
+            System.err.println("Error al imprimir ticket de copia: " + e.getMessage());
+            return "❌ Error inesperado al imprimir ticket.";
+        }
+    }
+
     private List<Habitaciones> obtenerHabitaciones() {
         return servicioHabitaciones.getHabitaciones()
                 .stream()
@@ -679,11 +868,12 @@ public class IndexController {
         return obtenerVentas()
                 .stream()
                 .filter(venta -> (venta.getEstado_estadia().equals("SIN PROBLEMAS")
-                && !venta.getTipo_venta().equals("RESERVA CANCELADA")))
+                        && !venta.getTipo_venta().equals("RESERVA CANCELADA")))
                 .collect(Collectors.toList());
     }
 
     public LocalDateTime parseStringToLocalDateTime(String fechaStr) {
         return LocalDateTime.parse(fechaStr);
     }
+
 }
