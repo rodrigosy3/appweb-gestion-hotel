@@ -1,0 +1,234 @@
+2025-06-15T11:59:15.721-05:00  WARN 46296 --- [appHotel] [http-nio-3000-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:01:37.330-05:00  WARN 46296 --- [appHotel] [http-nio-3000-exec-5] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:01:38.145-05:00  WARN 46296 --- [appHotel] [http-nio-3000-exec-9] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T11:59:17.284-05:00  INFO 31900 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : Starting AppHotelApplication using Java 17.0.12 with PID 31900 (C:\Users\ADMIN\Documents\AplicacionHotel\appHotel\appHotel\target\classes started by ADMIN in C:\Users\ADMIN\Documents\AplicacionHotel\appHotel\appHotel)
+2025-06-15T11:59:17.289-05:00  INFO 31900 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : No active profile set, falling back to 1 default profile: "default"
+2025-06-15T11:59:18.040-05:00  INFO 31900 --- [appHotel] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-15T11:59:18.161-05:00  INFO 31900 --- [appHotel] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 111 ms. Found 13 JPA repository interfaces.
+2025-06-15T11:59:18.993-05:00  INFO 31900 --- [appHotel] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 3000 (http)
+2025-06-15T11:59:19.017-05:00  INFO 31900 --- [appHotel] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-15T11:59:19.018-05:00  INFO 31900 --- [appHotel] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.40]
+2025-06-15T11:59:19.088-05:00  INFO 31900 --- [appHotel] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-06-15T11:59:19.089-05:00  INFO 31900 --- [appHotel] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1740 ms
+2025-06-15T11:59:19.256-05:00  INFO 31900 --- [appHotel] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-15T11:59:19.328-05:00  INFO 31900 --- [appHotel] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.13.Final
+2025-06-15T11:59:19.364-05:00  INFO 31900 --- [appHotel] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-15T11:59:19.687-05:00  INFO 31900 --- [appHotel] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-15T11:59:19.731-05:00  INFO 31900 --- [appHotel] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-06-15T11:59:19.842-05:00  INFO 31900 --- [appHotel] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@6785c9fa
+2025-06-15T11:59:19.844-05:00  INFO 31900 --- [appHotel] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-06-15T11:59:19.880-05:00  INFO 31900 --- [appHotel] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 3.47.2
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-15T11:59:20.781-05:00  INFO 31900 --- [appHotel] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-15T11:59:20.820-05:00  INFO 31900 --- [appHotel] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-15T11:59:21.182-05:00  INFO 31900 --- [appHotel] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-15T11:59:22.235-05:00  INFO 31900 --- [appHotel] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name appUserDetailsService
+2025-06-15T11:59:22.324-05:00  INFO 31900 --- [appHotel] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-06-15T11:59:22.860-05:00  INFO 31900 --- [appHotel] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 3000 (http) with context path '/'
+2025-06-15T11:59:22.877-05:00  INFO 31900 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : Started AppHotelApplication in 6.004 seconds (process running for 6.275)
+2025-06-15T11:59:23.173-05:00  INFO 31900 --- [appHotel] [http-nio-3000-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-15T11:59:23.174-05:00  INFO 31900 --- [appHotel] [http-nio-3000-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-06-15T11:59:23.175-05:00  INFO 31900 --- [appHotel] [http-nio-3000-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-06-15T11:59:25.046-05:00  WARN 31900 --- [appHotel] [http-nio-3000-exec-5] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:00:36.394-05:00  WARN 31900 --- [appHotel] [http-nio-3000-exec-9] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:00:38.982-05:00  WARN 31900 --- [appHotel] [http-nio-3000-exec-10] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:00:52.930-05:00  WARN 31900 --- [appHotel] [http-nio-3000-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:01:25.128-05:00  WARN 31900 --- [appHotel] [http-nio-3000-exec-3] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:01:34.111-05:00  WARN 31900 --- [appHotel] [http-nio-3000-exec-6] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:04:27.584-05:00  INFO 48908 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : Starting AppHotelApplication using Java 17.0.12 with PID 48908 (C:\Users\ADMIN\Documents\AplicacionHotel\appHotel\appHotel\target\classes started by ADMIN in C:\Users\ADMIN\Documents\AplicacionHotel\appHotel\appHotel)
+2025-06-15T12:04:27.588-05:00  INFO 48908 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : No active profile set, falling back to 1 default profile: "default"
+2025-06-15T12:04:28.495-05:00  INFO 48908 --- [appHotel] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-15T12:04:28.622-05:00  INFO 48908 --- [appHotel] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 117 ms. Found 13 JPA repository interfaces.
+2025-06-15T12:04:29.343-05:00  INFO 48908 --- [appHotel] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 3000 (http)
+2025-06-15T12:04:29.362-05:00  INFO 48908 --- [appHotel] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-15T12:04:29.363-05:00  INFO 48908 --- [appHotel] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.40]
+2025-06-15T12:04:29.448-05:00  INFO 48908 --- [appHotel] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-06-15T12:04:29.450-05:00  INFO 48908 --- [appHotel] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1802 ms
+2025-06-15T12:04:29.912-05:00  INFO 48908 --- [appHotel] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-15T12:04:30.002-05:00  INFO 48908 --- [appHotel] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.13.Final
+2025-06-15T12:04:30.053-05:00  INFO 48908 --- [appHotel] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-15T12:04:30.459-05:00  INFO 48908 --- [appHotel] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-15T12:04:30.521-05:00  INFO 48908 --- [appHotel] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-06-15T12:04:30.656-05:00  INFO 48908 --- [appHotel] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@1f42366
+2025-06-15T12:04:30.658-05:00  INFO 48908 --- [appHotel] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-06-15T12:04:30.702-05:00  INFO 48908 --- [appHotel] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 3.47.2
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-15T12:04:31.834-05:00  INFO 48908 --- [appHotel] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-15T12:04:31.874-05:00  INFO 48908 --- [appHotel] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-15T12:04:32.231-05:00  INFO 48908 --- [appHotel] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-15T12:04:33.356-05:00  INFO 48908 --- [appHotel] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name appUserDetailsService
+2025-06-15T12:04:33.451-05:00  INFO 48908 --- [appHotel] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-06-15T12:04:34.044-05:00  INFO 48908 --- [appHotel] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 3000 (http) with context path '/'
+2025-06-15T12:04:34.059-05:00  INFO 48908 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : Started AppHotelApplication in 6.973 seconds (process running for 7.67)
+2025-06-15T12:04:34.535-05:00  INFO 48908 --- [appHotel] [http-nio-3000-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-15T12:04:34.536-05:00  INFO 48908 --- [appHotel] [http-nio-3000-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-06-15T12:04:34.541-05:00  INFO 48908 --- [appHotel] [http-nio-3000-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2025-06-15T12:04:36.379-05:00  WARN 48908 --- [appHotel] [http-nio-3000-exec-5] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:04:37.172-05:00  WARN 48908 --- [appHotel] [http-nio-3000-exec-2] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:04:40.306-05:00  WARN 48908 --- [appHotel] [http-nio-3000-exec-5] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:04:41.516-05:00  WARN 48908 --- [appHotel] [http-nio-3000-exec-2] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:04:44.527-05:00  WARN 48908 --- [appHotel] [http-nio-3000-exec-2] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:06:48.721-05:00  INFO 53352 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : Starting AppHotelApplication using Java 17.0.12 with PID 53352 (C:\Users\ADMIN\Documents\AplicacionHotel\appHotel\appHotel\target\classes started by ADMIN in C:\Users\ADMIN\Documents\AplicacionHotel\appHotel\appHotel)
+2025-06-15T12:06:48.725-05:00  INFO 53352 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : No active profile set, falling back to 1 default profile: "default"
+2025-06-15T12:06:49.632-05:00  INFO 53352 --- [appHotel] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-15T12:06:49.842-05:00  INFO 53352 --- [appHotel] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 192 ms. Found 13 JPA repository interfaces.
+2025-06-15T12:06:50.652-05:00  INFO 53352 --- [appHotel] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 3000 (http)
+2025-06-15T12:06:50.673-05:00  INFO 53352 --- [appHotel] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-15T12:06:50.675-05:00  INFO 53352 --- [appHotel] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.40]
+2025-06-15T12:06:50.759-05:00  INFO 53352 --- [appHotel] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-06-15T12:06:50.760-05:00  INFO 53352 --- [appHotel] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1992 ms
+2025-06-15T12:06:50.950-05:00  INFO 53352 --- [appHotel] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-15T12:06:51.036-05:00  INFO 53352 --- [appHotel] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.13.Final
+2025-06-15T12:06:51.096-05:00  INFO 53352 --- [appHotel] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-15T12:06:51.435-05:00  INFO 53352 --- [appHotel] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-15T12:06:51.472-05:00  INFO 53352 --- [appHotel] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-06-15T12:06:51.565-05:00  INFO 53352 --- [appHotel] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@4dd1548e
+2025-06-15T12:06:51.567-05:00  INFO 53352 --- [appHotel] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-06-15T12:06:51.610-05:00  INFO 53352 --- [appHotel] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 3.47.2
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-15T12:06:52.811-05:00  INFO 53352 --- [appHotel] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-15T12:06:52.850-05:00  INFO 53352 --- [appHotel] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-15T12:06:53.192-05:00  INFO 53352 --- [appHotel] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-15T12:06:54.549-05:00  INFO 53352 --- [appHotel] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name appUserDetailsService
+2025-06-15T12:06:54.637-05:00  INFO 53352 --- [appHotel] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-06-15T12:06:55.286-05:00  INFO 53352 --- [appHotel] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 3000 (http) with context path '/'
+2025-06-15T12:06:55.298-05:00  INFO 53352 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : Started AppHotelApplication in 7.25 seconds (process running for 7.637)
+2025-06-15T12:06:55.617-05:00  INFO 53352 --- [appHotel] [http-nio-3000-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-15T12:06:55.618-05:00  INFO 53352 --- [appHotel] [http-nio-3000-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-06-15T12:06:55.620-05:00  INFO 53352 --- [appHotel] [http-nio-3000-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-06-15T12:06:57.269-05:00  WARN 53352 --- [appHotel] [http-nio-3000-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:06:59.088-05:00  WARN 53352 --- [appHotel] [http-nio-3000-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:07:02.985-05:00  WARN 53352 --- [appHotel] [http-nio-3000-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:07:27.406-05:00  WARN 53352 --- [appHotel] [http-nio-3000-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:07:30.833-05:00  WARN 53352 --- [appHotel] [http-nio-3000-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:09:30.662-05:00  INFO 44796 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : Starting AppHotelApplication using Java 17.0.12 with PID 44796 (C:\Users\ADMIN\Documents\AplicacionHotel\appHotel\appHotel\target\classes started by ADMIN in C:\Users\ADMIN\Documents\AplicacionHotel\appHotel\appHotel)
+2025-06-15T12:09:30.665-05:00  INFO 44796 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : No active profile set, falling back to 1 default profile: "default"
+2025-06-15T12:09:31.576-05:00  INFO 44796 --- [appHotel] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-15T12:09:31.694-05:00  INFO 44796 --- [appHotel] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 108 ms. Found 13 JPA repository interfaces.
+2025-06-15T12:09:32.649-05:00  INFO 44796 --- [appHotel] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 3000 (http)
+2025-06-15T12:09:32.685-05:00  INFO 44796 --- [appHotel] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-15T12:09:32.687-05:00  INFO 44796 --- [appHotel] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.40]
+2025-06-15T12:09:32.806-05:00  INFO 44796 --- [appHotel] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-06-15T12:09:32.808-05:00  INFO 44796 --- [appHotel] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2086 ms
+2025-06-15T12:09:33.128-05:00  INFO 44796 --- [appHotel] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-15T12:09:33.230-05:00  INFO 44796 --- [appHotel] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.13.Final
+2025-06-15T12:09:33.292-05:00  INFO 44796 --- [appHotel] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-15T12:09:33.755-05:00  INFO 44796 --- [appHotel] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-15T12:09:33.812-05:00  INFO 44796 --- [appHotel] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-06-15T12:09:33.929-05:00  INFO 44796 --- [appHotel] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@1f42366
+2025-06-15T12:09:33.932-05:00  INFO 44796 --- [appHotel] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-06-15T12:09:33.983-05:00  INFO 44796 --- [appHotel] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 3.47.2
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-15T12:09:35.251-05:00  INFO 44796 --- [appHotel] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-15T12:09:35.292-05:00  INFO 44796 --- [appHotel] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-15T12:09:35.712-05:00  INFO 44796 --- [appHotel] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-15T12:09:37.384-05:00  INFO 44796 --- [appHotel] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name appUserDetailsService
+2025-06-15T12:09:37.489-05:00  INFO 44796 --- [appHotel] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-06-15T12:09:38.213-05:00  INFO 44796 --- [appHotel] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 3000 (http) with context path '/'
+2025-06-15T12:09:38.232-05:00  INFO 44796 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : Started AppHotelApplication in 8.013 seconds (process running for 8.374)
+2025-06-15T12:09:38.568-05:00  INFO 44796 --- [appHotel] [http-nio-3000-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-15T12:09:38.569-05:00  INFO 44796 --- [appHotel] [http-nio-3000-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-06-15T12:09:38.572-05:00  INFO 44796 --- [appHotel] [http-nio-3000-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-06-15T12:09:40.582-05:00  WARN 44796 --- [appHotel] [http-nio-3000-exec-5] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:09:41.300-05:00  WARN 44796 --- [appHotel] [http-nio-3000-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:09:49.180-05:00  WARN 44796 --- [appHotel] [http-nio-3000-exec-9] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:11:06.091-05:00  INFO 50588 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : Starting AppHotelApplication using Java 17.0.12 with PID 50588 (C:\Users\ADMIN\Documents\AplicacionHotel\appHotel\appHotel\target\classes started by ADMIN in C:\Users\ADMIN\Documents\AplicacionHotel\appHotel\appHotel)
+2025-06-15T12:11:06.094-05:00  INFO 50588 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : No active profile set, falling back to 1 default profile: "default"
+2025-06-15T12:11:06.940-05:00  INFO 50588 --- [appHotel] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-15T12:11:07.044-05:00  INFO 50588 --- [appHotel] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 93 ms. Found 13 JPA repository interfaces.
+2025-06-15T12:11:07.672-05:00  INFO 50588 --- [appHotel] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 3000 (http)
+2025-06-15T12:11:07.722-05:00  INFO 50588 --- [appHotel] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-15T12:11:07.724-05:00  INFO 50588 --- [appHotel] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.40]
+2025-06-15T12:11:07.863-05:00  INFO 50588 --- [appHotel] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-06-15T12:11:07.865-05:00  INFO 50588 --- [appHotel] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1725 ms
+2025-06-15T12:11:08.125-05:00  INFO 50588 --- [appHotel] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-15T12:11:08.197-05:00  INFO 50588 --- [appHotel] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.13.Final
+2025-06-15T12:11:08.230-05:00  INFO 50588 --- [appHotel] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-15T12:11:08.484-05:00  INFO 50588 --- [appHotel] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-15T12:11:08.519-05:00  INFO 50588 --- [appHotel] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-06-15T12:11:08.615-05:00  INFO 50588 --- [appHotel] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@63cf578f
+2025-06-15T12:11:08.617-05:00  INFO 50588 --- [appHotel] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-06-15T12:11:08.651-05:00  INFO 50588 --- [appHotel] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 3.47.2
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-15T12:11:09.537-05:00  INFO 50588 --- [appHotel] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-15T12:11:09.592-05:00  INFO 50588 --- [appHotel] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-15T12:11:10.129-05:00  INFO 50588 --- [appHotel] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-15T12:11:11.150-05:00  INFO 50588 --- [appHotel] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name appUserDetailsService
+2025-06-15T12:11:11.228-05:00  INFO 50588 --- [appHotel] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-06-15T12:11:11.926-05:00  INFO 50588 --- [appHotel] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 3000 (http) with context path '/'
+2025-06-15T12:11:11.939-05:00  INFO 50588 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : Started AppHotelApplication in 6.225 seconds (process running for 6.541)
+2025-06-15T12:11:12.209-05:00  INFO 50588 --- [appHotel] [http-nio-3000-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-15T12:11:12.210-05:00  INFO 50588 --- [appHotel] [http-nio-3000-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-06-15T12:11:12.212-05:00  INFO 50588 --- [appHotel] [http-nio-3000-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2025-06-15T12:11:14.348-05:00  WARN 50588 --- [appHotel] [http-nio-3000-exec-5] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:11:16.002-05:00  WARN 50588 --- [appHotel] [http-nio-3000-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:11:19.203-05:00  WARN 50588 --- [appHotel] [http-nio-3000-exec-5] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:12:53.111-05:00  INFO 53416 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : Starting AppHotelApplication using Java 17.0.12 with PID 53416 (C:\Users\ADMIN\Documents\AplicacionHotel\appHotel\appHotel\target\classes started by ADMIN in C:\Users\ADMIN\Documents\AplicacionHotel\appHotel\appHotel)
+2025-06-15T12:12:53.117-05:00  INFO 53416 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : No active profile set, falling back to 1 default profile: "default"
+2025-06-15T12:12:53.956-05:00  INFO 53416 --- [appHotel] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-15T12:12:54.080-05:00  INFO 53416 --- [appHotel] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 107 ms. Found 13 JPA repository interfaces.
+2025-06-15T12:12:54.844-05:00  INFO 53416 --- [appHotel] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 3000 (http)
+2025-06-15T12:12:54.858-05:00  INFO 53416 --- [appHotel] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-15T12:12:54.860-05:00  INFO 53416 --- [appHotel] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.40]
+2025-06-15T12:12:54.940-05:00  INFO 53416 --- [appHotel] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-06-15T12:12:54.941-05:00  INFO 53416 --- [appHotel] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1748 ms
+2025-06-15T12:12:55.120-05:00  INFO 53416 --- [appHotel] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-15T12:12:55.190-05:00  INFO 53416 --- [appHotel] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.13.Final
+2025-06-15T12:12:55.239-05:00  INFO 53416 --- [appHotel] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-15T12:12:55.516-05:00  INFO 53416 --- [appHotel] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-15T12:12:55.548-05:00  INFO 53416 --- [appHotel] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-06-15T12:12:55.670-05:00  INFO 53416 --- [appHotel] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.sqlite.jdbc4.JDBC4Connection@64ec1459
+2025-06-15T12:12:55.673-05:00  INFO 53416 --- [appHotel] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-06-15T12:12:55.725-05:00  INFO 53416 --- [appHotel] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 3.47.2
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-15T12:12:56.618-05:00  INFO 53416 --- [appHotel] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-15T12:12:56.664-05:00  INFO 53416 --- [appHotel] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-15T12:12:57.008-05:00  INFO 53416 --- [appHotel] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-15T12:12:58.095-05:00  INFO 53416 --- [appHotel] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name appUserDetailsService
+2025-06-15T12:12:58.184-05:00  INFO 53416 --- [appHotel] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2025-06-15T12:12:58.807-05:00  INFO 53416 --- [appHotel] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 3000 (http) with context path '/'
+2025-06-15T12:12:58.819-05:00  INFO 53416 --- [appHotel] [main] com.hotel.appHotel.AppHotelApplication   : Started AppHotelApplication in 6.202 seconds (process running for 6.522)
+2025-06-15T12:12:59.093-05:00  INFO 53416 --- [appHotel] [http-nio-3000-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-15T12:12:59.093-05:00  INFO 53416 --- [appHotel] [http-nio-3000-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-06-15T12:12:59.095-05:00  INFO 53416 --- [appHotel] [http-nio-3000-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-06-15T12:13:00.690-05:00  WARN 53416 --- [appHotel] [http-nio-3000-exec-5] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:13:05.405-05:00  WARN 53416 --- [appHotel] [http-nio-3000-exec-1] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-15T12:13:17.998-05:00  WARN 53416 --- [appHotel] [http-nio-3000-exec-8] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-14T19:01:39.994-05:00  WARN 53416 --- [appHotel] [http-nio-3000-exec-4] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]
+2025-06-14T19:01:44.839-05:00  WARN 53416 --- [appHotel] [http-nio-3000-exec-8] .w.s.m.s.DefaultHandlerExceptionResolver : Resolved [org.springframework.web.HttpRequestMethodNotSupportedException: Request method 'GET' is not supported]

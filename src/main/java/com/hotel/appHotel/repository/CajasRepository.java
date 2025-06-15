@@ -17,7 +17,7 @@ public interface CajasRepository extends JpaRepository<Cajas, Long> {
     @Query("SELECT c FROM Cajas c WHERE c.eliminado = false AND date(c.fechaRegistro) = date(:fecha)")
     List<Cajas> obtenerCajasDelDia(@Param("fecha") String fecha);
 
-    @Query("SELECT c FROM Cajas c WHERE c.eliminado = false AND c.venta.id_venta = :idVenta")
+    @Query("SELECT c FROM Cajas c WHERE c.eliminado = false AND c.venta.id_venta = :idVenta ORDER BY c.idCaja DESC")
     List<Cajas> obtenerCajasPorVenta(@Param("idVenta") Long idVenta);
 
     @Query("SELECT c FROM Cajas c WHERE c.eliminado = false ORDER BY c.idCaja DESC")

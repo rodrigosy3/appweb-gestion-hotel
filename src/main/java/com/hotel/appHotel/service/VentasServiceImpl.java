@@ -55,4 +55,15 @@ public class VentasServiceImpl implements VentasService {
     public Page<Ventas> getVentasNoEliminadas(Pageable pageable) {
         return repositorio.findByEliminadoFalseDesc(pageable);
     }
+
+    @Override
+    public List<Ventas> getVentasActivas() {
+        return repositorio.findVentasActivas();
+    }
+
+    @Override
+    public List<Ventas> getVentasNoEliminadas() {
+        return repositorio.findVentasNoEliminadas();
+    }
+
 }

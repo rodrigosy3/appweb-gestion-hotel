@@ -39,23 +39,11 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock(); // Llamar inmediatamente para evitar retrasos
 
-const btn_editar_1 = document.getElementById("btn-editar-1");
-const btn_editar_2 = document.getElementById("btn-editar-2");
 
-// Leer el parámetro fecha de la URL
+
+// // Leer el parámetro fecha de la URL
 const params_2 = new URLSearchParams(window.location.search);
 const fechaURL_2 = params_2.get("fechaFiltro");
-
-if (btn_editar_1 && btn_editar_2) {
-  // Si hay una fecha en la URL, calcular cuántos días se ha desplazado desde hoy
-  if (fechaURL_2) {
-    btn_editar_1.setAttribute("disabled", "true");
-    btn_editar_2.setAttribute("disabled", "true");
-  } else {
-    btn_editar_1.removeAttribute("disabled");
-    btn_editar_2.removeAttribute("disabled");
-  }
-}
 
 
 const btnTicketCaja = document.getElementById("btnTicketCaja");
@@ -64,7 +52,7 @@ if (btnTicketCaja) {
   btnTicketCaja.addEventListener("click", function (e) {
     e.preventDefault(); // Evita redirección
 
-    let url = "/cajas/ticket-caja-por-fecha";
+    let url = "/ticket-caja-por-fecha";
     if (fechaURL_2) {
       url += "?fecha=" + encodeURIComponent(fechaURL_2);
     }

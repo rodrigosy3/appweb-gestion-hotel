@@ -215,25 +215,34 @@ document.addEventListener("DOMContentLoaded", function () {
     const resumenFechaSalida = document.getElementById("fechaSalidaResumen");
     const resumenFechaSalidaValor = document.getElementById("fechaSalidaResumenValor");
     const resumenDiasAlojamiento = document.getElementById("diasAlojamientoResumen");
+    const resumenUltimaFecha = document.getElementById("ultimaFecha");
 
     const resumenSelectServicio = document.getElementById("selectTipoServicioResumen");
     const resumenSelectEstado = document.getElementById("selectEstadoResumen");
 
     const resumenDescuento = document.getElementById("descuentoResumen");
-    const resumenMontoAdelanto = document.getElementById("montoAdelantoResumen");
+    const resumenMontoTotalCobrado = document.getElementById("montoTotalCobradoResumen");
 
     const resumenMontoTotal = document.getElementById("montoTotalResumen");
     const resumenMontoTotalValor = document.getElementById("montoTotalResumenValor");
 
-    const resumenPorCobrar = document.getElementById("montoPorCobrarResumen");
+    const resumenMontoHabitacion = document.getElementById("montoHabitacionResumen");
     const resumenVuelto = document.getElementById("montoVueltoResumen");
 
     const precioInput = document.getElementById("habitacionPrecio");
     const tablaFechasBody = document.getElementById("tableBodyFechasAlojamiento");
 
-    const fechaActual = new Date();
-    let fechaEntradaValor;
+    const precio_habitacion = parseFloat(precioInput.getAttribute("data-precio") || 0);
 
+    let fechaEntradaValor;
+    let auxUltimaFecha = "";
+
+    if (resumenSelectEstado !== null && resumenSelectEstado.value === "POR COBRAR") {
+        resumenMontoTotalCobrado.value = 0;
+    }
+    if (!(resumenUltimaFecha.value === "" || resumenUltimaFecha.value === null)) {
+        auxUltimaFecha = resumenUltimaFecha.value;
+    }
     // La fecha de entrada vacía tomará la del resumen o la actual
     if (idVentaInput) {
         if (idVentaInput.value !== null && idVentaInput.value.trim() !== "") {
@@ -242,38 +251,42 @@ document.addEventListener("DOMContentLoaded", function () {
             resumenFechaEntrada.value = fechaParseString(fechaEntradaValor);
             resumenFechaSalida.value = fechaParseString(new Date(resumenFechaSalidaValor.value));
         } else {
-            fechaEntradaValor = new Date(fechaActual);
+            fechaEntradaValor = new Date();
             resumenFechaEntrada.value = fechaParseString(fechaEntradaValor);
         }
 
-        manejarBloqueoServicio();
+        manejarBloqueoServicio(false);
     }
 
     // Bloquear servicio si hay más de un día
-    function manejarBloqueoServicio() {
-        if (parseInt(resumenDiasAlojamiento.value) < 2) {
+    function manejarBloqueoServicio(huboCambio) {
+        let dias = parseInt(resumenDiasAlojamiento.value || 1);
+        dias = dias < 0 ? (dias * -1) : (dias === 0) ? 1 : dias;
+        resumenDiasAlojamiento.value = dias;
+
+        if (dias < 2) {
             resumenSelectServicio.value = "COMPLETO";
             resumenSelectServicio.setAttribute("disabled", true);
         } else {
             resumenSelectServicio.removeAttribute("disabled");
         }
 
-        actualizarFilas();
+        actualizarResumen(huboCambio);
     }
 
     // Manejar el cambio de días de alojamiento
     function actualizarFilas() {
-        const dias = parseInt(resumenDiasAlojamiento.value) || 1;
+        const dias = parseInt(resumenDiasAlojamiento.value || 1);
         tablaFechasBody.innerHTML = ""; // Limpiar la tabla antes de reconstruirla
-        let tipo_servicio = resumenSelectServicio.options[resumenSelectServicio.selectedIndex];
+        let tipo_servicio = resumenSelectServicio.value;
 
         let fechaBase = new Date(fechaEntradaValor);
 
         for (let i = 1; i <= dias; i++) {
             let nuevaFila = document.createElement("tr");
-            let servicio = (i === dias && tipo_servicio.getAttribute("data-tipo") === "MEDIO") ? "MEDIO" : "COMPLETO";
+            let servicio = (i === dias && tipo_servicio === "MEDIO") ? "MEDIO" : "COMPLETO";
 
-            let fechaSalida = calcularFechaSalida(fechaBase, servicio, fechaEntradaValor);
+            let fechaSalida = calcularFechaSalida(fechaBase, servicio, fechaEntradaValor, (i === 1));
 
             nuevaFila.innerHTML = `
                 <td class="align-middle text-center py-2">
@@ -302,116 +315,163 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
 
             tablaFechasBody.appendChild(nuevaFila);
-
             fechaBase = new Date(fechaSalida);
         }
-
-        actualizarResumen();
     }
 
-    function actualizarResumen() {
-        let tipo_servicio = resumenSelectServicio.options[resumenSelectServicio.selectedIndex];
-        let dias = parseInt(resumenDiasAlojamiento.value) || 1;
+    function actualizarResumen(cambiosEnServicio) {
+        let servicio = resumenSelectServicio.value;
+
+        let dias = parseInt(resumenDiasAlojamiento.value || 1);
+        dias = dias < 0 ? (dias * -1) : (dias === 0) ? 1 : dias;
+        resumenDiasAlojamiento.value = dias;
 
         let fechaBase = new Date(fechaEntradaValor);
-        let fechaSalida = "";
+        let madrugada = fechaBase.getHours() <= 6 ? 1 : 0; // Si es madrugada, no cuenta el día completo
 
-        resumenFechaEntradaValor.value = fechaJsToJavaParseString(fechaEntradaValor);
+        resumenFechaEntradaValor.value = fechaJsToJavaParseString(new Date(fechaEntradaValor));
 
         if (dias > 1) {
-            if (tipo_servicio.getAttribute("data-tipo") == "COMPLETO") {
-                fechaBase.setDate(fechaBase.getDate() + dias);
+            if (servicio === "COMPLETO") {
+                fechaBase.setDate(fechaBase.getDate() + dias - madrugada);
                 fechaBase.setHours(12, 0, 0); // Medio día
             } else {
-                fechaBase.setDate(fechaBase.getDate() + dias);
+                fechaBase.setDate(fechaBase.getDate() + dias - madrugada - 1);
                 fechaBase.setHours(18, 0, 0); // 6 PM
             }
-
-            resumenFechaSalidaValor.value = fechaJsToJavaParseString(fechaBase);
-            fechaSalida = fechaParseString(fechaBase);
         } else {
-            resumenFechaSalidaValor.value = fechaJsToJavaParseString(calcularFechaSalida(fechaBase, "COMPLETO", fechaEntradaValor));
-            fechaSalida = fechaParseString(calcularFechaSalida(fechaBase, "COMPLETO", fechaEntradaValor));
+            fechaBase.setDate(fechaBase.getDate() + dias - madrugada);
+            fechaBase.setHours(12, 0, 0); // Medio día
         }
 
-        resumenFechaSalida.value = fechaSalida;
+        resumenFechaSalida.value = fechaParseString(fechaBase);
+        resumenFechaSalidaValor.value = fechaJsToJavaParseString(fechaBase);
         resumenMontoTotal.value = calcularMontoTotal(resumenSelectServicio, resumenDiasAlojamiento, 0, 0, precioInput);
         resumenMontoTotalValor.value = calcularMontoTotal(resumenSelectServicio, resumenDiasAlojamiento, 0, 0, precioInput);
 
-        let montoTotal = parseFloat(resumenMontoTotal.value) || 0;
-        let adelanto = parseFloat(resumenMontoAdelanto.value) || 0;
+        let fHoy = new Date();
+        let fSalida = new Date(fechaBase);
+        let esMismoDia = (fHoy.getDate() === fSalida.getDate()) && (fHoy.getMonth() === fSalida.getMonth()) && (fHoy.getFullYear() === fSalida.getFullYear());
+        let precio_estado = esMismoDia && (servicio === "MEDIO") ? (precio_habitacion / 2) : precio_habitacion;
+
         let descuento = parseFloat(resumenDescuento.value) || 0;
+        let totalCobrado = parseFloat(resumenMontoTotalCobrado.value) || 0;
+        let vuelto = 0;
 
-        resumenDescuento.value = descuento == 0 ? 0 : descuento;
-        resumenMontoAdelanto.value = adelanto == 0 ? 0 : adelanto;
-
-        if (montoTotal > (adelanto + descuento)) {
-            // Hay un monto pendiente de cobro
-            resumenPorCobrar.value = (montoTotal - adelanto - descuento).toFixed(2);
-            resumenVuelto.value = 0.0;
-
-            // Estilos
-            resumenPorCobrar.classList.add("bg-danger-subtle");
-            resumenPorCobrar.classList.remove("bg-success-subtle");
-
-            resumenVuelto.classList.remove("bg-success-subtle", "bg-danger-subtle");
+        if (cambiosEnServicio) {
+            totalCobrado = 0;
+            vuelto = -1;
         } else {
-            // Hay vuelto
-            resumenPorCobrar.value = 0.0;
-            resumenVuelto.value = (adelanto - montoTotal - descuento).toFixed(2);
-
-            // Estilos
-            resumenPorCobrar.classList.remove("bg-danger-subtle");
-            resumenPorCobrar.classList.add("bg-success-subtle");
-
-            resumenVuelto.classList.add("bg-success-subtle");
-            resumenVuelto.classList.remove("bg-danger-subtle");
+            totalCobrado = totalCobrado < 0 ? (totalCobrado * -1) : totalCobrado;
+            vuelto = totalCobrado - precio_estado;
         }
 
+        resumenDescuento.value = (descuento).toFixed(2);
+        resumenMontoTotalCobrado.value = totalCobrado;
+        resumenMontoHabitacion.value = precio_estado.toFixed(2);
 
-        if (resumenVuelto.value >= 0 && resumenPorCobrar.value == 0) {
-            resumenSelectEstado.value = "PAGADO";
-            // resumenSelectEstado.setAttribute("disabled", true);
-            resumenSelectEstado.style.backgroundColor = "#d4edda"; // verde claro
-        } else {
+        if (vuelto < 0) {
+            resumenVuelto.value = (0).toFixed(2);
+            resumenVuelto.classList.remove("bg-success-subtle", "fw-bold");
+
             resumenSelectEstado.value = "POR COBRAR";
-            // resumenSelectEstado.removeAttribute("disabled");
             resumenSelectEstado.style.backgroundColor = "#f8d7da"; // rojo claro
+            resumenMontoTotalCobrado.style.backgroundColor = "#f8d7da";
+        } else {
+            resumenVuelto.value = vuelto.toFixed(2);
+            resumenVuelto.classList.add("bg-success-subtle", "fw-bold");
+
+            resumenSelectEstado.value = "PAGADO";
+            resumenSelectEstado.style.backgroundColor = "#d4edda"; // verde claro
+            resumenMontoTotalCobrado.style.backgroundColor = "#d4edda";
         }
+
+        let nuevaUltimaFecha;
+
+        if (resumenUltimaFecha.value === "") {
+            // Primer cobro
+            nuevaUltimaFecha = new Date(fechaEntradaValor);
+        } else {
+            // Ya hubo cobros: sumamos un día desde la última fecha
+            nuevaUltimaFecha = new Date(resumenUltimaFecha.value);
+            nuevaUltimaFecha.setDate(nuevaUltimaFecha.getDate() + 1);
+            // Establecemos la hora
+            nuevaUltimaFecha.setHours(12, 0, 0); // Mediodía
+        }
+
+        let fUltimaFecha = new Date(resumenUltimaFecha.value);
+        let esDiaCobrado = false;
+
+        if ((fHoy.getDate() >= fUltimaFecha.getDate()) && (fHoy.getDate() <= nuevaUltimaFecha.getDate())) {
+            esDiaCobrado = true;
+            if (fHoy.getDate() === nuevaUltimaFecha.getDate() && fHoy.getHours() >= nuevaUltimaFecha.getHours()) {
+                esDiaCobrado = false;
+            }
+        }
+
+        console.log('fUltimaFecha.getDate() :>> ', fUltimaFecha.getDate(), '   fHoy.getDate() :>> ', fHoy.getDate(), '   nuevaUltimaFecha.getDate() :>> ', nuevaUltimaFecha.getDate());
+        console.log('fUltimaFecha.getHours() :>> ', fUltimaFecha.getHours(), '   fHoy.getHours() :>> ', fHoy.getHours(), '   nuevaUltimaFecha.getHours() :>> ', nuevaUltimaFecha.getHours());
+        console.log('fUltimaFecha.getMinutes() :>> ', fUltimaFecha.getMinutes(), '   fHoy.getMinutes() :>> ', fHoy.getMinutes(), '   nuevaUltimaFecha.getMinutes() :>> ', nuevaUltimaFecha.getMinutes());
+        console.log('esDiaCobrado :>> ', esDiaCobrado);
+
+        // Si está PAGADO, guardamos como nueva fecha
+        if (resumenSelectEstado.value === "PAGADO" && !esDiaCobrado) {
+            resumenUltimaFecha.value = fechaJsToJavaParseString(nuevaUltimaFecha);
+        } else {
+            resumenUltimaFecha.value = auxUltimaFecha; // Mantienes el anterior si no se pagó
+        }
+
+        // let auxFecha = new Date(fechaEntradaValor);
+        // let hoy = new Date();
+        // let diaTransucrridos = parseInt(auxFecha.getDate() - hoy.getDate());
+
+        // auxFecha.setDate(fechaEntradaValor.getDate() + diaTransucrridos - madrugada);
+        // auxFecha.setHours(12, 0, 0);
+
+        // if (resumenUltimaFecha.value === "") {
+        //     resumenUltimaFecha.value = fechaJsToJavaParseString(auxFecha);
+        //     console.log('resumenUltimaFecha.value :>> ', resumenUltimaFecha.value);
+        // } else {
+        //     if (resumenSelectEstado.value === "PAGADO") {
+        //         resumenUltimaFecha.value = fechaJsToJavaParseString(auxFecha);
+        //     } else {
+        //         resumenUltimaFecha.value = auxUltimaFecha;
+        //     }
+        // }
+
+        actualizarFilas();
     }
 
     // **Eventos**
     function actualizarSelect() {
-        let montoTotal = parseFloat(resumenMontoTotal.value) || 0;
-        let descuento = parseFloat(resumenDescuento.value) || 0;
+        let estado = resumenSelectEstado.options[resumenSelectEstado.selectedIndex];
+        resumenDescuento.value = (0).toFixed(2);
 
-        if (this.value === "PAGADO") {
-            resumenDescuento.value = 0; // Resetea el descuento al pagar
-            resumenMontoAdelanto.value = (montoTotal - descuento).toFixed(2);
-            this.style.backgroundColor = "#d4edda"; // verde claro
+        if (estado.value === "PAGADO") {
+            resumenMontoTotalCobrado.value = parseFloat(resumenMontoHabitacion.value);
+            resumenSelectEstado.style.backgroundColor = "#d4edda"; // verde claro
         } else {
-            resumenDescuento.value = 0; // Resetea el descuento al pagar
-            resumenMontoAdelanto.value = 0;
-            this.style.backgroundColor = "#f8d7da"; // rojo claro
+            resumenMontoTotalCobrado.value = 0;
+            resumenSelectEstado.style.backgroundColor = "#f8d7da"; // rojo claro
         }
 
-        actualizarResumen();
+        actualizarResumen(false);
     }
 
-    if (resumenFechaEntrada) {
-        resumenFechaEntrada.addEventListener("change", actualizarFilas);
-    }
+    // if (resumenFechaEntrada) {
+    //     resumenFechaEntrada.addEventListener("change", actualizarFilas);
+    // }
     if (resumenDiasAlojamiento) {
-        resumenDiasAlojamiento.addEventListener("input", manejarBloqueoServicio);
+        resumenDiasAlojamiento.addEventListener("input", () => manejarBloqueoServicio(true));
     }
     if (resumenSelectServicio) {
-        resumenSelectServicio.addEventListener("change", actualizarFilas);
+        resumenSelectServicio.addEventListener("change", () => actualizarResumen(true));
     }
     if (resumenDescuento) {
-        resumenDescuento.addEventListener("input", actualizarResumen);
+        resumenDescuento.addEventListener("input", () => actualizarResumen(false));
     }
-    if (resumenMontoAdelanto) {
-        resumenMontoAdelanto.addEventListener("input", actualizarResumen);
+    if (resumenMontoTotalCobrado) {
+        resumenMontoTotalCobrado.addEventListener("change", () => actualizarResumen(false));
     }
     if (resumenSelectEstado) {
         resumenSelectEstado.addEventListener("change", actualizarSelect);
@@ -668,23 +728,27 @@ document.addEventListener("DOMContentLoaded", function () {
     const reservaResumenFechaEntradaValor = document.getElementById("reservafechaEntradaResumenValor");
     const reservaResumenFechaSalida = document.getElementById("reservafechaSalidaResumen");
     const reservaResumenFechaSalidaValor = document.getElementById("reservafechaSalidaResumenValor");
+
     const reservaResumenDiasAlojamiento = document.getElementById("reservatiempoEstadiaResumen");
+    const reservaUltimaFecha = document.getElementById("reservaultimaFecha");
 
     const reservaResumenSelectServicio = document.getElementById("reservaselectTipoServicioResumen");
     const reservaResumenSelectEstado = document.getElementById("reservaselectEstadoResumen");
 
     const reservaResumenDescuento = document.getElementById("reservadescuentoResumen");
-    const reservaResumenMontoAdelanto = document.getElementById("reservamontoAdelantoResumen");
+    // const reservaResumenMontoTotalCobrado = document.getElementById("reservamontoTotalCobradoResumen");
+
     const reservaResumenMontoTotal = document.getElementById("reservamontoTotalResumen");
     const reservaResumenMontoTotalValor = document.getElementById("reservamontoTotalResumenValor");
 
-    const reservaResumenPorCobrar = document.getElementById("reservamontoPorCobrarResumen");
-    const reservaResumenVuelto = document.getElementById("reservamontoVueltoResumen");
+    const reservaResumenMontoHabitacion = document.getElementById("reservamontoHabitacionResumen");
+    // const reservaResumenVuelto = document.getElementById("reservamontoVueltoResumen");
 
     const reservaPrecioInput = document.getElementById("habitacionPrecio");
     const reservaTablaFechasBody = document.getElementById("reservatableBodyFechasAlojamiento");
 
-    let reservafechaActual = new Date();
+    const reserva_precio_habitacion = parseFloat(reservaPrecioInput.getAttribute("data-precio") || 0);
+
     let reservaFechaEntradaValor;
 
     // La fecha de entrada vacía tomará la del resumen o la actual
@@ -695,7 +759,7 @@ document.addEventListener("DOMContentLoaded", function () {
             reservaResumenFechaEntrada.value = reservaFechaEntradaValor;
             reservaResumenFechaSalida.value = fechaParseString(new Date(reservaResumenFechaSalidaValor.value));
         } else {
-            reservaFechaEntradaValor = fechaJavaToJsToDatetimelocal(new Date(reservafechaActual));
+            reservaFechaEntradaValor = fechaJavaToJsToDatetimelocal(new Date());
             reservaResumenFechaEntrada.value = reservaFechaEntradaValor;
         }
 
@@ -704,29 +768,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Bloquear servicio si hay más de un día
     function reservamanejarBloqueoServicio() {
-        if (parseInt(reservaResumenDiasAlojamiento.value) < 2) {
+        let dias = parseInt(reservaResumenDiasAlojamiento.value || 1);
+        dias = dias < 0 ? (dias * -1) : (dias === 0) ? 1 : dias;
+        reservaResumenDiasAlojamiento.value = dias;
+
+        if (dias < 2) {
             reservaResumenSelectServicio.value = "COMPLETO";
             reservaResumenSelectServicio.setAttribute("disabled", true);
         } else {
             reservaResumenSelectServicio.removeAttribute("disabled");
         }
 
-        reservaactualizarFilas();
+        reservaactualizarResumen();
     }
 
     // Manejar el cambio de días de alojamiento
     function reservaactualizarFilas() {
-        const dias = parseInt(reservaResumenDiasAlojamiento.value) || 1;
+        const dias = parseInt(reservaResumenDiasAlojamiento.value || 1);
         reservaTablaFechasBody.innerHTML = ""; // Limpiar la tabla antes de reconstruirla
-        let tipo_servicio = reservaResumenSelectServicio.options[reservaResumenSelectServicio.selectedIndex];
+        let tipo_servicio = reservaResumenSelectServicio.value;
 
         let fechaBase = new Date(reservaResumenFechaEntrada.value);
 
         for (let i = 1; i <= dias; i++) {
             let nuevaFila = document.createElement("tr");
-            let servicio = (i === dias && tipo_servicio.getAttribute("data-tipo") === "MEDIO") ? "MEDIO" : "COMPLETO";
+            let servicio = (i === dias && tipo_servicio === "MEDIO") ? "MEDIO" : "COMPLETO";
 
-            let fechaSalida = calcularFechaSalida(fechaBase, servicio, reservaFechaEntradaValor);
+            let fechaSalida = calcularFechaSalida(fechaBase, servicio, fechaBase, (i === 1));
 
             nuevaFila.innerHTML = `
                             <td class="align-middle text-center py-2">
@@ -755,122 +823,128 @@ document.addEventListener("DOMContentLoaded", function () {
                         `;
 
             reservaTablaFechasBody.appendChild(nuevaFila);
-
             fechaBase = new Date(fechaSalida);
         }
-
-        reservaactualizarResumen();
     }
 
     // **Actualizar el resumen final**
     function reservaactualizarResumen() {
-        let tipo_servicio = reservaResumenSelectServicio.options[reservaResumenSelectServicio.selectedIndex];
-        let fechaEntrada = new Date(reservaResumenFechaEntrada.value);
+        let servicio = reservaResumenSelectServicio.value;
 
-        let fechaBase = new Date(fechaEntrada);
-        let fechaSalida = "";
+        let dias = parseInt(reservaResumenDiasAlojamiento.value || 1);
+        dias = dias < 0 ? (dias * -1) : (dias === 0) ? 1 : dias;
+        reservaResumenDiasAlojamiento.value = dias;
 
-        let dias = parseInt(reservaResumenDiasAlojamiento.value) || 1;
+        let fechaBase = new Date(reservaResumenFechaEntrada.value);
+        let madrugada = fechaBase.getHours() <= 6 ? 1 : 0; // Si es madrugada, no cuenta el día completo
 
-        reservaResumenFechaEntradaValor.value = fechaJsToJavaParseString(new Date(fechaEntrada));
+        reservaResumenFechaEntradaValor.value = fechaJsToJavaParseString(new Date(fechaBase));
 
         if (dias > 1) {
-            if (tipo_servicio.getAttribute("data-tipo") == "COMPLETO") {
-                fechaBase.setDate(fechaBase.getDate() + dias);
+            if (servicio == "COMPLETO") {
+                fechaBase.setDate(fechaBase.getDate() + dias - madrugada);
                 fechaBase.setHours(12, 0, 0); // Medio día
             } else {
-                fechaBase.setDate(fechaBase.getDate() + dias);
+                fechaBase.setDate(fechaBase.getDate() + dias - madrugada - 1);
                 fechaBase.setHours(18, 0, 0); // 6 PM
             }
-
-            reservaResumenFechaSalidaValor.value = fechaJsToJavaParseString(fechaBase);
-            fechaSalida = fechaParseString(fechaBase);
-        } else if (dias === 1) {
-            reservaResumenFechaSalidaValor.value = fechaJsToJavaParseString(calcularFechaSalida(fechaBase, "COMPLETO", reservaFechaEntradaValor));
-            fechaSalida = fechaParseString(calcularFechaSalida(fechaBase, "COMPLETO", new Date(reservaResumenFechaEntrada.value)));
         } else {
-            alert("La cantidad de días de alojamiento no puede ser menor a 1.");
+            fechaBase.setDate(fechaBase.getDate() + dias - madrugada);
+            fechaBase.setHours(12, 0, 0); // Medio día
         }
 
-        reservaResumenFechaSalida.value = fechaSalida;
+        reservaResumenFechaSalida.value = fechaParseString(fechaBase);
+        reservaResumenFechaSalidaValor.value = fechaJsToJavaParseString(fechaBase);
         reservaResumenMontoTotal.value = calcularMontoTotal(reservaResumenSelectServicio, reservaResumenDiasAlojamiento, 0, 0, reservaPrecioInput);
         reservaResumenMontoTotalValor.value = calcularMontoTotal(reservaResumenSelectServicio, reservaResumenDiasAlojamiento, 0, 0, reservaPrecioInput);
 
-        let montoTotal = parseFloat(reservaResumenMontoTotal.value) || 0;
-        let adelanto = parseFloat(reservaResumenMontoAdelanto.value) || 0;
+        let fHoy = new Date();
+        let fSalida = new Date(fechaBase);
+        let esMismoDia = (fHoy.getDate() === fSalida.getDate()) && (fHoy.getMonth() === fSalida.getMonth()) && (fHoy.getFullYear() === fSalida.getFullYear());
+        let precio_estado = esMismoDia && (servicio === "MEDIO") ? (reserva_precio_habitacion / 2) : reserva_precio_habitacion;
+
         let descuento = parseFloat(reservaResumenDescuento.value) || 0;
-        reservaResumenDescuento.value = descuento == 0 ? 0 : descuento;
-        reservaResumenMontoAdelanto.value = adelanto == 0 ? 0 : adelanto;
 
-        if (montoTotal > (adelanto + descuento)) {
-            // Hay un monto pendiente de cobro
-            reservaResumenPorCobrar.value = (adelanto - montoTotal - descuento).toFixed(2);
-            reservaResumenVuelto.value = 0.0;
+        reservaResumenDescuento.value = (descuento).toFixed(2);
+        reservaResumenMontoHabitacion.value = precio_estado.toFixed(2);
 
-            // Estilos
-            reservaResumenPorCobrar.classList.add("bg-danger-subtle");
-            reservaResumenPorCobrar.classList.remove("bg-success-subtle");
+        reservaactualizarFilas();
 
-            reservaResumenVuelto.classList.remove("bg-success-subtle", "bg-danger-subtle");
-        } else {
-            // Hay vuelto
-            reservaResumenPorCobrar.value = 0.0;
-            reservaResumenVuelto.value = (adelanto - montoTotal - descuento).toFixed(2);
+        // let montoTotal = parseFloat(reservaResumenMontoTotal.value) || 0;
+        // let adelanto = parseFloat(reservaResumenMontoAdelanto.value) || 0;
+        // let descuento = parseFloat(reservaResumenDescuento.value) || 0;
+        // reservaResumenDescuento.value = descuento == 0 ? 0 : descuento;
+        // reservaResumenMontoAdelanto.value = adelanto == 0 ? 0 : adelanto;
 
-            // Estilos
-            reservaResumenPorCobrar.classList.remove("bg-danger-subtle");
-            reservaResumenPorCobrar.classList.add("bg-success-subtle");
+        // if (montoTotal > (adelanto + descuento)) {
+        //     // Hay un monto pendiente de cobro
+        //     reservaResumenPorCobrar.value = (adelanto - montoTotal - descuento).toFixed(2);
+        //     reservaResumenVuelto.value = 0.0;
 
-            reservaResumenVuelto.classList.add("bg-success-subtle");
-            reservaResumenVuelto.classList.remove("bg-danger-subtle");
-        }
+        //     // Estilos
+        //     reservaResumenPorCobrar.classList.add("bg-danger-subtle");
+        //     reservaResumenPorCobrar.classList.remove("bg-success-subtle");
+
+        //     reservaResumenVuelto.classList.remove("bg-success-subtle", "bg-danger-subtle");
+        // } else {
+        //     // Hay vuelto
+        //     reservaResumenPorCobrar.value = 0.0;
+        //     reservaResumenVuelto.value = (adelanto - montoTotal - descuento).toFixed(2);
+
+        //     // Estilos
+        //     reservaResumenPorCobrar.classList.remove("bg-danger-subtle");
+        //     reservaResumenPorCobrar.classList.add("bg-success-subtle");
+
+        //     reservaResumenVuelto.classList.add("bg-success-subtle");
+        //     reservaResumenVuelto.classList.remove("bg-danger-subtle");
+        // }
 
 
-        if (reservaResumenVuelto.value >= 0 && reservaResumenPorCobrar.value == 0) {
-            reservaResumenSelectEstado.value = "PAGADO";
-            // reservaResumenSelectEstado.setAttribute("disabled", true);
-            reservaResumenSelectEstado.style.backgroundColor = "#d4edda"; // verde claro
-        } else {
-            reservaResumenSelectEstado.value = "POR COBRAR";
-            // reservaResumenSelectEstado.removeAttribute("disabled");
-            reservaResumenSelectEstado.style.backgroundColor = "#f8d7da"; // rojo claro
-        }
+        // if (reservaResumenVuelto.value >= 0 && reservaResumenPorCobrar.value == 0) {
+        //     reservaResumenSelectEstado.value = "PAGADO";
+        //     // reservaResumenSelectEstado.setAttribute("disabled", true);
+        //     reservaResumenSelectEstado.style.backgroundColor = "#d4edda"; // verde claro
+        // } else {
+        //     reservaResumenSelectEstado.value = "POR COBRAR";
+        //     // reservaResumenSelectEstado.removeAttribute("disabled");
+        //     reservaResumenSelectEstado.style.backgroundColor = "#f8d7da"; // rojo claro
+        // }
     }
 
-    // Eventos
-    function reservaActualizarSelect() {
-        let montoTotal = parseFloat(reservaResumenMontoTotal.value) || 0;
-        let descuento = parseFloat(reservaResumenDescuento.value) || 0;
+    // // Eventos
+    // function reservaActualizarSelect() {
+    //     let montoTotal = parseFloat(reservaResumenMontoTotal.value) || 0;
+    //     let descuento = parseFloat(reservaResumenDescuento.value) || 0;
 
-        if (this.value === "PAGADO") {
-            reservaResumenMontoAdelanto.value = (montoTotal - descuento).toFixed(2);
-            this.style.backgroundColor = "#d4edda"; // verde claro
-        } else {
-            reservaResumenMontoAdelanto.value = 0;
-            this.style.backgroundColor = "#f8d7da"; // rojo claro
-        }
+    //     if (this.value === "PAGADO") {
+    //         reservaResumenMontoAdelanto.value = (montoTotal - descuento).toFixed(2);
+    //         this.style.backgroundColor = "#d4edda"; // verde claro
+    //     } else {
+    //         reservaResumenMontoAdelanto.value = 0;
+    //         this.style.backgroundColor = "#f8d7da"; // rojo claro
+    //     }
 
-        reservaactualizarResumen();
-    };
+    //     reservaactualizarResumen();
+    // };
 
     if (reservaResumenFechaEntrada) {
-        reservaResumenFechaEntrada.addEventListener("change", reservaactualizarFilas);
+        reservaResumenFechaEntrada.addEventListener("change", reservaactualizarResumen);
     }
     if (reservaResumenDiasAlojamiento) {
         reservaResumenDiasAlojamiento.addEventListener("input", reservamanejarBloqueoServicio);
     }
     if (reservaResumenSelectServicio) {
-        reservaResumenSelectServicio.addEventListener("change", reservaactualizarFilas);
+        reservaResumenSelectServicio.addEventListener("change", reservaactualizarResumen);
     }
-    if (reservaResumenDescuento) {
-        reservaResumenDescuento.addEventListener("input", reservaactualizarResumen);
-    }
-    if (reservaResumenMontoAdelanto) {
-        reservaResumenMontoAdelanto.addEventListener("input", reservaactualizarResumen);
-    }
-    if (reservaResumenSelectEstado) {
-        reservaResumenSelectEstado.addEventListener("change", reservaActualizarSelect);
-    }
+    // if (reservaResumenDescuento) {
+    //     reservaResumenDescuento.addEventListener("input", reservaactualizarResumen);
+    // }
+    // if (reservaResumenMontoTotalCobrado) {
+    //     reservaResumenMontoTotalCobrado.addEventListener("input", reservaactualizarResumen);
+    // }
+    // if (reservaResumenSelectEstado) {
+    //     reservaResumenSelectEstado.addEventListener("change", reservaActualizarSelect);
+    // }
 
 
 
@@ -980,13 +1054,15 @@ document.addEventListener("DOMContentLoaded", function () {
         btn.disabled = listaClientes.length === 0;
     }
     // Calcula la fecha de salida según el tipo de servicio
-    function calcularFechaSalida(fecha, tipoServicio, p_fechaEntradaValor) {
+    function calcularFechaSalida(fecha, tipoServicio, p_fechaEntradaValor, esPrimerDia) {
         let fechaSalida = new Date(fecha);
         p_fechaEntradaValor = new Date(p_fechaEntradaValor);
 
         if (tipoServicio.includes("COMPLETO")) {
             if (p_fechaEntradaValor.getHours() >= 6) {
                 fechaSalida.setDate(fechaSalida.getDate() + 1); // Día siguiente
+            } else if (p_fechaEntradaValor.getHours() < 6 && !esPrimerDia) {
+                fechaSalida.setDate(fechaSalida.getDate() + 1);
             }
             fechaSalida.setHours(12, 0, 0); // Medio día del mismo día
         } else {
@@ -995,6 +1071,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         return fechaSalida;
     }
+
     // Calcular importe según tipo de servicio
     function calcularImporteEnFilas(servicio, p_precioInput) {
         let precioBase = parseFloat(p_precioInput.getAttribute("data-precio")) || 0;

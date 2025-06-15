@@ -146,7 +146,7 @@ public class TicketPrinter {
             sb.append(String.format("CÓDIGO       : TK-%07d\n", ticket.getNumeroTicket()));
             sb.append(String.format("%-13s: %s\n", "ENCARGADO", usuarioResponsable.getNombres()));
             sb.append(String.format("%-13s: %s\n", "CARGO", usuarioResponsable.getRol().getNombre()));
-            sb.append(String.format("FECHA EMISIÓN: %s\n",
+            sb.append(String.format("F. DE EMISIÓN: %s\n",
                     formatearFecha(ticket.getFechaEmision())));
             sb.append("=".repeat(47)).append("\n");
             sb.append("\n");
@@ -159,8 +159,6 @@ public class TicketPrinter {
             sb.append("-".repeat(47)).append("\n");
 
             // ==== CLIENTES ====
-            sb.append("\n");
-
             if (listaClientes.isEmpty()) {
                 sb.append("# Sin clientes registrados para esta venta #\n");
             } else if (listaClientes.size() == 1) {
@@ -189,34 +187,39 @@ public class TicketPrinter {
             sb.append("-".repeat(47)).append("\n");
 
             // ==== MONTOS ====
-            sb.append("\n");
+            sb.append(String.format("%-13s: S/. %.2f\n", "PRECIO DE HAB", hab.getPrecio()));
             if (venta.getTiempo_estadia() == 1) {
                 sb.append(String.format("%-13s: %d día\n", "ESTADÍA", venta.getTiempo_estadia()));
             } else {
                 sb.append(String.format("%-13s: %d días\n", "ESTADÍA", venta.getTiempo_estadia()));
             }
-            sb.append(String.format("%-13s: S/. %.2f\n", "PRECIO", venta.getMonto_total()));
             sb.append(String.format("%-13s: S/. %.2f\n", "DESCUENTO", venta.getDescuento()));
+            sb.append("\n");
+            sb.append(String.format("%-13s: S/. %.2f\n", "TOTAL", venta.getMonto_total()));
 
-            // ==== SALDO PENDIENTE CON ESPACIADO EXTRA ====
-            sb.append("\n");
-            sb.append(centerText(String.format("TOTAL: S/. %.2f", venta.getMonto_total())));
-            sb.append("\n");
             sb.append("-".repeat(47)).append("\n");
 
             // ==== FECHAS ====
-            sb.append(String.format("FECHA DE ENTRADA : %s\n", formatearFecha(venta.getFecha_entrada())));
-            sb.append(String.format("FECHA DE SALIDA  : %s\n", formatearFecha(venta.getFecha_salida())));
+            sb.append(String.format("%-13s: %s\n", "F. DE ENTRADA", formatearFecha(venta.getFecha_entrada())));
+            sb.append(String.format("%-13s: %s\n", "F. DE SALIDA", formatearFecha(venta.getFecha_salida())));
             sb.append("\n");
 
-            // ==== PAGO CON Y VUELTO ====
-            double vuelto = venta.getMonto_adelanto() - (venta.getMonto_total() - venta.getDescuento());
-            sb.append(String.format("%-13s: S/. %.2f\n", "PAGO CON", venta.getMonto_adelanto()));
-            if (vuelto >= 0) {
-                sb.append(String.format("%-13s: S/. %.2f\n", "VUELTO", vuelto));
-            } else {
-                sb.append(String.format("%-13s: S/. %.2f\n", "POR COBRAR", (vuelto * -1)));
+            // Sólo para completo, aclarar que 12 PM es mediodía:
+            sb.append(centerText("IMPORTANTE"));
+            if ("COMPLETO".equalsIgnoreCase(venta.getTipo_servicio())) {
+                sb.append(String.format("%-1s> %s\n", "", "Recuerde que la salida es a MEDIODÍA"));
+                sb.append(String.format("%-1s   %s\n", " ", "12 pm corresponde a la TARDE"));
             }
+            sb.append(String.format("%-3s> %s\n", "", "Los cobros se realizan por día."));
+
+            // ==== PAGO CON Y VUELTO ====
+            double vuelto = venta.getTotalCobrado() - venta.getMontoDiario();
+
+            sb.append("\n");
+            sb.append(frameCenteredMessage("COBRO DE HOY DÍA", '-')).append("\n");
+            sb.append(String.format("%-13s: S/. %.2f\n", "TOTAL HOY", venta.getMontoDiario()));
+            sb.append(String.format("%-13s: S/. %.2f\n", "PAGO CON", venta.getTotalCobrado()));
+            sb.append(String.format("%-13s: S/. %.2f\n", "VUELTO", vuelto));
 
             sb.append("\n");
             sb.append("*".repeat(47)).append("\n");
@@ -225,9 +228,10 @@ public class TicketPrinter {
 
             // ==== Imprimir ====
             String ticketTexto = sb.toString();
-            TicketPrinter.imprimirTicket("XP-E200L", ticketTexto);
-            if (esNuevo) TicketPrinter.imprimirTicket("XP-E200L", ticketTexto);
-            // System.out.println("Imprimiendo ticket de venta:\n" + ticketTexto);
+            // TicketPrinter.imprimirTicket("XP-E200L", ticketTexto);
+            if (esNuevo)
+                TicketPrinter.imprimirTicket("XP-E200L", ticketTexto);
+            System.out.println("Imprimiendo ticket de venta:\n" + ticketTexto);
 
         } catch (Exception e) {
             System.out.println("ERROR al imprimir ticket de venta: " + e.getMessage());

@@ -28,11 +28,11 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link hotel-nav-link mx-2" th:href="@{/ventas}">VENTAS</a>
+                    <a class="nav-link hotel-nav-link mx-2" th:href="@{/ventas}"  sec:authorize="hasAnyRole('DUEÑO', 'ADMINISTRADOR')">VENTAS</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link hotel-nav-link mx-2" th:href="@{/cajas}">CAJAS</a>
+                    <a class="nav-link hotel-nav-link mx-2" th:href="@{/cajas}"  sec:authorize="hasAnyRole('DUEÑO', 'ADMINISTRADOR')">CAJAS</a>
                 </li>
 
                 <li class="nav-item">
@@ -65,26 +65,26 @@
                             <!-- VENTAS -->
                             <a class="dropdown-item hotel-dropdown-item"
                                 th:href="@{/ventas/reporte-por-fecha-pdf(fecha=${fechaFiltro})}"
-                                th:unless="${fechaFiltro == null}"><i class="bi bi-graph-up"></i> REPORTE: Ventas del
+                                th:unless="${fechaFiltro == null}" sec:authorize="hasAnyRole('DUEÑO', 'ADMINISTRADOR')"><i class="bi bi-graph-up"></i> REPORTE: Ventas del
                                 día segun
                                 fecha</a>
                             <a class="dropdown-item hotel-dropdown-item" th:href="@{/ventas/reporte-por-fecha-pdf}"
-                                th:if="${fechaFiltro == null}"><i class="bi bi-graph-up"></i> REPORTE: Ventas del
+                                th:if="${fechaFiltro == null}" sec:authorize="hasAnyRole('DUEÑO', 'ADMINISTRADOR')"><i class="bi bi-graph-up"></i> REPORTE: Ventas del
                                 día</a>
 
                             <!-- CAJAS -->
                             <a class="dropdown-item hotel-dropdown-item"
                                 th:href="@{/cajas/reporte-por-fecha-pdf(fecha=${fechaFiltro})}"
-                                th:unless="${fechaFiltro == null}"><i class="bi bi-graph-up-arrow"></i> REPORTE: Cajas
+                                th:unless="${fechaFiltro == null}" sec:authorize="hasAnyRole('DUEÑO', 'ADMINISTRADOR')"><i class="bi bi-graph-up-arrow"></i> REPORTE: Cajas
                                 del día segun
                                 fecha</a>
                             <a class="dropdown-item hotel-dropdown-item" th:href="@{/cajas/reporte-por-fecha-pdf}"
-                                th:if="${fechaFiltro == null}"><i class="bi bi-graph-up-arrow"></i> REPORTE: Cajas del
+                                th:if="${fechaFiltro == null}" sec:authorize="hasAnyRole('DUEÑO', 'ADMINISTRADOR')"><i class="bi bi-graph-up-arrow"></i> REPORTE: Cajas del
                                 día</a>
 
                             <!-- TICKET DE CAJA -->
                             <a class="dropdown-item hotel-dropdown-item" href="" id="btnTicketCaja"
-                                th:unless="${fechaFiltro == null}"><i class="bi bi-cash-stack"></i> TICKETS: Caja del
+                                th:unless="${fechaFiltro == null}" sec:authorize="hasAnyRole('DUEÑO', 'ADMINISTRADOR')"><i class="bi bi-cash-stack"></i> TICKETS: Caja del
                                 día
                                 segun
                                 fecha</a>

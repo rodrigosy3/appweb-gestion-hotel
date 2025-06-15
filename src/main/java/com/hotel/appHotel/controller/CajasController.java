@@ -13,19 +13,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.hotel.appHotel.config.TicketPrinter;
 import com.hotel.appHotel.model.Cajas;
-import com.hotel.appHotel.model.Usuarios;
-import com.hotel.appHotel.repository.CajasRepository;
-import com.hotel.appHotel.repository.CredencialesRepository;
 import com.hotel.appHotel.service.CajasService;
 import com.hotel.appHotel.service.PdfServiceCajas;
 
@@ -42,11 +36,11 @@ public class CajasController {
     @Autowired
     private PdfServiceCajas pdfService;
 
-    @Autowired
-    private CajasRepository repositorio;
+    // @Autowired
+    // private CajasRepository repositorio;
 
-    @Autowired
-    private CredencialesRepository repositorioCredenciales;
+    // @Autowired
+    // private CredencialesRepository repositorioCredenciales;
 
     @GetMapping
     public String listarVentasPorPagina(@RequestParam Map<String, Object> params, Model model) {
@@ -140,39 +134,6 @@ public class CajasController {
                         "attachment; filename=reporte_cajas_" + finalFechaFiltro + ".pdf")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(pdf);
-    }
-
-    @GetMapping("/ticket-caja-por-fecha")
-    @ResponseBody
-    public ResponseEntity<String> imprimirTicketCajaPorFecha(@RequestParam(value = "fecha", required = false) String fecha) {
-        try {
-            // Obtener el usuario responsable
-            String dni = SecurityContextHolder.getContext().getAuthentication().getName();
-            Usuarios usuario = null;
-
-            try {
-                usuario = repositorioCredenciales.buscarPorDni(dni).map(c -> c.getUsuario()).orElse(null);
-            } catch (Exception ignored) {
-            }
-
-            // Parsear la fecha o usar hoy como predeterminado
-            LocalDate fechaFiltro = (fecha != null && !fecha.isBlank())
-                    ? LocalDate.parse(fecha)
-                    : LocalDate.now();
-
-            // Obtener las cajas correspondientes a esa fecha
-            List<Cajas> cajasDelDia = repositorio.obtenerCajasDelDia(String.valueOf(fechaFiltro));
-
-            // Imprimir el ticket con la lógica centralizada
-            TicketPrinter.imprimirTicketCajaDelDia(usuario, cajasDelDia, fechaFiltro);
-
-            return ResponseEntity.ok("✅ Ticket impreso correctamente");
-
-        } catch (Exception e) {
-            System.err.println("ERROR al imprimir ticket de caja: " + e.getMessage());
-            return ResponseEntity.status(500).body("❌ Error al imprimir: " + e.getMessage());
-            // Aquí puedes registrar con Logger si prefieres
-        }
     }
 
 }

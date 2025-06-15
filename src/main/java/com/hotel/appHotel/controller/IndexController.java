@@ -110,7 +110,6 @@ public class IndexController {
         LocalDateTime fechaBase = LocalDateTime.now();
 
         if (fechaFiltro != null && !fechaFiltro.isEmpty()) {
-            System.out.println(fechaFiltro);
             fechaBase = LocalDateTime.parse(fechaFiltro + "T00:00:00");
 
             for (Ventas venta : obtenerVentas()) {
@@ -139,7 +138,6 @@ public class IndexController {
                     }
                 }
             }
-
         } else {
             for (Ventas venta : obtenerVentasActivas()) {
                 LocalDateTime fechaEntrada = parseStringToLocalDateTime(venta.getFecha_entrada());
@@ -158,11 +156,17 @@ public class IndexController {
                                             ultimaVentaPorHabitacion.get(id_habitacion).getFecha_entrada()))) {
 
                                 if (!tiempoRestante.isNegative()) {
-                                    if (tiempoRestante.toMinutes() <= 30) {
-                                        mapAlertaSalida.put(id_habitacion, 30);
-                                    } else if (tiempoRestante.toMinutes() <= 60) {
+                                    if (tiempoRestante.toMinutes() <= 60) {
                                         mapAlertaSalida.put(id_habitacion, 1);
+                                    } else if (tiempoRestante.toMinutes() <= 360) {
+                                        mapAlertaSalida.put(id_habitacion, 6);
                                     }
+                                }
+
+                                // MODIFICAR EL MONTO Y ESTADO CUANDO ES UN NUEVO DIA DE SERVICIO
+                                if (fechaBase.isAfter(parseStringToLocalDateTime(venta.getUltimaFecha()))
+                                        && venta.getEstado().equals("PAGADO")) {
+
                                 }
 
                                 ultimaVentaPorHabitacion.put(id_habitacion, venta);
@@ -171,10 +175,10 @@ public class IndexController {
                             }
                         } else {
                             if (!tiempoRestante.isNegative()) {
-                                if (tiempoRestante.toMinutes() <= 30) {
-                                    mapAlertaSalida.put(id_habitacion, 30);
-                                } else if (tiempoRestante.toMinutes() <= 60) {
+                                if (tiempoRestante.toMinutes() <= 60) {
                                     mapAlertaSalida.put(id_habitacion, 1);
+                                } else if (tiempoRestante.toMinutes() <= 360) {
+                                    mapAlertaSalida.put(id_habitacion, 6);
                                 }
                             }
 
@@ -188,6 +192,7 @@ public class IndexController {
                         ventasVencidasFechaSalida.put(id_habitacion, fechaSalida);
                     }
                 }
+                // servicioVentas.actualizarCobroDiario(venta.getId_venta());
             }
         }
 
@@ -231,83 +236,7 @@ public class IndexController {
     public String editarIndexForm(@PathVariable Long idHabitacion,
             @RequestParam(value = "idVenta", required = false) Long idVenta,
             Model modelo, RedirectAttributes redirectAttributes) {
-        // PARA MOSTRAR LAS VENTAS ACTIVAS EN LA PARTE INFERIOR
-        Map<Long, Ventas> ultimaVentaPorHabitacion = new HashMap<>();
-        Map<Long, LocalDateTime> ultimaVentaPorHabitacionFechaEntrada = new HashMap<>();
-        Map<Long, LocalDateTime> ultimaVentaPorHabitacionFechaSalida = new HashMap<>();
 
-        Map<Long, Ventas> ventasVencidas = new HashMap<>();
-        Map<Long, LocalDateTime> ventasVencidasFechaEntrada = new HashMap<>();
-        Map<Long, LocalDateTime> ventasVencidasFechaSalida = new HashMap<>();
-
-        Map<Long, Integer> mapAlertaSalida = new HashMap<>();
-
-        LocalDateTime fechaActual = LocalDateTime.now();
-
-        for (Ventas venta : obtenerVentasActivas()) {
-            LocalDateTime fechaEntrada = parseStringToLocalDateTime(venta.getFecha_entrada());
-            LocalDateTime fechaSalida = parseStringToLocalDateTime(venta.getFecha_salida());
-
-            Duration tiempoRestante = Duration.between(fechaActual, fechaSalida);
-
-            Long id_habitacion = venta.getHabitacion().getId_habitacion();
-
-            if (fechaEntrada.toLocalDate().equals(fechaActual.toLocalDate())
-                    || fechaEntrada.isBefore(fechaActual)) {
-                if (fechaSalida.isAfter(fechaActual) || fechaSalida.equals(fechaActual)) {
-                    if (ultimaVentaPorHabitacion.containsKey(id_habitacion)) {
-                        if (fechaEntrada.isAfter(
-                                parseStringToLocalDateTime(
-                                        ultimaVentaPorHabitacion.get(id_habitacion).getFecha_entrada()))) {
-
-                            if (!tiempoRestante.isNegative()) {
-                                if (tiempoRestante.toMinutes() <= 30) {
-                                    mapAlertaSalida.put(id_habitacion, 30);
-                                } else if (tiempoRestante.toMinutes() <= 60) {
-                                    mapAlertaSalida.put(id_habitacion, 1);
-                                }
-                            }
-
-                            ultimaVentaPorHabitacion.put(id_habitacion, venta);
-                            ultimaVentaPorHabitacionFechaEntrada.put(id_habitacion, fechaEntrada);
-                            ultimaVentaPorHabitacionFechaSalida.put(id_habitacion, fechaSalida);
-                        }
-                    } else {
-                        if (!tiempoRestante.isNegative()) {
-                            if (tiempoRestante.toMinutes() <= 30) {
-                                mapAlertaSalida.put(id_habitacion, 30);
-                            } else if (tiempoRestante.toMinutes() <= 60) {
-                                mapAlertaSalida.put(id_habitacion, 1);
-                            }
-                        }
-
-                        ultimaVentaPorHabitacion.put(id_habitacion, venta);
-                        ultimaVentaPorHabitacionFechaEntrada.put(id_habitacion, fechaEntrada);
-                        ultimaVentaPorHabitacionFechaSalida.put(id_habitacion, fechaSalida);
-                    }
-                } else {
-                    ventasVencidas.put(id_habitacion, venta);
-                    ventasVencidasFechaEntrada.put(id_habitacion, fechaEntrada);
-                    ventasVencidasFechaSalida.put(id_habitacion, fechaSalida);
-                }
-            }
-        }
-
-        modelo.addAttribute("hab_antiguas", obtenerHabitacionesAntiguas());
-        modelo.addAttribute("hab_modernas", obtenerHabitacionesModernas());
-
-        modelo.addAttribute("ultimaVentaPorHabitacion", ultimaVentaPorHabitacion);
-        modelo.addAttribute("ultimaVentaPorHabitacionFechaEntrada", ultimaVentaPorHabitacionFechaEntrada);
-        modelo.addAttribute("ultimaVentaPorHabitacionFechaSalida", ultimaVentaPorHabitacionFechaSalida);
-        modelo.addAttribute("mapAlertaSalida", mapAlertaSalida);
-
-        modelo.addAttribute("ventasVencidas", ventasVencidas);
-        modelo.addAttribute("ventasVencidasFechaEntrada", ventasVencidasFechaEntrada);
-        modelo.addAttribute("ventasVencidasFechaSalida", ventasVencidasFechaSalida);
-        //
-        //
-        //
-        // EDITAR VENTA O CREAR NUEVA VENTA
         Habitaciones habitacion = servicioHabitaciones.getHabitacionById(idHabitacion); // OBTENER HABITACION
         Ventas ventaHabitacion = idVenta == null ? new Ventas() : servicioVentas.getVentaById(idVenta); // OBTENER VENTA
         Ventas ventaParaReserva = new Ventas(); // OBTENER PRIMERA VENTA RESERVADA POR HABITACION
@@ -324,6 +253,7 @@ public class IndexController {
         modelo.addAttribute("habEstados", servicioHabitacionesEstado.getHabitacionesEstado());
 
         return VIEW_EDITAR;
+
     }
 
     @PostMapping("/{idHabitacion}")
@@ -333,7 +263,7 @@ public class IndexController {
             @RequestParam(value = "opcionImpresion", required = false) String opcionImpresion,
             RedirectAttributes redirectAttributes) {
         Ventas ventaGuardada;
-        Boolean huboCambios;
+        // Boolean huboCambios;
         // Logica para asignar el usuario responsable del cambio de la venta
         String dni = SecurityContextHolder.getContext().getAuthentication().getName();
         Optional<Credenciales> credencialOpt = repositorioCredenciales.buscarPorDni(dni);
@@ -352,17 +282,19 @@ public class IndexController {
             ventaHabitacion.setUsuario_responsable(usuario_responsable);
             /////////////////////////////////////////////////////////////////////
 
-            huboCambios = false;
+            // huboCambios = false;
             ventaGuardada = servicioVentas.createVenta(ventaHabitacion);
         } else {
             Ventas ventaExistente = servicioVentas.getVentaById(ventaHabitacion.getId_venta());
 
-            huboCambios = !ventaExistente.getTiempo_estadia().equals(ventaHabitacion.getTiempo_estadia())
-                    || !ventaExistente.getEstado().equals(ventaHabitacion.getEstado())
-                    || !ventaExistente.getDescuento().equals(ventaHabitacion.getDescuento())
-                    || !ventaExistente.getMonto_total().equals(ventaHabitacion.getMonto_total())
-                    || !ventaExistente.getMonto_adelanto().equals(ventaHabitacion.getMonto_adelanto())
-                    || !ventaExistente.getTipo_servicio().equals(ventaHabitacion.getTipo_servicio());
+            // huboCambios =
+            // !ventaExistente.getTiempo_estadia().equals(ventaHabitacion.getTiempo_estadia())
+            // || !ventaExistente.getEstado().equals(ventaHabitacion.getEstado())
+            // || !ventaExistente.getDescuento().equals(ventaHabitacion.getDescuento())
+            // || !ventaExistente.getMonto_total().equals(ventaHabitacion.getMonto_total())
+            // || !ventaExistente.getMontoDiario().equals(ventaHabitacion.getMontoDiario())
+            // ||
+            // !ventaExistente.getTipo_servicio().equals(ventaHabitacion.getTipo_servicio());
 
             // Copiar los datos de la venta a la venta existente
             ventaExistente.setFecha_entrada(ventaHabitacion.getFecha_entrada());
@@ -372,57 +304,134 @@ public class IndexController {
             ventaExistente.setEstado_estadia(ventaHabitacion.getEstado_estadia());
             ventaExistente.setDescuento(ventaHabitacion.getDescuento());
             ventaExistente.setMonto_total(ventaHabitacion.getMonto_total());
-            ventaExistente.setMonto_adelanto(ventaHabitacion.getMonto_adelanto());
+            ventaExistente.setMontoDiario(ventaHabitacion.getMontoDiario());
             ventaExistente.setTipo_servicio(ventaHabitacion.getTipo_servicio());
             ventaExistente.setTipo_venta(ventaHabitacion.getTipo_venta());
-            // BeanUtils.copyProperties(ventaHabitacion, ventaExistente, "habitacion",
-            // "usuario_responsable",
-            // "fecha_creacion");
+            ventaExistente.setTotalCobrado(ventaHabitacion.getTotalCobrado());
+            ventaExistente.setUltimaFecha(ventaHabitacion.getUltimaFecha());
+
             servicioVentas.updateVenta(ventaExistente);
 
             ventaGuardada = servicioVentas.getVentaById(ventaExistente.getId_venta());
         }
 
-        double montoPorRegistrar = 0;
+        // LOGICQA PARA REGISTRAR EN CAJA
         List<Cajas> cajasExistentes = servicioCajas.getCajasPorVenta(ventaGuardada.getId_venta());
+        double montoPorRegistrar = 0;
 
-        if (huboCambios) {
-            // Sumamos todo lo que ya se guardó en Cajas para esta venta
-            double totalRegistrado = cajasExistentes.stream()
-                    .mapToDouble(Cajas::getMonto)
-                    .sum();
+        if (!ventaGuardada.getUltimaFecha().equals("")) {
+            // Tomamos solo la fecha (yyyy-MM-dd) de la última fecha de servicio registrada
+            LocalDateTime ultimaFechaInicioVenta = LocalDateTime.parse(ventaGuardada.getUltimaFecha());
+            LocalDateTime ultimaFechaFinVenta = LocalDateTime.parse(ventaGuardada.getUltimaFecha());
+            LocalDateTime fechaSalidaVenta = LocalDateTime.parse(ventaGuardada.getFecha_salida());
+            LocalDateTime hoy = LocalDateTime.now();
 
-            // Calculamos “nuevoTotal” que representa la cantidad que debería estar en caja
-            // según el estado actual de la venta:
-            double nuevoTotal;
-
-            if ("PAGADO".equals(ventaGuardada.getEstado())) {
-                // Si está en PAGADO, consideramos el total menos descuento
-                nuevoTotal = ventaGuardada.getMonto_total() - ventaGuardada.getDescuento();
+            if (ventaGuardada.getTipo_servicio().equals("MEDIO")
+                    && fechaSalidaVenta.toLocalDate().equals(hoy.toLocalDate())
+                    && hoy.isAfter(ultimaFechaInicioVenta)) {
+                // ultimaFecha.plusDays(1).withHour(12).withMinute(0).withSecond(0);
+                ultimaFechaFinVenta = ultimaFechaFinVenta.withHour(18).withMinute(0).withSecond(0);
             } else {
-                // Si no está aún PAGADO (POR COBRAR), solo tomamos el adelanto menos descuento
-                nuevoTotal = ventaGuardada.getMonto_adelanto() - ventaGuardada.getDescuento();
+                ultimaFechaFinVenta = ultimaFechaFinVenta.plusDays(1).withHour(12).withMinute(0).withSecond(0);
+                System.out.println("asdadadasdadadasdadadasdadadasdadadasdadadasdadadasdadad");
             }
 
-            // La diferencia entre lo que “debería” y lo que YA existe en Cajas
-            montoPorRegistrar = nuevoTotal - totalRegistrado;
-        } else if (!huboCambios && cajasExistentes.isEmpty()) {
+            double montoCajaExistente = 0.0;
+            boolean existeCajaHoy = false;
+
+            // boolean existeCajaHoy = cajasExistentes.stream()
+            // .anyMatch(
+            // caja -> {
+            // LocalDateTime cajaFecha = LocalDateTime.parse(caja.getFechaRegistro());
+            // montoCajaExistente = caja.getMonto();
+            // System.out.println("ultimaFechaInicioVenta: " + ultimaFechaInicioVenta + "
+            // cajaFecha"
+            // + cajaFecha + " ultimaFechaFinVenta" + auxUltimaFechaFinVenta);
+
+            // return cajaFecha.isAfter(ultimaFechaInicioVenta)
+            // && cajaFecha.isBefore(auxUltimaFechaFinVenta);
+            // });
+
+            for (Cajas caja : cajasExistentes) {
+                LocalDateTime cajaFecha = LocalDateTime.parse(caja.getFechaRegistro());
+
+                System.out.println("ultimaFechaInicioVenta: " + ultimaFechaInicioVenta +
+                        "   cajaFecha: " + cajaFecha +
+                        "   ultimaFechaFinVenta: " + ultimaFechaFinVenta);
+
+                if (cajaFecha.isAfter(ultimaFechaInicioVenta) && cajaFecha.isBefore(ultimaFechaFinVenta)) {
+                    montoCajaExistente = caja.getMonto();
+                    existeCajaHoy = true;
+                    break;
+                }
+            }
+
+            System.out.println(existeCajaHoy);
+
             if ("PAGADO".equals(ventaGuardada.getEstado())) {
-                montoPorRegistrar = ventaGuardada.getMonto_total() - ventaGuardada.getDescuento();
-            } else {
-                montoPorRegistrar = ventaGuardada.getMonto_adelanto() - ventaGuardada.getDescuento();
+                if (!existeCajaHoy)
+                    montoPorRegistrar = ventaGuardada.getMontoDiario();
+                else if (existeCajaHoy && (montoCajaExistente < 0))
+                    montoPorRegistrar = ventaGuardada.getMontoDiario();
+            } else if ("POR COBRAR".equals(ventaGuardada.getEstado()) && existeCajaHoy) {
+                montoPorRegistrar = ventaGuardada.getMontoDiario() * (-1);
+            }
+
+            if (montoPorRegistrar != 0) {
+                Cajas caja = new Cajas();
+
+                caja.setMonto(montoPorRegistrar);
+                caja.setFechaRegistro(LocalDateTime.now().toString());
+                caja.setVenta(ventaGuardada);
+
+                servicioCajas.createCaja(caja);
             }
         }
 
-        if (montoPorRegistrar != 0) {
-            Cajas caja = new Cajas();
+        // double montoPorRegistrar = 0;
+        // List<Cajas> cajasExistentes =
+        // servicioCajas.getCajasPorVenta(ventaGuardada.getId_venta());
 
-            caja.setMonto(montoPorRegistrar);
-            caja.setFechaRegistro(LocalDateTime.now().toString());
-            caja.setVenta(ventaGuardada);
+        // if (huboCambios) {
+        // // Sumamos todo lo que ya se guardó en Cajas para esta venta
+        // // double totalRegistrado = cajasExistentes.stream()
+        // // .mapToDouble(Cajas::getMonto)
+        // // .sum();
 
-            servicioCajas.createCaja(caja);
-        }
+        // // Calculamos “nuevoTotal” que representa la cantidad que debería estar en
+        // caja
+        // // según el estado actual de la venta:
+        // double montoDiarioPagado;
+
+        // if ("PAGADO".equals(ventaGuardada.getEstado())) {
+        // // Si está en PAGADO, consideramos el total menos descuento
+        // montoDiarioPagado = ventaGuardada.getMontoDiario();
+        // } else {
+        // // Si no está aún PAGADO (POR COBRAR), solo tomamos el adelanto menos
+        // descuento
+        // montoDiarioPagado = ventaGuardada.getMonto_adelanto() -
+        // ventaGuardada.getDescuento();
+        // }
+
+        // // La diferencia entre lo que “debería” y lo que YA existe en Cajas
+        // montoPorRegistrar = montoDiarioPagado;
+        // } else if (!huboCambios && cajasExistentes.isEmpty()) {
+        // if ("PAGADO".equals(ventaGuardada.getEstado())) {
+        // montoPorRegistrar = ventaGuardada.getMontoDiario();
+        // } else {
+        // montoPorRegistrar = ventaGuardada.getMontoDiario();
+        // }
+        // }
+
+        // if (montoPorRegistrar != 0) {
+        // Cajas caja = new Cajas();
+
+        // caja.setMonto(montoPorRegistrar);
+        // caja.setFechaRegistro(LocalDateTime.now().toString());
+        // caja.setVenta(ventaGuardada);
+
+        // servicioCajas.createCaja(caja);
+        // }
 
         // FUNCIONES PARA CLIENTES POR HABITACIÓN
         // Convertir el JSON recibido en una lista de objetos Cliente
@@ -493,7 +502,7 @@ public class IndexController {
         Habitaciones habitacion = servicioHabitaciones.getHabitacionById(id);
 
         Ventas ventaReservada;
-        Boolean huboCambios;
+        // Boolean huboCambios;
 
         // Logica para asignar el usuario responsable del cambio de la venta
         String dni = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -509,18 +518,19 @@ public class IndexController {
 
             ventaParaReserva.setUsuario_responsable(usuario_responsable);
 
-            huboCambios = false;
+            // huboCambios = false;
             ventaReservada = servicioVentas.createVenta(ventaParaReserva);
         } else {
             Ventas ventaReservadaExistente = servicioVentas.getVentaById(ventaParaReserva.getId_venta());
 
-            huboCambios = !ventaReservadaExistente.getTiempo_estadia()
-                    .equals(ventaParaReserva.getTiempo_estadia())
-                    || !ventaReservadaExistente.getEstado().equals(ventaParaReserva.getEstado())
-                    || !ventaReservadaExistente.getDescuento().equals(ventaParaReserva.getDescuento())
-                    || !ventaReservadaExistente.getMonto_total().equals(ventaParaReserva.getMonto_total())
-                    || !ventaReservadaExistente.getMonto_adelanto().equals(ventaParaReserva.getMonto_adelanto())
-                    || !ventaReservadaExistente.getTipo_servicio().equals(ventaParaReserva.getTipo_servicio());
+            // huboCambios = !ventaReservadaExistente.getTiempo_estadia()
+            // .equals(ventaParaReserva.getTiempo_estadia())
+            // ||
+            // !ventaReservadaExistente.getDescuento().equals(ventaParaReserva.getDescuento())
+            // ||
+            // !ventaReservadaExistente.getMonto_total().equals(ventaParaReserva.getMonto_total())
+            // ||
+            // !ventaReservadaExistente.getTipo_servicio().equals(ventaParaReserva.getTipo_servicio());
 
             // Copiar los datos de la venta a la venta existente
             ventaReservadaExistente.setFecha_entrada(ventaParaReserva.getFecha_entrada());
@@ -534,6 +544,7 @@ public class IndexController {
             ventaReservadaExistente.setTipo_servicio(ventaParaReserva.getTipo_servicio());
             ventaReservadaExistente.setTipo_venta(ventaParaReserva.getTipo_venta());
             ventaReservadaExistente.setUsuario_responsable(usuario_responsable);
+            ventaReservadaExistente.setEstado("POR COBRAR");
             // BeanUtils.copyProperties(ventaParaReserva, ventaReservadaExistente,
             // "habitacion", "usuario_responsable",
             // "fecha_creacion");
@@ -556,46 +567,52 @@ public class IndexController {
             servicioHabitaciones.updateHabitacion(habitacion);
         }
 
-        double montoPorRegistrar = 0;
-        List<Cajas> cajasExistentes = servicioCajas.getCajasPorVenta(ventaReservada.getId_venta());
+        // double montoPorRegistrar = 0;
+        // List<Cajas> cajasExistentes =
+        // servicioCajas.getCajasPorVenta(ventaReservada.getId_venta());
 
-        if (huboCambios) {
-            // Sumamos todo lo que ya se guardó en Cajas para esta venta
-            double totalRegistrado = cajasExistentes.stream()
-                    .mapToDouble(Cajas::getMonto)
-                    .sum();
+        // if (huboCambios) {
+        // // Sumamos todo lo que ya se guardó en Cajas para esta venta
+        // double totalRegistrado = cajasExistentes.stream()
+        // .mapToDouble(Cajas::getMonto)
+        // .sum();
 
-            // Calculamos “nuevoTotal” que representa la cantidad que debería estar en caja
-            // según el estado actual de la venta:
-            double nuevoTotal;
+        // // Calculamos “nuevoTotal” que representa la cantidad que debería estar en
+        // caja
+        // // según el estado actual de la venta:
+        // double nuevoTotal;
 
-            if ("PAGADO".equals(ventaReservada.getEstado())) {
-                // Si está en PAGADO, consideramos el total menos descuento
-                nuevoTotal = ventaReservada.getMonto_total() - ventaReservada.getDescuento();
-            } else {
-                // Si no está aún PAGADO (POR COBRAR), solo tomamos el adelanto menos descuento
-                nuevoTotal = ventaReservada.getMonto_adelanto() - ventaReservada.getDescuento();
-            }
+        // if ("PAGADO".equals(ventaReservada.getEstado())) {
+        // // Si está en PAGADO, consideramos el total menos descuento
+        // nuevoTotal = ventaReservada.getMonto_total() - ventaReservada.getDescuento();
+        // } else {
+        // // Si no está aún PAGADO (POR COBRAR), solo tomamos el adelanto menos
+        // descuento
+        // nuevoTotal = ventaReservada.getMonto_adelanto() -
+        // ventaReservada.getDescuento();
+        // }
 
-            // La diferencia entre lo que “debería” y lo que YA existe en Cajas
-            montoPorRegistrar = nuevoTotal - totalRegistrado;
-        } else if (!huboCambios && cajasExistentes.isEmpty()) {
-            if ("PAGADO".equals(ventaReservada.getEstado())) {
-                montoPorRegistrar = ventaReservada.getMonto_total() - ventaReservada.getDescuento();
-            } else {
-                montoPorRegistrar = ventaReservada.getMonto_adelanto() - ventaReservada.getDescuento();
-            }
-        }
+        // // La diferencia entre lo que “debería” y lo que YA existe en Cajas
+        // montoPorRegistrar = nuevoTotal - totalRegistrado;
+        // } else if (!huboCambios && cajasExistentes.isEmpty()) {
+        // if ("PAGADO".equals(ventaReservada.getEstado())) {
+        // montoPorRegistrar = ventaReservada.getMonto_total() -
+        // ventaReservada.getDescuento();
+        // } else {
+        // montoPorRegistrar = ventaReservada.getMonto_adelanto() -
+        // ventaReservada.getDescuento();
+        // }
+        // }
 
-        if (montoPorRegistrar != 0) {
-            Cajas caja = new Cajas();
+        // if (montoPorRegistrar != 0) {
+        // Cajas caja = new Cajas();
 
-            caja.setMonto(montoPorRegistrar);
-            caja.setFechaRegistro(LocalDateTime.now().toString());
-            caja.setVenta(ventaReservada);
+        // caja.setMonto(montoPorRegistrar);
+        // caja.setFechaRegistro(LocalDateTime.now().toString());
+        // caja.setVenta(ventaReservada);
 
-            servicioCajas.createCaja(caja);
-        }
+        // servicioCajas.createCaja(caja);
+        // }
 
         // FUNCIONES PARA CLIENTES POR HABITACIÓN
         // Convertir el JSON recibido en una lista de objetos Cliente
@@ -648,7 +665,8 @@ public class IndexController {
 
         if ("SI_IMPRIMIR".equals(opcionImpresion)) {
             Tickets ticket = servicioTickets.createTicket(ventaReservada);
-            TicketPrinter.imprimirTicketVentaRealizada(ventaReservada, ticket, usuario_responsable, listaClientes, true);
+            TicketPrinter.imprimirTicketVentaRealizada(ventaReservada, ticket, usuario_responsable, listaClientes,
+                    true);
         } else if ("NO_IMPRIMIR".equals(opcionImpresion)) {
             redirectAttributes.addFlashAttribute("mensaje", "Venta guardada correctamente");
         }
@@ -798,43 +816,6 @@ public class IndexController {
         return ResponseEntity.ok("Estado actualizado correctamente.");
     }
 
-    @GetMapping("/ventas/imprimir-ticket-copia")
-    @ResponseBody
-    public String imprimirTicketCopiaVenta(@RequestParam("idVenta") Long idVenta) {
-        try {
-            // Buscar la venta
-            Ventas venta = servicioVentas.getVentaById(idVenta);
-            if (venta == null) {
-                return "❌ Venta no encontrada.";
-            }
-
-            // Obtener usuario logueado (si aplica)
-            String dni = SecurityContextHolder.getContext().getAuthentication().getName();
-            Usuarios encargado = repositorioCredenciales.buscarPorDni(dni).map(c -> c.getUsuario()).orElse(null);
-
-            // Buscar último ticket asociado a esa venta
-            Tickets ticketOpt = servicioTickets.getUltimoByVentaId(idVenta);
-            if (ticketOpt == null) {
-                return "❌ No existe ticket asociado a esta venta.";
-            }
-
-            Tickets ticket = ticketOpt;
-
-            // Obtener los clientes
-            List<VentasClientesHabitacion> listaClientes = repositorioVentasClientesHabitacion
-                    .findByVentaId(venta.getId_venta());
-
-            // Imprimir el ticket
-            TicketPrinter.imprimirTicketVentaRealizada(venta, ticket, encargado, listaClientes, false);
-
-            return "✅ Copia de ticket impresa correctamente.";
-
-        } catch (Exception e) {
-            System.err.println("Error al imprimir ticket de copia: " + e.getMessage());
-            return "❌ Error inesperado al imprimir ticket.";
-        }
-    }
-
     private List<Habitaciones> obtenerHabitaciones() {
         return servicioHabitaciones.getHabitaciones()
                 .stream()
@@ -858,18 +839,20 @@ public class IndexController {
     }
 
     private List<Ventas> obtenerVentas() {
-        return servicioVentas.getVentas()
-                .stream()
-                .filter(ventas -> !ventas.isEliminado())
-                .collect(Collectors.toList());
+        return servicioVentas.getVentasNoEliminadas();
+        // return servicioVentas.getVentas()
+        // .stream()
+        // .filter(ventas -> !ventas.isEliminado())
+        // .collect(Collectors.toList());
     }
 
     private List<Ventas> obtenerVentasActivas() {
-        return obtenerVentas()
-                .stream()
-                .filter(venta -> (venta.getEstado_estadia().equals("SIN PROBLEMAS")
-                        && !venta.getTipo_venta().equals("RESERVA CANCELADA")))
-                .collect(Collectors.toList());
+        return servicioVentas.getVentasActivas();
+        // return obtenerVentas()
+        // .stream()
+        // .filter(venta -> (venta.getEstado_estadia().equals("SIN PROBLEMAS")
+        // && !venta.getTipo_venta().equals("RESERVA CANCELADA")))
+        // .collect(Collectors.toList());
     }
 
     public LocalDateTime parseStringToLocalDateTime(String fechaStr) {

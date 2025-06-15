@@ -20,4 +20,10 @@ public interface VentasRepository extends JpaRepository<Ventas, Long> {
     @Query("SELECT v FROM Ventas v WHERE v.eliminado = false AND SUBSTRING(v.fecha_entrada, 1, 10) <= :fecha AND SUBSTRING(v.fecha_salida, 1, 10) >= :fecha ORDER BY v.id_venta DESC")
     List<Ventas> findVentasActivasPorFecha(@Param("fecha") String fecha);
 
+    @Query("SELECT v FROM Ventas v WHERE v.eliminado = false AND v.estado_estadia = 'SIN PROBLEMAS' AND v.tipo_venta <> 'RESERVA CANCELADA'")
+    List<Ventas> findVentasActivas();
+
+    @Query("SELECT v FROM Ventas v WHERE v.eliminado = false")
+    List<Ventas> findVentasNoEliminadas();
+
 }

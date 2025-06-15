@@ -80,6 +80,15 @@
 
                             <!-- #################### EVALUANDO FECHA DE ENTRADA A USAR SEGUN CONDICIONES DE VENTA #################### -->
                             <td class="text-start px-0 ps-2">
+                                <!-- ################################ CONDICIONES DE LAS VENTAS ################################ -->
+                                <span
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO' || ventasVencidas[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}"
+                                    class="hotel-room-status hotel-room-reserved fw-bold">
+                                    SERVICIO MEDIO
+                                    <br>
+                                </span>
+                                <!-- ########################################################################################### -->
+
                                 <span th:if="${ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null}">
                                     <span class="hotel-text-primary fw-bold"
                                         th:text="${'E: ' + #temporals.format(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}">
@@ -126,28 +135,22 @@
                                 </span>
                                 <!-- ################################################# -->
 
-                                <!-- ################################ CONDICIONES DE LAS VENTAS ################################ -->
-                                <span
-                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO' || ventasVencidas[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}"
-                                    class="hotel-room-status hotel-room-reserved fw-bold">
-                                    MEDIO DÍA - SALIDA 6:00 PM <br>
-                                </span>
-                                <!-- ########################################################################################### -->
-
                                 <!-- ####################### NOMBRES Y APELLIDOS DE LOS CLIENTES ##################### -->
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}">
+                                    <span th:if="${mapAlertaSalida[hab.id_habitacion] == 6}"
+                                        class="hotel-room-status hotel-room-maintenance fw-bold">
+                                        QUEDAN MENOS DE 6 HORAS, PREGUNTAR SI CONTINUARA CON EL SERVICIO
+                                        <br>
+                                    </span>
                                     <span th:if="${mapAlertaSalida[hab.id_habitacion] == 1}"
                                         class="fw-bold text-light bg-warning px-3">
-                                        QUEDA MENOS DE UNA HORA PARA DESOCUPAR <br>
-                                    </span>
-                                    <span th:if="${mapAlertaSalida[hab.id_habitacion] == 30}"
-                                        class="fw-bold text-light bg-warning px-3">
-                                        QUEDA MENOS DE 30 MINUTOS PARA DESOCUPAR <br>
+                                        QUEDA MENOS DE 1 HORA, PREGUNTAR SI CONTINUARA CON EL SERVICIO <br>
                                     </span>
                                     <span
                                         th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
                                         <span class="hotel-text-dark fw-medium"
-                                            th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
+                                            th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}"
+                                            th:title="${cliente.usuario_alojado.celular}">
                                             NOMBRES Y APELLIDOS
                                         </span>
                                         <br>
@@ -163,7 +166,8 @@
                                 <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ventasVencidas[hab.id_habitacion]?.ventasClientesHabitacion}">
                                     <span class="text-danger fw-medium"
-                                        th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
+                                        th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}"
+                                        th:title="${cliente.usuario_alojado.celular}">
                                         NOMBRES Y APELLIDOS
                                     </span>
                                     <br>
@@ -210,7 +214,7 @@
                                     POR COBRAR <br>
                                 </span>
                                 <span
-                                    th:text="${(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : (ventasVencidas[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ventasVencidas[hab.id_habitacion]?.monto_total, 1, 2) : ''}"
+                                    th:text="${(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.montoDiario, 1, 2) : (ventasVencidas[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ventasVencidas[hab.id_habitacion]?.montoDiario, 1, 2) : ''}"
                                     th:classappend="${ventasVencidas[hab.id_habitacion] != null ? 'text-danger fw-bold' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR'? 'text-danger fw-bold' : 'text-success'}">
                                 </span>
                             </td>
@@ -236,6 +240,7 @@
                                             th:value="${ventasVencidas[hab.id_habitacion].id_venta}" />
 
                                         <button type="submit" class="btn btn-sm hotel-btn-primary" id="btn-editar-1"
+                                            th:if="${fechaFiltro == null}"
                                             th:with="ventaID=${ultimaVentaPorHabitacion[hab.id_habitacion] != null ? ultimaVentaPorHabitacion[hab.id_habitacion].id_venta : ventasVencidas[hab.id_habitacion]?.id_venta}"
                                             th:title="'Venta: ' + ${ventaID}">
                                             Editar
@@ -283,6 +288,14 @@
 
                             <!-- #################### EVALUANDO FECHA DE ENTRADA A USAR SEGUN CONDICIONES DE VENTA #################### -->
                             <td class="text-start px-0 ps-2">
+                                <!-- ################################ CONDICIONES DE LAS VENTAS ################################ -->
+                                <span
+                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO' || ventasVencidas[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}"
+                                    class="hotel-room-status hotel-room-reserved fw-bold">
+                                    SERVICIO MEDIO <br>
+                                </span>
+                                <!-- ########################################################################################### -->
+
                                 <span th:if="${ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null}">
                                     <span class="hotel-text-primary fw-bold"
                                         th:text="${'E: ' + #temporals.format(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion], 'dd'', ''hh:mm a')}">
@@ -329,28 +342,22 @@
                                 </span>
                                 <!-- ################################################# -->
 
-                                <!-- ################################ CONDICIONES DE LAS VENTAS ################################ -->
-                                <span
-                                    th:if="${ultimaVentaPorHabitacion[hab.id_habitacion]?.tipo_servicio == 'MEDIO' || ventasVencidas[hab.id_habitacion]?.tipo_servicio == 'MEDIO'}"
-                                    class="hotel-room-status hotel-room-reserved fw-bold">
-                                    MEDIO DÍA - SALIDA 6:00 PM <br>
-                                </span>
-                                <!-- ########################################################################################### -->
-
                                 <!-- ####################### MOSTRAMOS NOMBRES Y APELLIDOS DE LOS CLIENTES ##################### -->
                                 <span th:if="${ultimaVentaPorHabitacion[hab.id_habitacion] != null}">
+                                    <span th:if="${mapAlertaSalida[hab.id_habitacion] == 6}"
+                                        class="hotel-room-status hotel-room-maintenance fw-bold">
+                                        QUEDAN MENOS DE 6 HORAS, PREGUNTAR SI CONTINUARA CON EL SERVICIO
+                                        <br>
+                                    </span>
                                     <span th:if="${mapAlertaSalida[hab.id_habitacion] == 1}"
                                         class="fw-bold text-light bg-warning px-3">
-                                        QUEDA MENOS DE UNA HORA <br>
-                                    </span>
-                                    <span th:if="${mapAlertaSalida[hab.id_habitacion] == 30}"
-                                        class="fw-bold text-light bg-warning px-3">
-                                        QUEDA MENOS DE 30 MINUTOS <br>
+                                        QUEDA MENOS DE 1 HORA, PREGUNTAR SI CONTINUARA CON EL SERVICIO <br>
                                     </span>
                                     <span
                                         th:each="cliente : ${ultimaVentaPorHabitacion[hab.id_habitacion]?.ventasClientesHabitacion}">
                                         <span class="hotel-text-dark fw-medium"
-                                            th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
+                                            th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}"
+                                            th:title="${cliente.usuario_alojado.celular}">
                                             NOMBRES Y APELLIDOS
                                         </span>
                                         <br>
@@ -367,7 +374,8 @@
                                 <span th:if="${ventasVencidas[hab.id_habitacion] != null}"
                                     th:each="cliente : ${ventasVencidas[hab.id_habitacion]?.ventasClientesHabitacion}">
                                     <span class="text-danger fw-medium"
-                                        th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}">
+                                        th:text="${cliente.usuario_alojado.nombres + ', ' + cliente.usuario_alojado.apellidos}"
+                                        th:title="${cliente.usuario_alojado.celular}">
                                         NOMBRES Y APELLIDOS
                                     </span>
                                     <br>
@@ -414,7 +422,7 @@
                                     POR COBRAR <br>
                                 </span>
                                 <span
-                                    th:text="${(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.monto_total, 1, 2) : (ventasVencidas[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ventasVencidas[hab.id_habitacion]?.monto_total, 1, 2) : ''}"
+                                    th:text="${(ultimaVentaPorHabitacionFechaEntrada[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ultimaVentaPorHabitacion[hab.id_habitacion]?.montoDiario, 1, 2) : (ventasVencidas[hab.id_habitacion] != null)? 'S/. ' + #numbers.formatDecimal(ventasVencidas[hab.id_habitacion]?.montoDiario, 1, 2) : ''}"
                                     th:classappend="${ventasVencidas[hab.id_habitacion] != null ? 'text-danger fw-bold' : ultimaVentaPorHabitacion[hab.id_habitacion]?.estado == 'POR COBRAR'? 'text-danger fw-bold' : 'text-success'}">
                                 </span>
                             </td>
@@ -439,7 +447,8 @@
                                             th:if="${ventasVencidas[hab.id_habitacion] != null}"
                                             th:value="${ventasVencidas[hab.id_habitacion].id_venta}" />
 
-                                        <button type="submit" class="btn btn-sm hotel-btn-primary" id="btn-editar-1"
+                                        <button type="submit" class="btn btn-sm hotel-btn-primary" id="btn-editar-2"
+                                            th:if="${fechaFiltro == null}"
                                             th:with="ventaID=${ultimaVentaPorHabitacion[hab.id_habitacion] != null ? ultimaVentaPorHabitacion[hab.id_habitacion].id_venta : ventasVencidas[hab.id_habitacion]?.id_venta}"
                                             th:title="'Venta: ' + ${ventaID}">
                                             Editar
@@ -451,7 +460,8 @@
                     </tbody>
                 </table>
 
-                <div class="position-sticky bottom-0 w-100 bg-white border-top py-2 hotel-total-box" style="z-index: 1;">
+                <div class="position-sticky bottom-0 w-100 bg-white border-top py-2 hotel-total-box"
+                    style="z-index: 1;">
                     <div class="d-flex justify-content-end pe-3">
                         <span class="fw-bold hotel-text-primary">Total caja (Habitaciones Modernas):</span>
                         <span class="fw-bold text-success ps-2"
@@ -468,14 +478,16 @@
                 <div class="modal-content shadow hotel-modal hotel-shadow-lg">
                     <div class="modal-header hotel-modal-header">
                         <h5 class="modal-title" id="modalLabel">Confirmar impresión</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body text-center hotel-text-primary">
                         ¿Está seguro de que desea imprimir una <strong>copia del ticket</strong>?
                     </div>
                     <div class="modal-footer justify-content-center">
                         <button type="button" class="btn hotel-btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn hotel-btn-success" id="btnConfirmarImpresion">Sí, imprimir</button>
+                        <button type="button" class="btn hotel-btn-success" id="btnConfirmarImpresion">Sí,
+                            imprimir</button>
                     </div>
                 </div>
             </div>
@@ -490,6 +502,7 @@
 
         function imprimirCopiaTicket(btn) {
             ventaIdSeleccionada = btn.getAttribute('data-venta-id');
+
             if (!ventaIdSeleccionada) {
                 alert("No se encontró el ID de la venta.");
                 return;
@@ -503,7 +516,7 @@
         document.getElementById("btnConfirmarImpresion").addEventListener("click", function () {
             if (!ventaIdSeleccionada) return;
 
-            fetch(`/ventas/imprimir-ticket-copia?idVenta=${ventaIdSeleccionada}`)
+            fetch(`/imprimir-ticket-copia?idVenta=${ventaIdSeleccionada}`)
                 .then(response => response.text())
                 .then(msg => alert(msg))
                 .catch(err => alert("❌ Error inesperado."));

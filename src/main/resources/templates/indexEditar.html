@@ -376,10 +376,10 @@
                                             <div class="col">
                                                 <select class="form-select text-center hotel-form-control"
                                                     th:field="*{tipo_servicio}" id="selectTipoServicioResumen">
-                                                    <option th:value="${'COMPLETO'}" data-tipo="COMPLETO">
+                                                    <option th:value="COMPLETO" data-tipo="COMPLETO">
                                                         COMPLETO
                                                         (12:00 pm)</option>
-                                                    <option th:value="${'MEDIO'}" data-tipo="MEDIO">MEDIO DÍA
+                                                    <option th:value="MEDIO" data-tipo="MEDIO">MEDIO DÍA
                                                         (6:00 pm)
                                                     </option>
                                                 </select>
@@ -405,7 +405,7 @@
                                                 DE SALIDA: </div>
                                             <div class="col">
                                                 <input type="text"
-                                                    class="text-center form-control bg-secondary-subtle  hotel-form-control"
+                                                    class="text-center form-control bg-secondary-subtle hotel-form-control"
                                                     id="fechaSalidaResumen" readonly>
                                                 <input type="hidden" th:field="*{fecha_salida}"
                                                     id="fechaSalidaResumenValor">
@@ -423,16 +423,7 @@
                                                     min="0" step="0.01" readonly>
                                             </div>
                                         </div>
-                                        <div class="row row-cols-2 mb-2">
-                                            <div
-                                                class="col align-content-center bg-primary-subtle fw-bold rounded-2 hotel-text-primary">
-                                                ADELANTO DEL TOTAL: </div>
-                                            <div class="col">
-                                                <input type="number" class="text-center form-control hotel-form-control"
-                                                    placeholder="0.00" th:field="*{monto_adelanto}"
-                                                    id="montoAdelantoResumen" min="0" step="0.01">
-                                            </div>
-                                        </div>
+
                                         <div class="row row-cols-2 mb-4">
                                             <div
                                                 class="col align-content-center bg-primary-subtle fw-bold rounded-2 hotel-text-primary">
@@ -440,23 +431,45 @@
                                             </div>
                                             <div class="col">
                                                 <input type="number"
-                                                    class="text-center form-control bg-success-subtle fw-bold rounded-2 hotel-form-control"
+                                                    class="text-center form-control bg-dark-subtle fw-bold rounded-2 hotel-form-control"
                                                     id="montoTotalResumen" min="0" step="0.01" readonly>
                                                 <input type="hidden" th:field="*{monto_total}"
                                                     id="montoTotalResumenValor">
                                             </div>
                                         </div>
 
+                                        <!-- Separador con icono -->
+                                        <div class="row mb-1">
+                                            <div class="col position-relative">
+                                                <hr class="hotel-divider">
+                                                <span class="hotel-divider-text text-primary-emphasis">| COBRO POR DÍA
+                                                    |</span>
+                                            </div>
+                                        </div>
+
                                         <div class="row row-cols-2 mb-2">
                                             <div
                                                 class="col align-content-center bg-primary-subtle fw-bold rounded-2 hotel-text-primary">
-                                                POR COBRAR: </div>
+                                                TOTAL HOY DÍA: </div>
                                             <div class="col">
                                                 <input type="number"
-                                                    class="text-center form-control bg-secondary-subtle hotel-form-control"
-                                                    id="montoPorCobrarResumen" min="0" step="0.01" readonly>
+                                                    class="text-center form-control bg-success-subtle hotel-form-control fw-bold"
+                                                    name="montoDiario" id="montoHabitacionResumen" min="0" step="0.01"
+                                                    readonly>
                                             </div>
                                         </div>
+
+                                        <div class="row row-cols-2 mb-2">
+                                            <div
+                                                class="col align-content-center bg-primary-subtle fw-bold rounded-2 hotel-text-primary">
+                                                DINERO ENTREGADO: </div>
+                                            <div class="col">
+                                                <input type="number" class="text-center form-control hotel-form-control" th:field="*{totalCobrado}"
+                                                    placeholder="0.00" id="montoTotalCobradoResumen" min="0"
+                                                    step="0.01">
+                                            </div>
+                                        </div>
+
                                         <div class="row row-cols-2 mb-4">
                                             <div
                                                 class="col align-content-center bg-primary-subtle fw-bold rounded-2 hotel-text-primary">
@@ -485,6 +498,7 @@
                                             </div>
                                         </div>
 
+                                        <input type="hidden" th:field="*{ultimaFecha}" id="ultimaFecha">
                                         <input type="hidden" th:field="*{estado_estadia}" id="estadoEstadia">
                                         <input type="hidden" th:field="*{tipo_venta}" id="tipoVenta"
                                             th:value="${'ALQUILER'}">
@@ -791,6 +805,7 @@
                                                     min="1">
                                             </div>
                                         </div>
+
                                         <div class="row row-cols-2 mb-2">
                                             <div
                                                 class="col align-content-center bg-primary-subtle fw-bold rounded-2 hotel-text-primary">
@@ -808,6 +823,7 @@
                                                 </select>
                                             </div>
                                         </div>
+
                                         <div class="row row-cols-2 mb-4">
                                             <div
                                                 class="col align-content-center bg-primary-subtle fw-bold rounded-2 hotel-text-primary">
@@ -832,16 +848,7 @@
                                                     id="reservadescuentoResumen" min="0" step="0.01" readonly>
                                             </div>
                                         </div>
-                                        <div class="row row-cols-2 mb-2">
-                                            <div
-                                                class="col align-content-center bg-primary-subtle fw-bold rounded-2 hotel-text-primary">
-                                                ADELANTO DEL TOTAL: </div>
-                                            <div class="col">
-                                                <input type="number" class="text-center form-control hotel-form-control"
-                                                    placeholder="0.00" th:field="*{monto_adelanto}"
-                                                    id="reservamontoAdelantoResumen" min="0" step="0.01">
-                                            </div>
-                                        </div>
+
                                         <div class="row row-cols-2 mb-4">
                                             <div
                                                 class="col align-content-center bg-primary-subtle fw-bold rounded-2 hotel-text-primary">
@@ -856,44 +863,20 @@
                                             </div>
                                         </div>
 
-                                        <div class="row row-cols-2 mb-2">
-                                            <div
-                                                class="col align-content-center bg-primary-subtle fw-bold rounded-2 hotel-text-primary">
-                                                POR COBRAR: </div>
-                                            <div class="col">
-                                                <input type="number"
-                                                    class="text-center form-control bg-secondary-subtle hotel-form-control"
-                                                    id="reservamontoPorCobrarResumen" min="0" step="0.01" readonly>
-                                            </div>
-                                        </div>
-                                        <div class="row row-cols-2 mb-4">
-                                            <div
-                                                class="col align-content-center bg-primary-subtle fw-bold rounded-2 hotel-text-primary">
-                                                VUELTO:
-                                            </div>
-                                            <div class="col">
-                                                <input type="number"
-                                                    class="text-center form-control bg-secondary-subtle hotel-form-control"
-                                                    id="reservamontoVueltoResumen" min="0" step="0.01" readonly>
-                                            </div>
-                                        </div>
-
                                         <div class="row row-cols-2 mb-4">
                                             <div
                                                 class="col align-content-center bg-primary-subtle fw-bold rounded-2 hotel-text-primary">
                                                 ESTADO
                                                 DE LA VENTA:</div>
                                             <div class="col">
-                                                <select class="form-select text-center fw-bold" th:field="*{estado}"
-                                                    id="reservaselectEstadoResumen">
-                                                    <option th:value="'POR COBRAR'">POR COBRAR
-                                                    </option>
-                                                    <option th:value="PAGADO"> PAGADO
-                                                    </option>
-                                                </select>
+                                                <input type="text"
+                                                    class="text-center form-control hotel-form-control bg-danger-subtle fw-bold rounded-2"
+                                                    id="reservaselectEstadoResumen" name="estado" th:value="'POR COBRAR'" readonly>
                                             </div>
                                         </div>
 
+                                        <input type="hidden" th:field="*{montoDiario}"
+                                            id="reservamontoHabitacionResumen">
                                         <input type="hidden" th:field="*{estado_estadia}" id="reservaestadoEstadia">
                                         <input type="hidden" name="tipo_venta" id="reservatipoVenta" value="RESERVA">
                                         <input type="hidden" th:field="*{id_venta}" id="reservaidVenta">
@@ -913,7 +896,7 @@
                             </div>
                         </form>
 
-                        <div class="row">
+                        <div class="row my-3">
                             <div class="col text-start w-25">
                                 <button th:if="${ventaParaReserva.id_venta != null}" type="button"
                                     class="btn hotel-btn-danger" id="reservabtnRetirarReserva">
@@ -943,7 +926,8 @@
                             <form th:action="@{/editar-estado/habitacion/{id}(id=${habitacion.id_habitacion})}"
                                 th:object="${habitacion}" method="post" class="w-50 mx-auto">
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold hotel-text-primary">Estado de la Habitación:</label>
+                                    <label class="form-label fw-bold hotel-text-primary">Estado de la
+                                        Habitación:</label>
                                     <select class="form-select hotel-form-control" th:field="*{estado}" th>
                                         <option class="text-center" th:each="estado : ${habEstados}"
                                             th:if="${estado.estado != 'OCUPADO' && estado.estado != 'RESERVADA'}"
@@ -954,15 +938,16 @@
 
                                 <div class="mb-3">
                                     <label class="form-label fw-bold hotel-text-primary">Razón:</label>
-                                    <textarea class="form-control hotel-form-control" th:field="*{razon_estado}" rows="3"
-                                        placeholder="Especifica la razón"></textarea>
+                                    <textarea class="form-control hotel-form-control" th:field="*{razon_estado}"
+                                        rows="3" placeholder="Especifica la razón"></textarea>
                                 </div>
 
                                 <div class="d-flex justify-content-center">
                                     <button type="button" class="btn hotel-btn-danger w-25 me-3" data-bs-toggle="modal"
                                         data-bs-target="#cancelModal">VOLVER</button>
 
-                                    <button type="submit" class="btn hotel-btn-primary ms-3">GUARDAR ESTADO EDITADO DE LA
+                                    <button type="submit" class="btn hotel-btn-primary ms-3">GUARDAR ESTADO EDITADO DE
+                                        LA
                                         HABITACION</button>
                                 </div>
                             </form>
@@ -977,7 +962,8 @@
                             <form th:action="@{/editar-estado/habitacion/{id}(id=${habitacion.id_habitacion})}"
                                 th:object="${habitacion}" method="post" class="w-50 mx-auto">
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold hotel-text-primary">Estado de la Habitación:</label>
+                                    <label class="form-label fw-bold hotel-text-primary">Estado de la
+                                        Habitación:</label>
                                     <select class="form-select hotel-form-control" th:field="*{estado}" th>
                                         <option class="text-center" th:each="estado : ${habEstados}"
                                             th:if="${estado.estado != 'OCUPADO' && estado.estado != 'RESERVADA'}"
@@ -988,15 +974,16 @@
 
                                 <div class="mb-3">
                                     <label class="form-label fw-bold hotel-text-primary">Razón:</label>
-                                    <textarea class="form-control hotel-form-control" th:field="*{razon_estado}" rows="3"
-                                        placeholder="Especifica la razón"></textarea>
+                                    <textarea class="form-control hotel-form-control" th:field="*{razon_estado}"
+                                        rows="3" placeholder="Especifica la razón"></textarea>
                                 </div>
 
                                 <div class="d-flex justify-content-center">
                                     <button type="button" class="btn hotel-btn-danger w-25 me-3" data-bs-toggle="modal"
                                         data-bs-target="#cancelModal">VOLVER</button>
 
-                                    <button type="submit" class="btn hotel-btn-primary ms-3">GUARDAR ESTADO EDITADO DE LA
+                                    <button type="submit" class="btn hotel-btn-primary ms-3">GUARDAR ESTADO EDITADO DE
+                                        LA
                                         HABITACION</button>
                                 </div>
                             </form>
@@ -1036,7 +1023,8 @@
                             </p>
 
                             <div class="col text-center mt-5 mb-3">
-                                <button type="button" class="btn hotel-btn-primary w-25 me-3" id="btnVerDetallesOcupado">VER
+                                <button type="button" class="btn hotel-btn-primary w-25 me-3"
+                                    id="btnVerDetallesOcupado">VER
                                     DETALLES</button>
                                 <button type="button" class="btn hotel-btn-danger w-25 ms-3" data-bs-toggle="modal"
                                     data-bs-target="#cancelModal">VOLVER</button>
@@ -1061,7 +1049,8 @@
                                 <input type="hidden" name="id_ventaHabitacion" th:value="${ventaParaReserva.id_venta}">
 
                                 <div class="col text-center mt-5 mb-3">
-                                    <button type="button" class="btn hotel-btn-primary w-25" id="btnVerDetallesReserva">VER
+                                    <button type="button" class="btn hotel-btn-primary w-25"
+                                        id="btnVerDetallesReserva">VER
                                         DETALLES
                                     </button>
                                     <button type="submit" class="btn hotel-btn-success w-25 mx-3"
@@ -1076,12 +1065,14 @@
                     <!-- Caso por defecto: Formulario para agregar un nuevo estado -->
                     <div th:case="*">
                         <div class="alert w-50 mx-auto hotel-shadow-sm">
-                            <h4 class="fs-2 text-uppercase text-center mb-3 hotel-text-primary">Habitación disponible</h4>
+                            <h4 class="fs-2 text-uppercase text-center mb-3 hotel-text-primary">Habitación disponible
+                            </h4>
 
                             <form th:action="@{/editar-estado/habitacion/{id}(id=${habitacion.id_habitacion})}"
                                 th:object="${habitacion}" method="post" class="mx-auto">
                                 <div class="mb-3">
-                                    <label class="form-label fw-bold hotel-text-primary">Estado de la Habitación:</label>
+                                    <label class="form-label fw-bold hotel-text-primary">Estado de la
+                                        Habitación:</label>
                                     <select class="form-select hotel-form-control" th:field="*{estado}" th>
                                         <option class="text-center" th:each="estado : ${habEstados}"
                                             th:if="${estado.estado != 'OCUPADO' && estado.estado != 'RESERVADA'}"
@@ -1092,15 +1083,16 @@
 
                                 <div class="mb-3">
                                     <label class="form-label fw-bold hotel-text-primary">Razón:</label>
-                                    <textarea class="form-control hotel-form-control" th:field="*{razon_estado}" rows="3"
-                                        placeholder="Especifica la razón"></textarea>
+                                    <textarea class="form-control hotel-form-control" th:field="*{razon_estado}"
+                                        rows="3" placeholder="Especifica la razón"></textarea>
                                 </div>
 
                                 <div class="d-flex justify-content-center">
                                     <button type="button" class="btn hotel-btn-danger w-25 me-3" data-bs-toggle="modal"
                                         data-bs-target="#cancelModal">VOLVER</button>
 
-                                    <button type="submit" class="btn hotel-btn-primary ms-3">GUARDAR ESTADO EDITADO DE LA
+                                    <button type="submit" class="btn hotel-btn-primary ms-3">GUARDAR ESTADO EDITADO DE
+                                        LA
                                         HABITACION</button>
                                 </div>
                             </form>
@@ -1126,13 +1118,16 @@
                             <tbody>
                                 <tr th:each="contenido : ${habitacion.habitacionesContenido}">
                                     <td class="align-middle">
-                                        <span class="hotel-text-dark fw-medium" th:text="${contenido.caracteristica.nombre}"></span>
+                                        <span class="hotel-text-dark fw-medium"
+                                            th:text="${contenido.caracteristica.nombre}"></span>
                                     </td>
                                     <td class="align-middle">
-                                        <span class="hotel-text-secondary" th:text="${contenido.caracteristica.descripcion}"></span>
+                                        <span class="hotel-text-secondary"
+                                            th:text="${contenido.caracteristica.descripcion}"></span>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <span class="hotel-text-success fw-bold" th:text="'S/. ' + ${contenido.caracteristica.precio}"></span>
+                                        <span class="hotel-text-success fw-bold"
+                                            th:text="'S/. ' + ${contenido.caracteristica.precio}"></span>
                                     </td>
                                     <td class="align-middle text-center">
                                         <select class="form-select text-center estado-selector hotel-estado-selector"
@@ -1166,6 +1161,7 @@
             </div>
         </div>
     </div>
+
     <div th:insert="~{fragments/modal :: modal('/')}"></div>
 
     <!-- ========== MODAL DE CONFIRMACIÓN ========== -->
@@ -1175,9 +1171,10 @@
             <div class="modal-content hotel-modal-confirmacion">
                 <div class="modal-header">
                     <h5 class="modal-title" id="confirmacionModalLabel">
-                        ¿Deseas guardar la venta e imprimir ticket?
+                        ¿Deseas guardar la venta?
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Cerrar"></button>
                 </div>
                 <div class="modal-body hotel-text-primary text-center">
                     Selecciona una opción

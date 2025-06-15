@@ -57,13 +57,28 @@ public class Ventas {
     private String estado_estadia = "SIN PROBLEMAS";
 
     @Column(name = "descuento")
-    private Double descuento;
+    private Double descuento = 0.0;
 
     @Column(name = "monto_total")
-    private Double monto_total;
+    private Double monto_total = 0.0;
 
     @Column(name = "monto_adelanto")
-    private Double monto_adelanto;
+    private Double monto_adelanto = 0.0;
+
+    @Column
+    private String ultimaFecha;
+
+    @Column(name = "por_cobrar")
+    private Double porCobrar = 0.0;
+
+    @Column(name = "monto_diario")
+    private Double montoDiario = 0.0;
+
+    @Column(name = "cobro_diario")
+    private Boolean cobroDiario;
+    
+    @Column(name = "total_cobrado")
+    private Double totalCobrado;
 
     @Column(name = "tipo_servicio")
     private String tipo_servicio = "COMPLETO";
@@ -80,7 +95,8 @@ public class Ventas {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "venta")
     private Set<VentasClientesHabitacion> ventasClientesHabitacion;
 
-    // Genera la fecha en el momento del guardado y no cuando se empezó a crear la entidad
+    // Genera la fecha en el momento del guardado y no cuando se empezó a crear la
+    // entidad
     @PrePersist
     private void prePersist() {
         this.fecha_creacion = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));

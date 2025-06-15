@@ -21,4 +21,9 @@ public interface VentasService {
     Page<Ventas> getAllByPage(Pageable pageable);
 
     Page<Ventas> getVentasNoEliminadas(Pageable pageable);
+
+    public List<Ventas> getVentasActivas();
+
+    public List<Ventas> getVentasNoEliminadas();
+
 }
