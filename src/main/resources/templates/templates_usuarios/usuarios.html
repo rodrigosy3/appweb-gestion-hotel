@@ -23,7 +23,7 @@
 
             <div>
                 <nav aria-label="pagination-usuarios">
-                    <ul class="pagination justify-content-center">
+                    <ul class="pagination justify-content-center hotel-pagination">
                         <li class="page-item" th:classappend="${prevPage == 0 ? 'disabled' : ''}">
                             <a th:href="@{|/admin/usuarios?page=${prevPage}|}" class="page-link">Anterior</a>
                         </li>
@@ -39,11 +39,11 @@
             </div>
 
             <div class="my-auto">
-                <a class="btn btn-primary" th:href="@{/admin/usuarios/nuevo}" role="button">AGREGAR USUARIO</a>
+                <a class="btn hotel-btn-primary" th:href="@{/admin/usuarios/nuevo}" role="button">AGREGAR USUARIO</a>
             </div>
         </div>
 
-        <table class="table border table-hover shadow">
+        <table class="table border table-hover hotel-table-modernas hotel-shadow-sm">
             <thead class="table-dark">
                 <tr>
                     <th class="text-center w-auto" colspan="2">ACCIONES</th>

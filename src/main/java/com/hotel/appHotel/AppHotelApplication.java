@@ -58,7 +58,10 @@ public class AppHotelApplication {
 
 	public static void main(String[] args) {
 		int puerto = 3000;
-		crearCarpetaBD();
+		String appData = crearCarpetaBD();
+
+		// Establecer como propiedad del sistema
+		System.setProperty("rutaBD", appData);
 
 		if (isServerRunning(puerto)) {
 			System.out.println("El servidor ya está en ejecución. Abriendo el navegador...");
@@ -71,8 +74,9 @@ public class AppHotelApplication {
 		abrirNavegador("http://localhost:" + puerto);
 	}
 
-	private static void crearCarpetaBD() {
-		String ruta = System.getProperty("user.home") + "/Documents/AppHotelDatos";
+	private static String crearCarpetaBD() {
+		// String ruta = System.getProperty("user.home") + "/Documents/AppHotelDatos";
+		String ruta = System.getenv("APPDATA") + "/HostalVData";
 		File carpeta = new File(ruta);
 
 		if (!carpeta.exists()) {
@@ -83,6 +87,8 @@ public class AppHotelApplication {
 				System.err.println("❌ No se pudo crear la carpeta");
 			}
 		}
+
+		return ruta;
 	}
 
 	// Verifica si el servidor ya está en ejecución

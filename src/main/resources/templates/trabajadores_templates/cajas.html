@@ -28,7 +28,7 @@
 
             <div>
                 <nav aria-label="pagination-ventas">
-                    <ul class="pagination justify-content-center">
+                    <ul class="pagination justify-content-center hotel-pagination">
                         <li class="page-item" th:classappend="${prevPage == 0 ? 'disabled' : ''}">
                             <a th:href="@{|/cajas?page=${prevPage}|}" class="page-link">Anterior</a>
                         </li>
@@ -44,13 +44,13 @@
             </div>
 
             <div class="my-auto">
-                <a class="btn btn-primary" th:href="@{/cajas/exportar-pdf(page=${actualPage})}" target="_blank">
+                <a class="btn hotel-btn-primary" th:href="@{/cajas/exportar-pdf(page=${actualPage})}" target="_blank">
                     <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
                 </a>
             </div>
         </div>
 
-        <table class="table table-sm table-hover border shadow">
+        <table class="table table-hover hotel-table-modernas hotel-shadow-sm">
             <thead class="table-dark">
                 <tr>
                     <th class="text-center align-middle">ID</th>
@@ -60,10 +60,11 @@
                     <th class="text-center align-middle">TIPO DE VENTA</th>
                     <th class="text-center align-middle">MONTO (S/.)</th>
                     <th class="text-center align-middle">FECHA REGISTRO</th>
+                    <th class="text-center align-middle">ENCARGADO</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="caja : ${cajas}" th:classappend="${caja.monto &lt; 0 ? 'table-warning' : 'table-success'}">
+                <tr th:each="caja : ${cajas}" th:classappend="${caja.monto &lt; 0 ? 'table-danger' : ''}">
                     <!-- ID del movimiento -->
                     <td class="text-center align-middle" th:text="${caja.idCaja}">ID</td>
 
@@ -93,13 +94,12 @@
                     </td>
 
                     <!-- Tipo de servicio -->
-                    <td class="text-center align-middle"
-                        th:text="${caja.venta != null ? caja.venta.tipo_venta : '-'}">
+                    <td class="text-center align-middle" th:text="${caja.venta != null ? caja.venta.tipo_venta : '-'}">
                         TIPO DE VENTA
                     </td>
 
                     <!-- Monto del movimiento (positivo o negativo) -->
-                    <td class="text-center align-middle" th:text="${ caja.monto}">
+                    <td class="text-center align-middle" th:text="${caja.monto}">
                         MONTO
                     </td>
 
@@ -108,6 +108,12 @@
                     T(java.time.LocalDateTime).parse(caja.fechaRegistro),
                     'dd-MM-yyyy hh:mm a')}">
                         FECHA REGISTRO
+                    </td>
+
+                    <!-- Monto del movimiento (positivo o negativo) -->
+                    <td class="text-center align-middle"
+                        th:text="${caja.usuarioResponsable.nombres + ' ' + caja.usuarioResponsable.apellidos}">
+                        ENCARGADO
                     </td>
                 </tr>
             </tbody>

@@ -23,7 +23,7 @@
 
             <div>
                 <nav aria-label="pagination-usuarios">
-                    <ul class="pagination justify-content-center">
+                    <ul class="pagination justify-content-center hotel-pagination">
                         <li class="page-item" th:classappend="${prevPage == 0 ? 'disabled' : ''}">
                             <a th:href="@{|/clientes?page=${prevPage}|}" class="page-link">Anterior</a>
                         </li>
@@ -39,7 +39,7 @@
             </div>
 
             <div class="my-auto">
-                <a class="btn btn-primary ms-5 my-auto" th:href="@{/clientes/exportar-pdf(page=${actualPage})}"
+                <a class="btn hotel-btn-primary ms-5 my-auto" th:href="@{/clientes/exportar-pdf(page=${actualPage})}"
                     target="_blank">
                     <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
                 </a>
@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <table class="table border table-hover shadow">
+        <table class="table border table-hover hotel-table-modernas hotel-shadow-sm">
             <thead class="table-dark">
                 <tr>
                     <th class="text-center">DNI</th>
@@ -76,11 +76,11 @@
                         th:class="${usuario.razon_vetado == ''? 'bg-secondary-subtle' : ''}">
                         RAZÓN DE VETO</td>
                     <td class="text-center border border-secondary-subtle">
-                        <a class="btn btn-sm btn-primary" role="button"
+                        <a class="btn btn-sm hotel-btn-primary" role="button"
                             th:href="@{/clientes/editar/{id}(id=${usuario.id_usuario})}">
                             EDITAR
                         </a>
-                        <button th:disabled="${usuario.estado_vetado}" class="btn btn-sm btn-danger btn-vetar"
+                        <button th:disabled="${usuario.estado_vetado}" class="btn btn-sm hotel-btn-danger btn-vetar"
                             th:data-id="${usuario.id_usuario}" th:data-nombre="${usuario.nombres}"
                             th:data-vetado="${usuario.estado_vetado}">
                             VETAR CLIENTE
@@ -106,8 +106,8 @@
                         <textarea id="razonVeto" class="form-control" rows="3"></textarea>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-danger" id="btnConfirmarVeto">Confirmar Veto</button>
+                        <button type="button" class="btn hotel-btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn hotel-btn-danger" id="btnConfirmarVeto">Confirmar Veto</button>
                     </div>
                 </div>
             </div>

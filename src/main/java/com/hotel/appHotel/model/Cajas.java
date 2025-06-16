@@ -25,6 +25,10 @@ public class Cajas {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long idCaja;
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_responsable", referencedColumnName = "id_usuario")
+    private Usuarios usuarioResponsable;
+
     @Column(name = "monto")
     private Double monto;
 

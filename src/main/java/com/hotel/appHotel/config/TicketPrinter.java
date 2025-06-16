@@ -229,9 +229,10 @@ public class TicketPrinter {
             // ==== Imprimir ====
             String ticketTexto = sb.toString();
             // TicketPrinter.imprimirTicket("XP-E200L", ticketTexto);
-            if (esNuevo)
+            if (esNuevo) {
                 TicketPrinter.imprimirTicket("XP-E200L", ticketTexto);
-            System.out.println("Imprimiendo ticket de venta:\n" + ticketTexto);
+                System.out.println("Imprimiendo ticket de venta:\n" + ticketTexto);
+            }
 
         } catch (Exception e) {
             System.out.println("ERROR al imprimir ticket de venta: " + e.getMessage());

@@ -333,7 +333,6 @@ public class IndexController {
                 ultimaFechaFinVenta = ultimaFechaFinVenta.withHour(18).withMinute(0).withSecond(0);
             } else {
                 ultimaFechaFinVenta = ultimaFechaFinVenta.plusDays(1).withHour(12).withMinute(0).withSecond(0);
-                System.out.println("asdadadasdadadasdadadasdadadasdadadasdadadasdadadasdadad");
             }
 
             double montoCajaExistente = 0.0;
@@ -355,9 +354,9 @@ public class IndexController {
             for (Cajas caja : cajasExistentes) {
                 LocalDateTime cajaFecha = LocalDateTime.parse(caja.getFechaRegistro());
 
-                System.out.println("ultimaFechaInicioVenta: " + ultimaFechaInicioVenta +
-                        "   cajaFecha: " + cajaFecha +
-                        "   ultimaFechaFinVenta: " + ultimaFechaFinVenta);
+                // System.out.println("ultimaFechaInicioVenta: " + ultimaFechaInicioVenta +
+                //         "   cajaFecha: " + cajaFecha +
+                //         "   ultimaFechaFinVenta: " + ultimaFechaFinVenta);
 
                 if (cajaFecha.isAfter(ultimaFechaInicioVenta) && cajaFecha.isBefore(ultimaFechaFinVenta)) {
                     montoCajaExistente = caja.getMonto();
@@ -366,7 +365,7 @@ public class IndexController {
                 }
             }
 
-            System.out.println(existeCajaHoy);
+            // System.out.println(existeCajaHoy);
 
             if ("PAGADO".equals(ventaGuardada.getEstado())) {
                 if (!existeCajaHoy)
@@ -380,6 +379,7 @@ public class IndexController {
             if (montoPorRegistrar != 0) {
                 Cajas caja = new Cajas();
 
+                caja.setUsuarioResponsable(usuario_responsable);
                 caja.setMonto(montoPorRegistrar);
                 caja.setFechaRegistro(LocalDateTime.now().toString());
                 caja.setVenta(ventaGuardada);

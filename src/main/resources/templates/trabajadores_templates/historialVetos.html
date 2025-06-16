@@ -22,7 +22,7 @@
 
             <div>
                 <nav aria-label="pagination-ventas">
-                    <ul class="pagination justify-content-center">
+                    <ul class="pagination justify-content-center hotel-pagination">
                         <li class="page-item" th:classappend="${prevPage == 0 ? 'disabled' : ''}">
                             <a th:href="@{|/historialVetos?page=${prevPage}|}" class="page-link">Anterior</a>
                         </li>
@@ -37,16 +37,16 @@
             </div>
 
             <div class="my-auto">
-                <a class="btn btn-primary" th:href="@{/historialVetos/exportar-pdf(page=${actualPage})}" target="_blank">
+                <a class="btn hotel-btn-primary" th:href="@{/historialVetos/exportar-pdf(page=${actualPage})}" target="_blank">
                     <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
                 </a>                
             </div>
         </div>
 
-        <table class="table border table-hover shadow">
+        <table class="table border table-hover hotel-table-modernas hotel-shadow-sm">
             <thead class="table-dark">
                 <tr>
-                    <th>PERSONAL RESPONSABLE</th>
+                    <th>ENCARGADO</th>
                     <th>USUARIO REPORTADO</th>
                     <th>RAZÓN DEL VETO</th>
 

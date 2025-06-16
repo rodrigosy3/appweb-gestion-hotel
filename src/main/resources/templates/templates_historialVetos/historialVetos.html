@@ -14,7 +14,7 @@
 <body>
     <div th:insert="~{fragments/navbar :: navbar}"></div>
 
-    <div class="container">
+    <div class="mx-5">
         <div th:if="${error}" class="alert alert-danger alert-dismissible fade show text-center" role="alert">
             <span th:text="${error}"></span>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -22,12 +22,12 @@
 
         <div class="d-flex justify-content-between">
             <div>
-                <h1 class="text-center">LISTA DE HISTORIAL DE VETOS</h1>
+                <h2 class="text-center">HISTORIALES DE VETOS</h2>
             </div>
 
             <div>
                 <nav aria-label="pagination-ventas">
-                    <ul class="pagination justify-content-center">
+                    <ul class="pagination justify-content-center hotel-pagination">
                         <li class="page-item" th:classappend="${prevPage == 0 ? 'disabled' : ''}">
                             <a th:href="@{|/admin/historialVetos?page=${prevPage}|}" class="page-link">Anterior</a>
                         </li>
@@ -42,12 +42,11 @@
             </div>
 
             <div class="my-auto">
-                <a class="btn btn-primary" th:href="@{/admin/historialVetos/nuevo}" role="button">AGREGAR HISTORIAL DE
-                    VETO</a>
+                <a class="btn hotel-btn-primary" th:href="@{/admin/historialVetos/nuevo}" role="button">AGREGAR REGISTRO</a>
             </div>
         </div>
 
-        <table class="table border table-hover shadow">
+        <table class="table border table-hover hotel-table-modernas hotel-shadow-sm">
             <thead class="table-dark">
                 <tr>
                     <th class="text-center w-auto" colspan="2">ACCIONES</th>
